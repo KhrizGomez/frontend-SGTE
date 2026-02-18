@@ -1,0 +1,92 @@
+<main class="page d-flex justify-content-center align-items-center">
+    <!-- Fondo -->
+    <div class="bg position-absolute"></div>
+
+    <!-- Formulario -->
+    <section class="card card border-0 shadow-lg p-4">
+        <!-- Logo -->
+        <header class="logo mb-4">
+            <img src="/assets/logo.png" alt="UTEQ" class="img-fluid" />
+        </header>
+
+        <form>
+            <div class="mb-3">
+                <input type="text" name="usuario" placeholder="Usuario"
+                    class="form-control form-control-lg rounded-4" required />
+            </div>
+
+            <div class="mb-3">
+                <input type="password" name="contrasena" placeholder="Contraseña"
+                    class="form-control form-control-lg rounded-4" required />
+            </div>
+
+            <button type="submit" class="btn btn-success btn-lg w-100 rounded-4 mb-2">
+                Iniciar sesión
+            </button>
+
+            <button type="button" class="btn btn-dark btn-lg w-100 rounded-4" (click)="abrirModalCreateAccount()">
+                Crear cuenta
+            </button>
+        </form>
+
+        <!-- Enlaces -->
+        <div class="d-flex flex-column align-items-center my-4 mb-0">
+            <a href="#" class="text-dark text-decoration-none small" >
+                ¿Olvidaste tu contraseña?
+            </a>
+        </div>
+    </section>
+
+    <!-- Modal de creacion de cuenta -->
+    <div class="modal fade" id="modalCreateAccount" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="modalCreateAccountLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="modalCreateAccountLabel">Crear cuenta</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-check form-switch fs-5 mb-3">
+                            <input class="form-check-input switch-giganterande my-2 mb-2" style="cursor: pointer;" type="checkbox" role="switch" id="switchGrande"
+                                   name="checkUsuarioExterno"
+                                   [(ngModel)]="estudianteExterno">
+                            <label class="form-check-label m-0" for="checkCambio">Externo</label>
+                        </div>
+
+                        <div class="mb-3">
+                            <input type="text" name="cedula" placeholder="Cedula"
+                                   class="form-control form-control-lg rounded-4"
+                                   [(ngModel)]="cedula"
+                                   required/>
+                        </div>
+
+                        @if (estudianteExterno)
+                        {
+                            <div class="mb-3">
+                                <input type="text" name="nombres" placeholder="Nombres"
+                                       class="form-control form-control-lg rounded-4"
+                                       [(ngModel)]="nombres"
+                                       required/>
+                            </div>
+
+                            <div class="mb-3">
+                                <input type="text" name="apellidos" placeholder="Apellidos"
+                                       class="form-control form-control-lg rounded-4"
+                                       [(ngModel)]="apellidos"
+                                       required/>
+                            </div>
+                        }
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" (click)="registrarCuenta()">Registrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</main>
