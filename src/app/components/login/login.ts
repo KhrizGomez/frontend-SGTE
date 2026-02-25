@@ -2,6 +2,7 @@ import { AfterViewInit, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { UserValidationService } from '../../services/user-validation.service';
+import { UserRegistrationService } from '../../services/user-registration-service';
 
 declare var bootstrap: any;
 
@@ -18,7 +19,10 @@ export class Login implements AfterViewInit  {
     nombres: string = '';
     apellidos: string = '';
 
-    constructor(private userValidationService: UserValidationService) { }
+    constructor(
+        private userValidationService: UserValidationService,
+        private userRegistrationService: UserRegistrationService
+    ) { }
 
     abrirModalCreateAccount() {
         const modalElement = document.getElementById('modalCreateAccount');
@@ -39,9 +43,16 @@ export class Login implements AfterViewInit  {
             this.userValidationService.validarUsuario(this.cedula).subscribe({
                 next: (data) => {
                     console.log('Datos del usuario validado:', data);
-                    // Aquí puedes enviar los datos a otra API
-                    // Por ejemplo: this.registrarUsuarioInternoEnOtraAPI(data);
-                    alert('Usuario validado correctamente');
+                    this.userRegistrationService.registrarUsuario(data).subscribe({
+                        next: (response) => {
+                            console.log('Usuario registrado en la API de registro:', response);
+                            alert('Usuario registrado correctamente en la API de registro');
+                        },
+                        error: (error) => {
+                            console.error('Error al registrar usuario en la API de registro:', error);
+                            alert('Error al registrar usuario en la API de registro');
+                        }
+                    });
                 },
                 error: (error) => {
                     console.error('Error al validar usuario:', error);
