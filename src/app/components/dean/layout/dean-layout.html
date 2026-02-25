@@ -1,0 +1,144 @@
+<div class="app-container">
+    <header class="topbar">
+        <div class="topbar__title">
+            <img src="assets/logo-secundario.png" alt="Logo UTEQ" class="topbar__logo">
+        </div>
+
+        <div class="topbar__actions">
+            <!-- Selector de Periodo -->
+            <!-- <div class="topbar__period">
+                <i class="bi bi-calendar3"></i>
+                <span>REGULAR 2025-2026 SPA</span>
+                <i class="bi bi-chevron-down"></i>
+            </div> -->
+
+            <!-- Notificaciones
+            <button class="topbar__btn-action">
+                <i class="bi bi-bell"></i>
+                <span class="badge">9</span>
+            </button> -->
+
+            <!-- Perfil de Usuario -->
+            <div class="topbar__user-toggle" (click)="toggleLogout()">
+                <div class="avatar-circle">
+                    <div class="upc__avatar-large" style="width: 100%; height: 100%; font-size: 1rem;">{{ userInitials
+                        }}</div>
+                </div>
+                <span class="user-label">SOFT</span>
+                <i class="bi bi-chevron-down chevron"></i>
+
+                <!-- Menú desplegable tipo Tarjeta -->
+                @if (showLogout) {
+                <div class="user-profile-card" (click)="$event.stopPropagation()">
+                    <!-- Cabecera -->
+                    <div class="upc__header">
+                        <div class="upc__avatar-wrapper">
+                            <div class="upc__avatar-large">{{ userInitials }}</div>
+                        </div>
+                        <div class="upc__name">{{ userName }}</div>
+                        <div class="upc__email">{{ userEmail }}</div>
+                    </div>
+
+                    <!-- Perfiles Disponibles -->
+                    <!-- <div class="upc__section">
+                        <div class="upc__label">Perfiles Disponibles</div>
+                        <div class="upc__item">
+                            <i class="bi bi-circle"></i>
+                            <span>N-SOFT</span>
+                        </div>
+                        <div class="upc__item active">
+                            <i class="bi bi-check-lg"></i>
+                            <span>SOFT-R</span>
+                            <i class="bi bi-check-lg upc__check-icon"></i>
+                        </div>
+                    </div> -->
+
+                    <!-- Acciones -->
+                    <div class="upc__section">
+                        <button class="upc__item">
+                            <i class="bi bi-person"></i>
+                            <span>Mi perfil</span>
+                        </button>
+                        <!-- <button class="upc__item">
+                            <i class="bi bi-display"></i>
+                            <span>Mis dispositivos</span>
+                        </button>
+                        <button class="upc__item">
+                            <i class="bi bi-image"></i>
+                            <span>Cambio de foto</span>
+                        </button>
+                        <button class="upc__item">
+                            <i class="bi bi-lock"></i>
+                            <span>Cambio de clave</span>
+                        </button> -->
+                    </div>
+
+                    <!-- Logout -->
+                    <div class="upc__footer">
+                        <button class="btn-logout-alt" (click)="logout()">
+                            <i class="bi bi-box-arrow-left"></i>
+                            <span>Cerrar sesión</span>
+                        </button>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+    </header>
+
+    <div class="layout-wrapper" [class.sidebar-collapsed]="!sidebarOpen">
+        <aside class="sidebar">
+            <!-- Logo UTEQ -->
+            <div class="sidebar__brand">
+                <!-- <div class="brand-shield">
+                    <i class="bi bi-shield-fill"></i>
+                </div>
+                <span class="brand-text-full">UTEQ SGTE</span> -->
+
+                <!-- Nuevo Toggle con flecha -->
+                <button class="sidebar__toggle" (click)="toggleSidebar()" title="Contraer/Expandir">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+            </div>
+
+            <!-- Navegación con secciones -->
+            <nav class="sidebar__nav">
+                <p class="nav-section-label">Modulos</p>
+                <ul class="nav-list">
+                    <li *ngFor="let item of navPrincipal" class="nav-list__item">
+                        <a [routerLink]="item.route" routerLinkActive="active" #rlaD1="routerLinkActive"
+                            class="nav-link">
+                            <i [class]="item.icon" [style.color]="rlaD1.isActive ? '#ffffff' : item.color"></i>
+                            <span>{{ item.label }}</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- <p class="nav-section-label">Herramientas</p> -->
+                <ul class="nav-list">
+                    <li *ngFor="let item of navHerramientas" class="nav-list__item">
+                        <a [routerLink]="item.route" routerLinkActive="active" #rlaD2="routerLinkActive"
+                            class="nav-link">
+                            <i [class]="item.icon" [style.color]="rlaD2.isActive ? '#ffffff' : item.color"></i>
+                            <span>{{ item.label }}</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Footer: Limpio -->
+            <div class="sidebar__footer">
+                <button class="mini-logout-btn" (click)="logout()" title="Cerrar sesión">
+                    <i class="bi bi-box-arrow-left"></i>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Contenido principal -->
+        <div class="page-content-wrapper">
+            <main class="page-content">
+                <router-outlet></router-outlet>
+            </main>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,9 @@
+/* Administrador – Acento rojo carmesí */
+@import '../../../shared/styles/layout-base.css';
+
+:host {
+    --sidebar-bg: #1f1015;
+    --sidebar-accent: #ef4444;
+    --sidebar-text: #c9a8ae;
+    --sidebar-hover: rgba(239, 68, 68, 0.12);
+}
