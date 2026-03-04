@@ -4,31 +4,13 @@
         <div class="topbar__title">
             <img src="assets/logo-secundario.png" alt="Logo UTEQ" class="topbar__logo">
         </div>
-        
 
         <div class="topbar__actions">
-            <!-- Selector de Periodo -->
-            <!-- <div class="topbar__period">
-                <i class="bi bi-calendar3"></i>
-                <span>REGULAR 2025-2026 SPA</span>
-                <i class="bi bi-chevron-down"></i>
-            </div> -->
-
-            <!-- Notificaciones
-            <button class="topbar__btn-action">
-                <i class="bi bi-bell"></i>
-                <span class="badge">9</span>
-            </button> -->
 
             <!-- Perfil de Usuario -->
             <div class="topbar__user-toggle" (click)="toggleLogout()">
                 <div class="avatar-circle">
-                    <div class="upc__avatar-large" 
-                    style="
-                    width: 100%; 
-                    height: 100%; 
-                    font-size: 1rem;
-                    ">{{ userInitials }}</div>
+                    <div class="upc__avatar-large">{{ userInitials }}</div>
                 </div>
                 <span class="user-label">SOFT</span>
                 <i class="bi bi-chevron-down chevron"></i>
