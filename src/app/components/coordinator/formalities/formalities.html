@@ -1,0 +1,193 @@
+<div class="main p-0 m-0">
+
+    <!-- Encabezado del componente -->
+
+    <div class="contenedor mt-4">
+
+        <!-- Titulo del componete o modulo -->
+
+        <h1 class="text">
+            Gestion de tramites
+        </h1>
+
+       <!-- Descripcion de componente -->
+
+        <p class="text-muted">
+            Complete los datos para iniciar un nuevo tramite en el sistema.
+        </p>
+    </div>
+
+    <!-- Cuerpo del componente -->
+
+    <div class="d-inline-block contenedor mt-4">
+        <div class="d-flex">
+
+            <!-- Filtros -->
+
+            <div class="d-flex gap-4 mt-auto">
+                <div>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary dropdown-toggle " type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                            Categoria
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item">Action</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Prioridad
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item">Action</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Estado
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item">Action</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Boton para agregar nuevo tramite -->
+
+            <div class="mt-auto ms-auto">
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalNuevoTramite">
+                    Nuevo tramite
+                </button>
+            </div>
+
+        </div>
+
+        <!-- Tarjetas con los tramites creados -->
+
+        <h4 class="mt-5">
+            Lista de tramites creados
+        </h4>
+
+        <div class="mt-4">
+            <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4">
+                @for (tramite of listaTramites; track tramite.id) {
+
+                    <!-- Generacion de tarjeta -->
+
+                    <div class="col">
+                        <div class="card h-100 border-1 bg-light rounded-3 p-3 shadow-sm">
+                            <div class="d-flex gap-3 h-100">
+
+                                <div class="bg-success text-white rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 50px; height: 50px;">
+                                    <i class="bi bi-file-earmark-text fs-4"></i>
+                                </div>
+
+                                <!-- Informacion del tramite -->
+
+                                <div class="d-flex flex-column flex-grow-1">
+                                    <h6 class="fw-bold text-dark mb-1 lh-sm" style="font-size: 1rem;">
+                                        {{ tramite.titulo }}
+                                    </h6>
+                                    <small class="text-secondary lh-sm mb-3" style="font-size: 0.8rem;">
+                                        {{ tramite.categoria }} - {{ tramite.prioridad }} - {{ tramite.estado }} - {{ tramite.fechaVence }}
+                                    </small>
+
+                                    <!--<div class="d-flex gap-2 mt-auto">
+                                        <button class="btn btn-success btn-sm rounded-pill px-3 fw-bold" style="font-size: 0.8rem;">
+                                            Editar
+                                        </button>
+                                        <button class="btn btn-secondary text-dark bg-opacity-10 border-0 btn-sm rounded-pill px-3 fw-bold" style="background-color: #e2e8f0; font-size: 0.8rem;">
+                                            Duplicar
+                                        </button>
+                                    </div>-->
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<!-- Modal para registrar un nuevo tramite -->
+
+<div class="modal fade" id="modalNuevoTramite" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="tituloModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-personalizado">
+        <div class="modal-content border-0 shadow">
+
+            <!-- Encabezado del modal -->
+
+            <div class="modal-header bg-light border-bottom pt-3 ps-4 pe-4 pb-1 align-items-center">
+                <div class="d-inline">
+                    <h5 class="modal-title fw-bold text-primary text-black" id="tituloModal">
+                        Registrar nuevo tramite
+                    </h5>
+                    <p class="text-muted">
+                        Complete los datos para iniciar un nuevo tramite en el sistema.
+                    </p>
+                </div>
+                <div class="align-items-center ms-auto">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+            </div>
+
+            <!-- Cuerpo del modal -->
+
+            <div class="modal-body p-4">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Titulo del tramite</label>
+                    <input type="text" class="form-control" placeholder="...">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Descripcion</label>
+                    <input type="text" class="form-control" placeholder="...">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Categoria</label>
+                    <select class="form-select" [(ngModel)]="categoriaTramiteSeleccion" name="tipoTramite">
+                        <option value="" disabled selected>Seleccione un trámite...</option>
+                        @for (item of listaCategoriasTramites; track item.id_categoria) {
+                            <option [value]="item.id_categoria">
+                                {{ item.nombre_categoria }}
+                            </option>
+                        }
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Seguimiento</label>
+                    <select class="form-select" [(ngModel)]="seguimientoTramiteSelecccion" name="tipoTramite">
+                        <option value="" disabled selected>Seleccione un flujo...</option>
+                        @for (item of listaSeguimientosTramites; track item.id_flujo) {
+                            <option [value]="item.id_flujo">
+                                {{ item.nombre_flujo }}
+                            </option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="modal-footer border-top-0 bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary">Guardar Trámite</button>
+            </div>
+
+        </div>
+    </div>
+</div>

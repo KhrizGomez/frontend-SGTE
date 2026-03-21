@@ -1,2 +1,21 @@
-/* Coordinador — hereda el estilo base UTEQ */
-@import '../../../shared/styles/layout-base.css';
+.sidebar-fija{
+    width: 280px;
+}
+
+.navbar{
+    height: 60px;
+}
+
+.nav-link{
+    font-weight: bolder;
+}
+
+.nav-link:hover {
+    background-color: rgb(6, 140, 50, 0.5);
+    border-radius: 5px;
+    cursor:pointer;
+}
+
+
+
+

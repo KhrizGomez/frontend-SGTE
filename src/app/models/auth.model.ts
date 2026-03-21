@@ -11,6 +11,6 @@ export interface LoginResponse {
     correoInstitucional: string;
     telefono: string;
     estado: boolean;
-    roles: string[];
+    rol: string;
     mensaje: string;
 }
