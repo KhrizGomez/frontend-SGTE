@@ -120,7 +120,7 @@ export class AiChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     }
     this.stopSpeech();
 
-    const utterance = new SpeechSynthesisUtterance(msg.text);
+    const utterance = new SpeechSynthesisUtterance(this.stripMarkdown(msg.text));
     utterance.lang  = 'es-EC';
     utterance.rate  = 0.95;
     utterance.pitch = 1.1;
@@ -223,7 +223,13 @@ export class AiChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.shouldScrollToBottom = true;
     this.isTyping = true;
 
-    const request: ChatApiRequest = { module: this.config.module, message: text };
+    const request: ChatApiRequest = {
+      module: this.config.module,
+      message: text,
+      ...(this.config.userId    && { userId:    this.config.userId }),
+      ...(this.config.idCarrera && { idCarrera: this.config.idCarrera }),
+      ...(this.config.idFacultad && { idFacultad: this.config.idFacultad }),
+    };
     this.chatService.sendMessage(request)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -267,5 +273,16 @@ export class AiChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   private generateId(): string {
     return Math.random().toString(36).substring(2, 9);
+  }
+
+  private stripMarkdown(text: string): string {
+    return text
+      .replace(/\*\*(.*?)\*\*/g, '$1')
+      .replace(/\*(.*?)\*/g, '$1')
+      .replace(/_(.*?)_/g, '$1')
+      .replace(/`{1,3}[^`]*`{1,3}/g, '')
+      .replace(/^#{1,6}\s+/gm, '')
+      .replace(/^[-*+]\s+/gm, '')
+      .replace(/^\d+\.\s+/gm, '');
   }
 }

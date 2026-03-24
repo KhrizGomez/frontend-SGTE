@@ -21,13 +21,13 @@
    BOTÓN FLOTANTE
    ══════════════════════════════ */
 .chat-float-btn {
-  width: 5.2rem;
-  height: 5.2rem;
+  width: 3.5rem;
+  height: 3.5rem;
   border-radius: 50%;
   background: linear-gradient(135deg, #0a2d5c 0%, #1565C0 100%);
   border: none;
   color: #fff;
-  font-size: 1.4rem;
+  font-size: 1.1rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -62,7 +62,7 @@
 }
 
 .float-robot-icon {
-  font-size: 2rem;
+  font-size: 1.4rem;
   color: #fff;
 }
 

@@ -16,11 +16,17 @@ export interface ChatbotConfig {
   title: string;
   quickActions: QuickAction[];
   welcomeMessage?: string;
+  userId?: number;
+  idCarrera?: number;
+  idFacultad?: number;
 }
 
 export interface ChatApiRequest {
   module: string;
   message: string;
+  userId?: number;
+  idCarrera?: number;
+  idFacultad?: number;
 }
 
 export interface ChatApiResponse {
