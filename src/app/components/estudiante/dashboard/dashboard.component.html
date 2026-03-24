@@ -1,171 +1,167 @@
-﻿<section class="stats">
-  <div class="stat">
-    <div class="stat__icon">âœ‰ï¸</div>
-    <div class="stat__value">12</div>
-    <div class="stat__label">Solicitudes enviadas</div>
-  </div>
-  <div class="stat">
-    <div class="stat__icon">ðŸ“ˆ</div>
-    <div class="stat__value">5</div>
-    <div class="stat__label">Solicitudes en proceso</div>
-  </div>
-  <div class="stat">
-    <div class="stat__icon">âœ…</div>
-    <div class="stat__value">6</div>
-    <div class="stat__label">Solicitudes resueltas</div>
-  </div>
-  <div class="stat">
-    <div class="stat__icon">ðŸš«</div>
-    <div class="stat__value">1</div>
-    <div class="stat__label">Solicitudes rechazadas</div>
-  </div>
-  <div class="stat">
-    <div class="stat__icon">ðŸ‘</div>
-    <div class="stat__value">11</div>
-    <div class="stat__label">Solicitudes completadas</div>
-  </div>
-</section>
+﻿<div class="dashboard-container">
 
-<section class="grid-3">
-  <article class="panel span-2" aria-labelledby="p-env-mes">
-    <div class="panel__header">
-      <h2 id="p-env-mes">Solicitudes enviadas por mes</h2>
-    </div>
-    <div class="bars" id="bars"></div>
-    <div class="bars__labels" id="bars-labels"></div>
-  </article>
-
-  <article class="panel" aria-labelledby="p-notif">
-    <div class="panel__header">
-      <h2 id="p-notif">Notificaciones</h2>
-    </div>
-    <ul class="notif">
-      <li class="notif__item notif__item--warn">
-        <span class="ico">âš ï¸</span>
-        <div>
-          <div class="notif__title">AcciÃ³n requerida, Â¡Urgente!</div>
-          <div class="notif__desc">Completa los documentos faltantes, tu solicitud vence HOY.</div>
-        </div>
-      </li>
-      <li class="notif__item">
-        <span class="ico">ðŸ”„</span>
-        <div>
-          <div class="notif__title">Solicitud de cambio de carrera, Â¡Enviada!</div>
-          <div class="notif__desc">En evaluaciÃ³n, respuesta en 15 dÃ­as aproximadamente.</div>
-        </div>
-      </li>
-      <li class="notif__item notif__item--info">
-        <span class="ico">â­</span>
-        <div>
-          <div class="notif__title">Solicitud de validaciÃ³n para tu sÃ­labo, Â¡EstÃ¡ en revisiÃ³n!</div>
-          <div class="notif__desc">Este proceso toma entre 1 - 3 dÃ­as hÃ¡biles.</div>
-        </div>
-      </li>
-      <li class="notif__item">
-        <span class="ico">ðŸ“¬</span>
-        <div>
-          <div class="notif__title">Tienes un nuevo mensaje de coordinaciÃ³n</div>
-          <div class="notif__desc">Revisa los comentarios en tu solicitud.</div>
-        </div>
-      </li>
-    </ul>
-  </article>
-
-  <!-- Acciones rÃ¡pidas (Estudiante) -->
-  <article class="panel" aria-labelledby="st-qactions">
-    <div class="panel__header">
-      <h2 id="st-qactions">Acciones rÃ¡pidas</h2>
-    </div>
-    <ul id="st-qa" class="qa-list">
-      <li>
-        <button class="qa-item" type="button" data-act="new">
-          <span class="qa-ico">âž•</span>
-          <span class="qa-text"><strong>Nueva solicitud</strong><br/><small>Crea una nueva solicitud</small></span>
-        </button>
-      </li>
-      <li>
-        <button class="qa-item" type="button" data-act="ai">
-          <span class="qa-ico">ðŸ¤–</span>
-          <span class="qa-text"><strong>Ayuda de la IA</strong><br/><small>Resuelve tus dudas</small></span>
-        </button>
-      </li>
-      <li>
-        <button class="qa-item" type="button" data-act="buscar">
-          <span class="qa-ico">ðŸ”</span>
-          <span class="qa-text"><strong>Buscar trÃ¡mite</strong><br/><small>Consulta el estado</small></span>
-        </button>
-      </li>
-      <li>
-        <button class="qa-item" type="button" data-act="config">
-          <span class="qa-ico">âš™ï¸</span>
-          <span class="qa-text"><strong>ConfiguraciÃ³n</strong><br/><small>Preferencias de notificaciones</small></span>
-        </button>
-      </li>
-    </ul>
-  </article>
-
-  <article class="panel span-2" aria-labelledby="p-gauge">
-    <div class="panel__header">
-      <h2 id="p-gauge">Tiempo estimado por trÃ¡mite</h2>
-    </div>
-    <div class="gauge">
-      <div class="gauge__arc"></div>
-      <div class="gauge__min">0</div>
-      <div class="gauge__max">100</div>
-    </div>
-  </article>
-
-  <article class="panel" aria-labelledby="p-fechas">
-    <div class="panel__header">
-      <h2 id="p-fechas">PrÃ³ximas fechas importantes</h2>
-    </div>
-    <ul class="dates">
-      <li>
-        <span class="badge">HOY<br/>04 SEP</span>
-        <div>
-          <div class="dates__title">Certificado de notas</div>
-          <div class="dates__desc">Ãšltimo dÃ­a para realizar solicitud, no lo olvides.</div>
-        </div>
-      </li>
-      <li>
-        <span class="badge">07<br/>SEP</span>
-        <div>
-          <div class="dates__title">Solicitudes para beca</div>
-          <div class="dates__desc">Recuerda que solo puedes hacerlo hasta esta fecha lÃ­mite.</div>
-        </div>
-      </li>
-      <li>
-        <span class="badge">15<br/>SEP</span>
-        <div>
-          <div class="dates__title">AnulaciÃ³n de matrÃ­cula</div>
-          <div class="dates__desc">Recuerda que solo puedes hacerlo hasta esta fecha lÃ­mite.</div>
-        </div>
-      </li>
-    </ul>
-  </article>
-
-  <article class="panel" aria-labelledby="p-cal">
-    <div class="panel__header">
-      <h2 id="p-cal">April 2025</h2>
-    </div>
-    <div class="calendar" aria-label="Calendario Abril 2025">
-      <div class="cal__week cal__head">
-        <span>SUN</span><span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span>FRI</span><span>SAT</span>
+  <!-- KPI ROW -->
+  <section class="kpi-grid">
+    <div class="kpi-card kpi-warning">
+      <div class="kpi-content">
+        <span class="kpi-label">En Revisión</span>
+        <span class="kpi-value">2</span>
       </div>
-      <div class="cal__week">
-        <span class="muted">30</span><span class="muted">31</span><span class="day">1</span><span class="day">2</span><span class="day">3</span><span class="day">4</span><span class="day">5</span>
+      <div class="kpi-icon"><i class="bi bi-clock"></i></div>
+    </div>
+
+    <div class="kpi-card kpi-success">
+      <div class="kpi-content">
+        <span class="kpi-label">Finalizadas</span>
+        <span class="kpi-value">8</span>
       </div>
-      <div class="cal__week">
-        <span class="day">6</span><span class="day">7</span><span class="day">8</span><span class="day">9</span><span class="day pill">10</span><span class="day">11</span><span class="day">12</span>
+      <div class="kpi-icon"><i class="bi bi-check-circle"></i></div>
+    </div>
+
+    <div class="kpi-card kpi-danger">
+      <div class="kpi-content">
+        <span class="kpi-label">Observadas</span>
+        <span class="kpi-value">1</span>
       </div>
-      <div class="cal__week">
-        <span class="day">13</span><span class="day pill">14</span><span class="day">15</span><span class="day pill">16</span><span class="day">17</span><span class="day">18</span><span class="day">19</span>
+      <div class="kpi-icon"><i class="bi bi-x-circle"></i></div>
+    </div>
+
+    <div class="kpi-card kpi-primary">
+      <div class="kpi-content">
+        <span class="kpi-label">Total Solicitudes</span>
+        <span class="kpi-value">11</span>
       </div>
-      <div class="cal__week">
-        <span class="day pill">20</span><span class="day">21</span><span class="day">22</span><span class="day">23</span><span class="day pill">24</span><span class="day">25</span><span class="day">26</span>
+      <div class="kpi-icon"><i class="bi bi-file-earmark-text"></i></div>
+    </div>
+  </section>
+
+  <!-- MIDDLE ROW -->
+  <section class="middle-grid">
+    <div class="dash-panel">
+      <div class="panel-header">
+        <i class="bi bi-pie-chart-fill"></i>
+        <h3 class="panel-title">Distribución de mis trámites</h3>
+      </div>
+      <div class="donut-chart-container">
+        <div class="donut-mock" style="background: conic-gradient(#d97706 0deg 65deg, #0f6a1d 65deg 320deg, #dc2626 320deg 360deg);">
+          <div class="donut-inner">
+            <strong>11</strong>
+            <span>Total</span>
+          </div>
+        </div>
+        <div class="chart-legend">
+          <div class="legend-item"><div class="legend-color" style="background:#d97706"></div>En Revisión</div>
+          <div class="legend-item"><div class="legend-color" style="background:#0f6a1d"></div>Finalizadas</div>
+          <div class="legend-item"><div class="legend-color" style="background:#dc2626"></div>Observadas</div>
+        </div>
       </div>
     </div>
-  </article>
-</section>
 
+    <div class="dash-panel">
+      <div class="panel-header">
+        <i class="bi bi-bar-chart-fill"></i>
+        <h3 class="panel-title">Historial de Solicitudes</h3>
+        <span class="panel-subtitle">Último Semestre</span>
+      </div>
+      <div class="bar-chart-container">
+        <div class="y-axis">
+          <span>5</span>
+          <span>3</span>
+          <span>0</span>
+        </div>
+        <div class="bar-col">
+          <div class="bar" style="height: 10%;"></div>
+          <span class="x-label">Oct</span>
+        </div>
+        <div class="bar-col">
+          <div class="bar" style="height: 25%;"></div>
+          <span class="x-label">Nov</span>
+        </div>
+        <div class="bar-col">
+          <div class="bar" style="height: 60%"></div>
+          <span class="x-label">Dic</span>
+        </div>
+        <div class="bar-col">
+          <div class="bar" style="height: 15%"></div>
+          <span class="x-label">Ene</span>
+        </div>
+        <div class="bar-col">
+          <div class="bar" style="height: 40%"></div>
+          <span class="x-label">Feb</span>
+        </div>
+        <div class="bar-col">
+          <div class="bar" style="height: 5%"></div>
+          <span class="x-label">Mar</span>
+        </div>
+        <div class="bar-col">
+          <div class="bar" style="height: 90%; background: #0f6a1d;"></div>
+          <span class="x-label">Abr</span>
+        </div>
+      </div>
+      <div class="chart-legend" style="margin-top: 15px;">
+        <div class="legend-item"><div class="legend-color" style="background:#a3d9a5"></div>Regulares</div>
+        <div class="legend-item"><div class="legend-color" style="background:#0f6a1d"></div>Urgentes</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BOTTOM ROW -->
+  <section class="bottom-grid">
+    <div class="dash-panel">
+      <div class="panel-header">
+        <i class="bi bi-bell-fill"></i>
+        <h3 class="panel-title">Avisos y Notificaciones</h3>
+        <span class="panel-subtitle" style="background: #0f6a1d; color: white; padding: 2px 8px; border-radius: 10px; font-weight: bold; margin-left: auto;">2</span>
+      </div>
+
+      <div class="session-list">
+        <div class="session-item">
+          <div class="session-time"><i class="bi bi-exclamation-triangle-fill" style="color: #d97706;"></i> Hoy</div>
+          <div class="session-info">
+            <h4 class="session-title" style="text-transform: uppercase;">Falta documento en su solicitud</h4>
+            <div style="font-size: 0.8rem; color: #6c757d; margin-bottom: 4px;">Certificado de Matrícula (Ref. #204)</div>
+            <span class="session-badge" style="background: #fff3cd; color: #d97706; padding: 4px 8px; border-radius: 12px; font-size: 0.75rem;"><i class="bi bi-clock-history"></i> Vence en 2 días</span>
+          </div>
+        </div>
+
+        <div class="session-item">
+          <div class="session-time"><i class="bi bi-check-circle-fill" style="color: #059669;"></i> Ayer</div>
+          <div class="session-info">
+            <h4 class="session-title" style="text-transform: uppercase;">Trámite Finalizado Exitosamente</h4>
+            <div style="font-size: 0.8rem; color: #6c757d; margin-bottom: 4px;">Cambio de Paralelo (Ref. #199)</div>
+            <span class="session-badge green"><i class="bi bi-file-earmark-pdf"></i> Resolución lista</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-outline-full" [routerLink]="['/estudiante/notificaciones']">&rarr; Ver todas mis notificaciones</button>
+    </div>
+
+    <div class="dash-panel">
+      <div class="panel-header">
+        <i class="bi bi-lightning-fill"></i>
+        <h3 class="panel-title">Accesos Rápidos</h3>
+      </div>
+
+      <div class="quick-links">
+        <a [routerLink]="['/estudiante/solicitudes']" class="quick-link ql-green">
+          <div class="quick-link-icon"><i class="bi bi-plus-circle-fill"></i></div>
+          Iniciar Nuevo Trámite
+          <i class="bi bi-chevron-right ms-auto"></i>
+        </a>
+        <a [routerLink]="['/estudiante/seguimiento']" class="quick-link ql-blue">
+          <div class="quick-link-icon"><i class="bi bi-search"></i></div>
+          Seguimiento de Solicitudes
+          <i class="bi bi-chevron-right ms-auto"></i>
+        </a>
+        <a [routerLink]="['/estudiante/asistente']" class="quick-link" style="color: #495057;">
+          <div class="quick-link-icon" style="background:#f1f3f5; color: #495057"><i class="bi bi-robot"></i></div>
+          Asistente de IA (Ayuda)
+          <i class="bi bi-chevron-right ms-auto"></i>
+        </a>
+      </div>
+    </div>
+  </section>
+
+</div>
 

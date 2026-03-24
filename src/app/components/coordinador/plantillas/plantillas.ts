@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+﻿import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AutenticacionService } from '../../../services/general/autenticacion.service';
@@ -81,6 +81,14 @@ export class Plantillas implements OnInit {
 
   get categorias(): string[] {
     return [...new Set(this.plantillas.map(p => p.categoria))];
+  }
+
+  get activasTotal(): number {
+    return this.plantillas.filter(p => p.estaActivo).length;
+  }
+
+  get inactivasTotal(): number {
+    return this.plantillas.filter(p => !p.estaActivo).length;
   }
 
   limpiarFiltros(): void {

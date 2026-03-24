@@ -1,101 +1,217 @@
-﻿<div class="soli-toolbar">
-  <div class="spacer"></div>
-  <label class="field field--inline">
-    <span class="label">Tipo</span>
-    <select id="st-fil-tipo" class="select">
-      <option value="">Todos</option>
-      <option>Certificados acadÃ©micos</option>
-      <option>Cambio de carrera</option>
-      <option>HomologaciÃ³n</option>
-      <option>Baja de matrÃ­cula</option>
-      <option>Otro</option>
+﻿<div class="dashboard-container">
+
+  <!-- KPI ROW -->
+  <section class="kpi-row">
+    <div class="kpi-card kpi-warning">
+      <div class="kpi-content">
+        <span class="kpi-label">En Revisión</span>
+        <span class="kpi-value">0</span>
+      </div>
+      <div class="kpi-icon"><i class="bi bi-clock"></i></div>
+    </div>
+
+    <div class="kpi-card kpi-success">
+      <div class="kpi-content">
+        <span class="kpi-label">Finalizadas</span>
+        <span class="kpi-value">0</span>
+      </div>
+      <div class="kpi-icon"><i class="bi bi-check-circle"></i></div>
+    </div>
+
+    <div class="kpi-card kpi-danger">
+      <div class="kpi-content">
+        <span class="kpi-label">Observadas</span>
+        <span class="kpi-value">0</span>
+      </div>
+      <div class="kpi-icon"><i class="bi bi-x-circle"></i></div>
+    </div>
+
+    <div class="kpi-card kpi-primary">
+      <div class="kpi-content">
+        <span class="kpi-label">Trámites Disponibles</span>
+        <span class="kpi-value">{{ totalDisponibles }}</span>
+      </div>
+      <div class="kpi-icon"><i class="bi bi-file-earmark-text"></i></div>
+    </div>
+  </section>
+
+  <!-- FILTER ROW -->
+  <section class="view-toolbar">
+    <div class="filter-label">
+      <i class="bi bi-funnel"></i> Filtrar por estado:
+    </div>
+
+    <div class="filter-pills">
+      <button class="filter-pill active">
+        <i class="bi bi-grid-fill"></i> Todas <span class="badge-count">{{ totalDisponibles }}</span>
+      </button>
+      <button class="filter-pill">
+        <i class="bi bi-check-circle"></i> Activa
+      </button>
+      <button class="filter-pill">
+        <i class="bi bi-x-circle"></i> Inactiva
+      </button>
+    </div>
+
+    <input class="search-input ms-auto" [(ngModel)]="buscar" placeholder="Buscar categoría, nombr..." />
+
+    <select class="search-input mx-2" [(ngModel)]="filtrCategoria">
+      <option value="">Todas las categorías</option>
+      @for (cat of categorias; track cat) {
+        <option [value]="cat">{{ cat }}</option>
+      }
     </select>
-  </label>
-  <label class="field field--inline">
-    <span class="label">Prioridad</span>
-    <select id="st-fil-prio" class="select">
-      <option value="">Todas</option>
-      <option>Baja</option>
-      <option>Media</option>
-      <option>Alta</option>
-      <option>Urgente</option>
-    </select>
-  </label>
-  <label class="field field--inline">
-    <span class="label">Estado</span>
-    <select id="st-fil-estado" class="select">
-      <option value="">Todos</option>
-      <option>Disponible</option>
-      <option>Requiere revisiÃ³n</option>
-    </select>
-  </label>
-  <label class="field field--inline">
-    <span class="label">Buscar</span>
-    <input id="st-buscar" class="select" placeholder="TÃ­tulo, tipoâ€¦" />
-  </label>
-  <button id="st-fil-clear" class="btn-ghost" type="button" title="Limpiar filtros">Limpiar</button>
+
+    <div class="view-toggles">
+      <button class="view-btn"><i class="bi bi-layout-text-window"></i></button>
+      <button class="view-btn"><i class="bi bi-grid"></i></button>
+      <button class="view-btn active"><i class="bi bi-grid-3x3-gap-fill"></i></button>
+    </div>
+  </section>
+
+  @if (error) {
+    <div class="status warn" role="alert" style="margin-bottom: 20px;">
+      <i class="bi bi-exclamation-triangle-fill"></i> {{ error }}
+      <button class="btn-ghost btn-small" type="button" (click)="cargarPlantillasDisponibles()">Reintentar</button>
+    </div>
+  }
+
+  @if (cargando) {
+    <app-loading message="Cargando trámites disponibles..."></app-loading>
+  }
+
+  <!-- CARDS GRID -->
+  @if (!cargando && !error) {
+
+    @if (plantillasFiltradas.length === 0) {
+      <div class="empty-state" style="text-align:center; padding: 40px; background: #fff; border-radius: 12px; border: 1px solid #e9ecef;">
+        <i class="bi bi-folder2-open" style="font-size: 3rem; color: #ced4da;"></i>
+        <p style="margin-top: 10px; color: #6c757d;">No hay trámites disponibles.</p>
+      </div>
+    }
+
+    <div class="cards-grid">
+      @for (p of plantillasFiltradas; track p.idPlantilla) {
+        <div class="info-card">
+          <!-- Top Row -->
+          <div class="card-header-row">
+            <span class="card-badge"><i class="bi bi-person-fill"></i> {{ p.categoria }}</span>
+            <span class="card-date"><i class="bi bi-calendar3"></i> {{ p.diasResolucionEstimados }} d est.</span>
+          </div>
+
+          <!-- Main Info -->
+          <div class="card-main">
+            <h4 class="card-title"><i class="bi bi-file-earmark-text-fill"></i> {{ p.nombrePlantilla }}</h4>
+            <span class="card-subtitle"><i class="bi bi-book"></i> {{ p.carrera }}</span>
+            <span class="card-comment"><i class="bi bi-chat-left-text"></i> {{ p.descripcionPlantilla || p.nombreFlujo }}</span>
+          </div>
+
+          <!-- Status & Participants -->
+          <div class="card-status-row">
+            <span class="status-badge success">Activa</span>
+            <span class="participants"><i class="bi bi-people-fill"></i> {{ p.requisitosTramite.length }} pasos</span>
+          </div>
+
+          <!-- Footer -->
+          <div class="card-footer">
+            <span class="ref-id"># Ref. #{{ p.idPlantilla }}</span>
+            <div class="card-actions">
+              <button class="action-btn" title="Ver detalle" (click)="abrirDetalle(p)"><i class="bi bi-eye"></i></button>
+              <button class="action-btn warning" title="Requisitos"><i class="bi bi-folder2-open"></i></button>
+              <button class="action-btn danger" title="Descartar"><i class="bi bi-slash-circle"></i></button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
 </div>
 
-<div id="st-sgrid" class="soli-grid"></div>
+<!-- Modal detalle de trámite (Estudiante) -->
+@if (modalAbierto && plantillaSeleccionada) {
+  <div class="modal">
+    <div class="modal__backdrop" (click)="cerrarModal()"></div>
+    <div class="modal__dialog d-flex flex-column" role="dialog" aria-modal="true" aria-labelledby="det-modal-title" style="max-height: 90vh;">
+      <div class="modal__header">
+        <h3 id="det-modal-title">Iniciar trámite</h3>
+        <button class="btn-ghost" type="button" (click)="cerrarModal()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      <div class="modal__body p-3" style="overflow-y: auto;">
+        
+        <div class="alert alert-info d-flex align-items-center mb-4" role="alert" style="gap:10px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:12px; color:#1e40af;">
+          <i class="bi bi-info-circle-fill fs-4"></i>
+          <div>
+            <strong>{{ plantillaSeleccionada.nombrePlantilla }}</strong><br>
+            <small>{{ plantillaSeleccionada.descripcionPlantilla || plantillaSeleccionada.nombreFlujo }}</small>
+          </div>
+        </div>
 
-<!-- Modal Solicitud (Estudiante) -->
-<div id="st-modal" class="modal" hidden>
-  <div class="modal__backdrop" data-close="1"></div>
-  <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="st-modal-title">
-    <div class="modal__header">
-      <h3 id="st-modal-title">TrÃ¡mite</h3>
-      <button id="st-close" class="btn-ghost" type="button">âœ•</button>
-    </div>
-    <div class="modal__body">
-      <form id="st-form" class="form-grid form-modal" autocomplete="off">
-        <input type="hidden" id="st-id" />
-        <label class="field field--col-2">
-          <span class="label">TrÃ¡mite</span>
-          <input id="st-tramite" class="select" readonly />
-        </label>
-        <div id="st-cert-wrap" class="field field--col-2" hidden>
-          <div id="st-cert-tipo-wrap" class="col">
-            <label class="field">
-              <span class="label">Tipo de certificado</span>
-              <select id="st-cert-tipo" class="select">
-                <option selected>Seleccione una opciÃ³n</option>
-                <option>Certificado de notas</option>
-                <option>RÃ©cord acadÃ©mico</option>
-                <option>Constancia de estudios</option>
-              </select>
-            </label>
+        <form class="container-fluid m-0 p-0" (ngSubmit)="enviarSolicitud()">
+          
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label text-muted fw-bold">trámite</label>
+              <input type="text" class="form-control" [value]="plantillaSeleccionada.nombrePlantilla" readonly style="background:#f8f9fa;">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label text-muted fw-bold">Tiempo estimado (ETA)</label>
+              <input type="text" class="form-control" [value]="plantillaSeleccionada.diasResolucionEstimados + ' día(s)'" readonly style="background:#f8f9fa;">
+            </div>
           </div>
-        </div>
-        <!-- Campos adicionales (dependen del trÃ¡mite) -->
-        <div id="st-extra" class="extra-grid field--col-2"></div>
-        <div class="field field--col-2">
-          <span class="label">Tiempo estimado (ETA)</span>
-          <input id="st-eta" class="select" readonly placeholder="â€”" />
-        </div>
-        <div class="field field--col-2">
-          <span class="label">Requisitos del trÃ¡mite</span>
-          <ul id="st-reqs" class="files" aria-label="Requisitos previos"></ul>
-        </div>
-        <label id="st-obs-wrap" class="field field--col-2">
-          <span class="label">Observaciones</span>
-          <textarea id="st-obs" class="textarea" placeholder="DescripciÃ³n"></textarea>
-        </label>
-        <div id="st-attach-wrap" class="field field--col-2">
-          <span class="label">Adjuntar documentos</span>
-          <div id="st-dropzone" class="dropzone" tabindex="0" role="button" aria-label="Arrastra o selecciona archivos">
-            <div class="dz-ico">ðŸ“„</div>
-            <div class="dz-text">Arrastra o selecciona los archivos aquÃ­</div>
-            <input id="st-file-input" type="file" multiple hidden />
+
+          <div class="row mb-3">
+            <div class="col-12">
+              <label class="form-label text-muted fw-bold">Requisitos requeridos</label>
+              <ul class="list-group">
+                @if (plantillaSeleccionada.requisitosTramite.length > 0) {
+                  @for (req of plantillaSeleccionada.requisitosTramite; track req.idRequisito) {
+                    <li class="list-group-item d-flex align-items-center gap-2" style="font-size:14px;">
+                      <i class="bi bi-paperclip text-secondary"></i> 
+                      <span>
+                        <strong>{{ req.nombreRequisito }}</strong> 
+                        @if (req.esObligatorio) { <span class="text-danger">*</span> }
+                        <br>
+                        <small class="text-muted">{{ req.descripcionRequisito }}</small>
+                      </span>
+                    </li>
+                  }
+                } @else {
+                  <li class="list-group-item text-muted" style="font-size:14px;">
+                    No se requieren documentos previos para este trámite.
+                  </li>
+                }
+              </ul>
+            </div>
           </div>
-          <div id="st-dz-list" class="dz-list"></div>
-        </div>
-        <div class="form-actions field--col-2">
-          <button id="st-cancel" type="button" class="btn-ghost">Cancelar</button>
-          <button id="st-enviar" type="submit" class="btn-primary">Enviar solicitud</button>
-        </div>
-      </form>
+
+          <div class="row mb-3">
+            <div class="col-12">
+              <label class="form-label text-muted fw-bold">Observaciones (Opcional)</label>
+              <textarea class="form-control" rows="3" [(ngModel)]="observaciones" name="obs" placeholder="AÃ±ade algÃºn comentario o justificaciÃ³n..."></textarea>
+            </div>
+          </div>
+
+          <div class="row mb-4">
+            <div class="col-12">
+              <label class="form-label text-muted fw-bold">Adjuntar documentos</label>
+              <div class="p-4 text-center border rounded" style="border-style:dashed !important; background:#f8fafc; cursor:pointer;">
+                <i class="bi bi-cloud-arrow-up-fill fs-2" style="color:#0d6efd;"></i>
+                <p class="mb-0 text-muted">Haz clic o arrastra los archivos aquÃ</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2 mt-4 pt-3" style="border-top:1px solid #dee2e6;">
+            <button type="button" class="btn btn-light border" (click)="cerrarModal()">Cancelar</button>
+            <button type="submit" class="btn btn-primary" style="background:#0f6a1d; border-color:#0f6a1d;">Enviar solicitud</button>
+          </div>
+        </form>
+
+      </div>
     </div>
   </div>
-</div>
-
+}
 

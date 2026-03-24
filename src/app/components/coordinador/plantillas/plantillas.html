@@ -1,91 +1,136 @@
-﻿<div class="soli-toolbar">
-  <div class="spacer"></div>
-  <label class="field field--inline">
-    <span class="label">CategorÃ­a</span>
-    <select class="select" [(ngModel)]="filtrCategoria">
-      <option value="">Todas</option>
+﻿<div class="dashboard-container">
+  
+  <!-- KPI ROW -->
+  <section class="kpi-row">
+    <div class="kpi-card kpi-warning">
+      <div class="kpi-content">
+        <span class="kpi-label">Inactivas</span>
+        <span class="kpi-value">{{ inactivasTotal }}</span>
+      </div>
+      <div class="kpi-icon"><i class="bi bi-clock"></i></div>
+    </div>
+
+    <div class="kpi-card kpi-success">
+      <div class="kpi-content">
+        <span class="kpi-label">Activas</span>
+        <span class="kpi-value">{{ activasTotal }}</span>
+      </div>
+      <div class="kpi-icon"><i class="bi bi-check-circle"></i></div>
+    </div>
+
+    <div class="kpi-card kpi-danger">
+      <div class="kpi-content">
+        <span class="kpi-label">Descartadas</span>
+        <span class="kpi-value">0</span>
+      </div>
+      <div class="kpi-icon"><i class="bi bi-x-circle"></i></div>
+    </div>
+
+    <div class="kpi-card kpi-primary">
+      <div class="kpi-content">
+        <span class="kpi-label">Total Plantillas</span>
+        <span class="kpi-value">{{ plantillas.length }}</span>
+      </div>
+      <div class="kpi-icon"><i class="bi bi-file-earmark-text"></i></div>
+    </div>
+  </section>
+
+  <!-- FILTER ROW -->
+  <section class="view-toolbar">
+    <div class="filter-label">
+      <i class="bi bi-funnel"></i> Filtrar por estado:
+    </div>
+    
+    <div class="filter-pills">
+      <button class="filter-pill" [class.active]="filtrActivo === ''" (click)="filtrActivo = ''">
+        <i class="bi bi-grid-fill"></i> Todas <span class="badge-count">{{ plantillas.length }}</span>
+      </button>
+      <button class="filter-pill" [class.active]="filtrActivo === 'activo'" (click)="filtrActivo = 'activo'">
+        <i class="bi bi-check-circle"></i> Activa
+      </button>
+      <button class="filter-pill" [class.active]="filtrActivo === 'inactivo'" (click)="filtrActivo = 'inactivo'">
+        <i class="bi bi-x-circle"></i> Inactiva
+      </button>
+    </div>
+
+    <input class="search-input ms-auto" [(ngModel)]="buscar" placeholder="Buscar categoría, nombre..." />
+
+    <select class="search-input mx-2" [(ngModel)]="filtrCategoria">
+      <option value="">Todas las categorías</option>
       @for (cat of categorias; track cat) {
         <option [value]="cat">{{ cat }}</option>
       }
     </select>
-  </label>
-  <label class="field field--inline">
-    <span class="label">Estado</span>
-    <select class="select" [(ngModel)]="filtrActivo">
-      <option value="">Todos</option>
-      <option value="activo">Activo</option>
-      <option value="inactivo">Inactivo</option>
-    </select>
-  </label>
-  <label class="field field--inline">
-    <span class="label">Buscar</span>
-    <input class="select" [(ngModel)]="buscar" placeholder="Nombre, categorÃ­a, flujoâ€¦" />
-  </label>
-  <button class="btn-ghost" type="button" (click)="limpiarFiltros()">Limpiar</button>
-</div>
 
-@if (error) {
-  <div class="status warn" role="alert">
-    <i class="bi bi-exclamation-triangle-fill"></i> {{ error }}
-    <button class="btn-ghost btn-small" type="button" (click)="cargarPlantillas()">Reintentar</button>
-  </div>
-}
+    <div class="view-toggles">
+      <button class="view-btn"><i class="bi bi-layout-text-window"></i></button>
+      <button class="view-btn"><i class="bi bi-grid"></i></button>
+      <button class="view-btn active"><i class="bi bi-grid-3x3-gap-fill"></i></button>
+    </div>
+  </section>
 
-<article class="panel" aria-labelledby="co-cards-title">
-  <div class="panel__header">
-    <h3 id="co-cards-title">
-      Plantillas
-      @if (!cargando) {
-        <span class="badge badge--neutral">{{ plantillasFiltradas.length }}</span>
-      }
-    </h3>
-  </div>
-
-  @if (cargando) {
-    <app-loading message="Cargando plantillasâ€¦" />
-  }
-
-  @if (!cargando && !error && plantillasFiltradas.length === 0) {
-    <div class="empty-state">
-      <i class="bi bi-folder2-open"></i>
-      <p>No hay plantillas disponibles.</p>
+  @if (error) {
+    <div class="status warn" role="alert" style="margin-bottom: 20px;">
+      <i class="bi bi-exclamation-triangle-fill"></i> {{ error }}
+      <button class="btn-ghost btn-small" type="button" (click)="cargarPlantillas()">Reintentar</button>
     </div>
   }
 
-  @if (!cargando) {
-    <div class="soli-grid">
+  @if (cargando) {
+    <app-loading message="Cargando plantillas..." />
+  }
+
+  <!-- CARDS GRID -->
+  @if (!cargando && !error) {
+    
+    @if (plantillasFiltradas.length === 0) {
+      <div class="empty-state" style="text-align:center; padding: 40px; background: #fff; border-radius: 12px; border: 1px solid #e9ecef;">
+        <i class="bi bi-folder2-open" style="font-size: 3rem; color: #ced4da;"></i>
+        <p style="margin-top: 10px; color: #6c757d;">No hay plantillas disponibles.</p>
+      </div>
+    }
+
+    <div class="cards-grid">
       @for (p of plantillasFiltradas; track p.idPlantilla) {
-        <div class="soli-card">
-          <span class="soli-ico" aria-hidden="true">
-            <i class="bi bi-file-text-fill"></i>
-          </span>
-          <span class="soli-txt">
-            <span class="soli-title">{{ p.nombrePlantilla }}</span>
-            <span class="soli-desc">
-              {{ p.categoria }} Â· {{ p.nombreFlujo }} Â· {{ p.pasosTramite.length }} pasos Â· {{ p.diasResolucionEstimados }}d
-            </span>
-            @if (p.descripcionPlantilla) {
-              <span class="soli-desc">{{ p.descripcionPlantilla }}</span>
+        <div class="info-card">
+          <!-- Top Row -->
+          <div class="card-header-row">
+            <span class="card-badge"><i class="bi bi-person-fill"></i> {{ p.categoria }}</span>
+            <span class="card-date"><i class="bi bi-calendar3"></i> {{ p.diasResolucionEstimados }} d est.</span>
+          </div>
+
+          <!-- Main Info -->
+          <div class="card-main">
+            <h4 class="card-title"><i class="bi bi-file-earmark-text-fill"></i> {{ p.nombrePlantilla }}</h4>
+            <span class="card-subtitle"><i class="bi bi-book"></i> {{ p.carrera }}</span>
+            <span class="card-comment"><i class="bi bi-chat-left-text"></i> {{ p.descripcionPlantilla || p.nombreFlujo }}</span>
+          </div>
+
+          <!-- Status & Participants -->
+          <div class="card-status-row">
+            @if (p.estaActivo) {
+              <span class="status-badge success">Activa</span>
+            } @else {
+              <span class="status-badge secondary">Inactiva</span>
             }
-            <span class="soli-badges">
-              @if (p.estaActivo) {
-                <span class="pill pill--success">Activo</span>
-              } @else {
-                <span class="pill pill--light">Inactivo</span>
-              }
-              @if (p.disponibleExternos) {
-                <span class="pill pill--info">Externos</span>
-              }
-            </span>
-            <span class="soli-actions">
-              <button class="pill pill--primary" type="button" (click)="abrirDetalle(p)">Ver detalle</button>
-            </span>
-          </span>
+            <span class="participants"><i class="bi bi-people-fill"></i> {{ p.pasosTramite.length }} pasos</span>
+          </div>
+
+          <!-- Footer -->
+          <div class="card-footer">
+            <span class="ref-id"># Ref. #{{ p.idPlantilla }}</span>
+            <div class="card-actions">
+              <button class="action-btn" title="Ver detalle" (click)="abrirDetalle(p)"><i class="bi bi-eye"></i></button>
+              <button class="action-btn warning" title="Editar"><i class="bi bi-folder2-open"></i></button>
+              <button class="action-btn danger" title="Bloquear"><i class="bi bi-slash-circle"></i></button>
+            </div>
+          </div>
         </div>
       }
     </div>
   }
-</article>
+
+</div>
 
 <!-- Modal detalle de plantilla -->
 @if (modalAbierto && plantillaSeleccionada) {
@@ -100,16 +145,16 @@
       </div>
       <div class="modal__body">
         <dl class="detail-list">
-          <dt>CategorÃ­a</dt><dd>{{ plantillaSeleccionada.categoria }}</dd>
+          <dt>categoría</dt><dd>{{ plantillaSeleccionada.categoria }}</dd>
           <dt>Carrera</dt><dd>{{ plantillaSeleccionada.carrera }}</dd>
           <dt>Flujo</dt><dd>{{ plantillaSeleccionada.nombreFlujo }}</dd>
-          <dt>DescripciÃ³n del flujo</dt><dd>{{ plantillaSeleccionada.descripcion }}</dd>
-          <dt>ResoluciÃ³n estimada</dt><dd>{{ plantillaSeleccionada.diasResolucionEstimados }} dÃ­a(s)</dd>
-          <dt>Disponible para externos</dt><dd>{{ plantillaSeleccionada.disponibleExternos ? 'SÃ­' : 'No' }}</dd>
+          <dt>Descripción del flujo</dt><dd>{{ plantillaSeleccionada.descripcion }}</dd>
+          <dt>Resolución estimada</dt><dd>{{ plantillaSeleccionada.diasResolucionEstimados }} día(s)</dd>
+          <dt>Disponible para externos</dt><dd>{{ plantillaSeleccionada.disponibleExternos ? 'Sí' : 'No' }}</dd>
           <dt>Estado</dt><dd>{{ plantillaSeleccionada.estaActivo ? 'Activo' : 'Inactivo' }}</dd>
         </dl>
 
-        <h4 class="mt-2">Pasos del trÃ¡mite</h4>
+        <h4 class="mt-2">Pasos del trámite</h4>
         <ol class="timeline timeline--v">
           @for (paso of plantillaSeleccionada.pasosTramite; track paso.idPaso) {
             <li class="tl-item">
@@ -117,8 +162,8 @@
               <div class="tl-body">
                 <div class="tl-title">{{ paso.nombreEtapa }}</div>
                 <div class="tl-meta">
-                  Paso {{ paso.ordenPaso }} Â· SLA {{ paso.horasSla }}h
-                  @if (paso.rolRequerido) { Â· {{ paso.rolRequerido }} }
+                  Paso {{ paso.ordenPaso }} · SLA {{ paso.horasSla }}h
+                  @if (paso.rolRequerido) { · {{ paso.rolRequerido }} }
                 </div>
                 <div class="tl-desc">{{ paso.descripcionEtapa }}</div>
               </div>
@@ -129,5 +174,4 @@
     </div>
   </div>
 }
-
 
