@@ -1,0 +1,129 @@
+<div class="chat-float-wrapper">
+
+  <!-- Panel del chat -->
+  <div class="chat-panel" [class.open]="isOpen">
+
+    <!-- Header -->
+    <div class="chat-header">
+      <div class="chat-header-left">
+        <div class="chat-avatar-header">
+          <i class="bi bi-robot chat-bot-icon"></i>
+        </div>
+        <div>
+          <div class="chat-title">{{ config.title }}</div>
+          <div class="chat-subtitle">Asistente SGTE · IA</div>
+        </div>
+      </div>
+      <button class="chat-close-btn" (click)="toggleChat()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <!-- Mensajes -->
+    <div class="chat-messages" #messagesContainer>
+
+      <ng-container *ngFor="let msg of messages">
+
+        <!-- Burbuja IA -->
+        <div class="msg-row ai-row" *ngIf="msg.role === 'ai'">
+          <div class="msg-avatar-small">
+            <i class="bi bi-robot bot-icon-sm"></i>
+          </div>
+          <div>
+            <div class="msg-bubble ai-bubble">{{ msg.text }}</div>
+            <div class="msg-meta">
+              <span class="msg-time">{{ formatTime(msg.timestamp) }}</span>
+              <button
+                class="speak-btn"
+                (click)="speak(msg)"
+                [class.speaking]="speakingMsgId === msg.id"
+                [title]="speakingMsgId === msg.id ? 'Detener' : 'Escuchar respuesta'"
+              >
+                <i class="bi"
+                   [class.bi-volume-up-fill]="speakingMsgId !== msg.id"
+                   [class.bi-stop-circle-fill]="speakingMsgId === msg.id"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Burbuja usuario -->
+        <div class="msg-row user-row" *ngIf="msg.role === 'user'">
+          <div>
+            <div class="msg-bubble user-bubble">{{ msg.text }}</div>
+            <div class="msg-time user-time">{{ formatTime(msg.timestamp) }}</div>
+          </div>
+        </div>
+
+      </ng-container>
+
+      <!-- Quick Actions -->
+      <div class="quick-actions" *ngIf="quickActionsVisible && !isTyping">
+        <div class="quick-actions-label">Acciones rápidas</div>
+        <button
+          class="quick-chip"
+          *ngFor="let action of config.quickActions"
+          (click)="useQuickAction(action.prompt)"
+        >
+          <i class="bi" [class]="action.icon || 'bi-lightning-charge'"></i>
+          {{ action.label }}
+        </button>
+      </div>
+
+      <!-- Typing indicator -->
+      <div class="msg-row ai-row" *ngIf="isTyping">
+        <div class="msg-avatar-small">
+          <i class="bi bi-robot bot-icon-sm"></i>
+        </div>
+        <div class="msg-bubble ai-bubble typing-bubble">
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Input -->
+    <div class="chat-input-area">
+      <button
+        *ngIf="hasSpeechRecognition"
+        class="chat-mic-btn"
+        [class.listening]="isListening"
+        [disabled]="isTyping"
+        (click)="toggleListening()"
+        [title]="isListening ? 'Detener micrófono' : 'Hablar'"
+      >
+        <i class="bi" [class.bi-mic-fill]="!isListening" [class.bi-stop-circle-fill]="isListening"></i>
+      </button>
+
+      <input
+        class="chat-input"
+        type="text"
+        [placeholder]="isListening ? 'Escuchando...' : 'Escribe o habla tu consulta...'"
+        [(ngModel)]="inputMessage"
+        (keydown)="onKeyDown($event)"
+        [disabled]="isTyping || isListening"
+      />
+
+      <button
+        class="chat-send-btn"
+        (click)="sendMessage()"
+        [disabled]="!inputMessage.trim() || isTyping"
+      >
+        <i class="bi bi-send-fill"></i>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Botón flotante -->
+  <button class="chat-float-btn" (click)="toggleChat()" [class.active]="isOpen">
+    <div class="float-btn-pulse" *ngIf="!isOpen"></div>
+    <i class="bi bi-x-lg float-close-icon" *ngIf="isOpen"></i>
+    <div class="float-avatar-circle" *ngIf="!isOpen">
+      <i class="bi bi-robot float-robot-icon"></i>
+    </div>
+  </button>
+
+</div>
