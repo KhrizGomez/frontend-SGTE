@@ -1,4 +1,4 @@
-<div class="layout">
+﻿<div class="layout">
   <div class="content-sidebar">
     <aside class="sidebar">
       <div class="brand-bar">
@@ -10,7 +10,6 @@
         <a class="nav__item" [routerLink]="['/estudiante/solicitudes']" routerLinkActive="active">Solicitudes</a>
         <a class="nav__item" [routerLink]="['/estudiante/seguimiento']" routerLinkActive="active">Seguimiento</a>
         <p class="nav__section">Herramientas</p>
-        <a class="nav__item" [routerLink]="['/estudiante/asistente']" routerLinkActive="active">Asistente IA</a>
         <a class="nav__item" [routerLink]="['/estudiante/notificaciones']" routerLinkActive="active">Notificaciones</a>
       </nav>
       <div class="user">
@@ -19,7 +18,7 @@
           <div class="user__name">{{ getNombre() }}</div>
           <div class="user__role text-capitalize">{{ getRol() }}</div>
         </div>
-        <button class="power" title="Cerrar sesión" aria-label="Cerrar sesión" (click)="cerrarSesion()">
+        <button class="power" title="Cerrar sesiÃ³n" aria-label="Cerrar sesiÃ³n" (click)="cerrarSesion()">
           <i class="bi bi-power"></i>
         </button>
       </div>
@@ -40,3 +39,5 @@
     <router-outlet></router-outlet>
   </main>
 </div>
+
+<app-ai-chat [config]="chatConfig"></app-ai-chat>

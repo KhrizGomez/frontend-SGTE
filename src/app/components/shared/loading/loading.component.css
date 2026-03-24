@@ -12,9 +12,8 @@
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background: conic-gradient(from 0deg, transparent 0%, #04873C 100%);
-  mask: radial-gradient(farthest-side, transparent calc(100% - 7px), #000 calc(100% - 7px));
-  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 7px), #000 calc(100% - 7px));
+  border: 6px solid #d8e4d9;
+  border-top-color: #0f7a1a;
   animation: spin 0.9s linear infinite;
 }
 

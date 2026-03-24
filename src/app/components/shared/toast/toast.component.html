@@ -1,0 +1,15 @@
+<div class="toast-container">
+  @for (toast of toastService.toasts(); track toast) {
+    <div class="toast" [ngClass]="toast.type" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+        <strong class="me-auto">{{ toast.title }}</strong>
+        <button type="button" class="btn-close" (click)="remove(toast)" aria-label="Close">
+            <i class="bi bi-x"></i>
+        </button>
+      </div>
+      <div class="toast-body">
+        {{ toast.message }}
+      </div>
+    </div>
+  }
+</div>

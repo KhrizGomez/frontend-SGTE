@@ -1,32 +1,32 @@
-          <div class="seg-grid">
+﻿          <div class="seg-grid">
             <article class="panel seg-left" aria-labelledby="seg-list-title">
               <div class="panel__header">
-                <h3 id="seg-list-title">Trámites vigentes</h3>
+                <h3 id="seg-list-title">TrÃ¡mites vigentes</h3>
                 <label class="field field--inline">
                   <span class="label">Buscar</span>
-                  <input id="seg-q" class="select" placeholder="#ID, estudiante, título…" />
+                  <input id="seg-q" class="select" placeholder="#ID, estudiante, tÃ­tuloâ€¦" />
                 </label>
               </div>
-              <ul id="seg-list" class="seg-list" aria-label="Lista de trámites"></ul>
+              <ul id="seg-list" class="seg-list" aria-label="Lista de trÃ¡mites"></ul>
             </article>
 
             <article class="panel seg-right" aria-labelledby="seg-det-title">
               <div class="panel__header">
-                <h3 id="seg-det-title">Detalle del trámite</h3>
+                <h3 id="seg-det-title">Detalle del trÃ¡mite</h3>
                 <span id="seg-det-id" class="seg-id"></span>
               </div>
 
-              <div id="seg-empty" class="seg-empty">Selecciona un trámite de la lista para ver detalles.</div>
+              <div id="seg-empty" class="seg-empty">Selecciona un trÃ¡mite de la lista para ver detalles.</div>
 
               <div id="seg-detail" class="seg-detail" hidden>
                 <div class="seg-summary">
                   <div>
-                    <div class="seg-title" id="seg-title">—</div>
-                    <div class="seg-meta"><span id="seg-est">—</span> · <span id="seg-tipo">—</span> · <span id="seg-prio">—</span> · <span id="seg-estado">—</span></div>
+                    <div class="seg-title" id="seg-title">â€”</div>
+                    <div class="seg-meta"><span id="seg-est">â€”</span> Â· <span id="seg-tipo">â€”</span> Â· <span id="seg-prio">â€”</span> Â· <span id="seg-estado">â€”</span></div>
                   </div>
                   <div class="seg-dates">
-                    <div><small>Creado</small><div id="seg-creado">—</div></div>
-                    <div><small>Actualizado</small><div id="seg-actual">—</div></div>
+                    <div><small>Creado</small><div id="seg-creado">â€”</div></div>
+                    <div><small>Actualizado</small><div id="seg-actual">â€”</div></div>
                   </div>
                 </div>
 
@@ -43,9 +43,9 @@
                 <div id="seg-reject" class="seg-reject" hidden></div>
 
                 <div class="seg-actions">
-                  <button id="seg-next" class="btn-primary" type="button">Pasar a la siguiente etapa</button>
-                  <button id="seg-resol" class="btn-ghost" type="button" hidden>Generar resolución</button>
-                  <button id="seg-rechazar" class="btn-danger" type="button">Rechazar solicitud</button>
+                  <button id="seg-next" class="btn-primary btn-icon" type="button" title="Siguiente etapa"><i class="bi bi-chevron-right"></i></button>
+                  <button id="seg-resol" class="btn-ghost btn-icon" type="button" title="Generar resolución" hidden><i class="bi bi-file-earmark-check"></i></button>
+                  <button id="seg-rechazar" class="btn-danger btn-icon" type="button" title="Rechazar"><i class="bi bi-ban"></i></button>
                 </div>
               </div>
             </article>
@@ -82,7 +82,7 @@
             <div class="modal__body">
               <label class="field field--col-2">
                 <span class="label">Motivo del rechazo</span>
-                <textarea id="rej-reason" class="textarea" placeholder="Explica brevemente el motivo…" required></textarea>
+                <textarea id="rej-reason" class="textarea" placeholder="Explica brevemente el motivoâ€¦" required></textarea>
               </label>
               <div class="form-actions">
                 <button id="rej-cancel" type="button" class="btn-ghost">Cancelar</button>
@@ -91,3 +91,6 @@
             </div>
           </div>
         </div>
+
+
+

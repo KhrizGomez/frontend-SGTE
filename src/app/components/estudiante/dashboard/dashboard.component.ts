@@ -67,7 +67,11 @@ export class EstudianteDashboard implements AfterViewInit {
         if(!btn) return;
         const act = btn.getAttribute('data-act');
         if(act === 'new') window.location.href = '/estudiante/solicitudes';
-        else if (act === 'ai') window.location.href = '/estudiante/asistente';
+        else if (act === 'ai') {
+          const chatBtn = document.querySelector('.chat-float-btn') as HTMLButtonElement | null;
+          if (chatBtn) chatBtn.click();
+          else showStatus('Asistente no disponible en esta vista', 'warn');
+        }
         else if (act === 'buscar') window.location.href = '/estudiante/seguimiento';
         else if (act === 'config') window.location.href = '/estudiante/notificaciones';
       });

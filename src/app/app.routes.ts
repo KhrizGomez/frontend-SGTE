@@ -7,6 +7,9 @@ export const routes: Routes = [
     { path: 'coordinacion',
         loadChildren: () =>
             import('./components/coordinador/coordinador.routes').then(m => m.coordinadorRoutes) },
+    { path: 'decanato',
+        loadChildren: () =>
+            import('./components/decano/decano.routes').then(m => m.decanoRoutes) },
     { path: 'estudiante',
         loadChildren: () =>
             import('./components/estudiante/estudiante.routes').then(m => m.estudianteRoutes) },

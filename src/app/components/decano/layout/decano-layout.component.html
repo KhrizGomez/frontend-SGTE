@@ -1,0 +1,44 @@
+﻿<div class="layout">
+  <div class="content-sidebar">
+    <aside class="sidebar">
+      <div class="brand-bar">
+        <img src="assets/logo.png" alt="UTEQ" height="42" width="180" style="object-fit: contain;"/>
+      </div>
+      <nav class="nav d-inline-block">
+        <p class="nav__section">Principal</p>
+        <a class="nav__item" [routerLink]="['/decanato/dashboard']" routerLinkActive="active">Dashboard</a>
+        <a class="nav__item" [routerLink]="['/decanato/plantillas']" routerLinkActive="active">Plantillas</a>
+        <a class="nav__item" [routerLink]="['/decanato/solicitudes']" routerLinkActive="active">Solicitudes</a>
+        <p class="nav__section">Herramientas</p>
+        <a class="nav__item" [routerLink]="['/decanato/notificaciones']" routerLinkActive="active">Notificaciones</a>
+        <a class="nav__item" [routerLink]="['/decanato/reportes']" routerLinkActive="active">Reportes</a>
+      </nav>
+      <div class="user">
+        <div class="avatar text-white" style="background:#04873C">{{ getIniciales() }}</div>
+        <div class="user__info">
+          <div class="user__name">{{ getNombre() }}</div>
+          <div class="user__role text-capitalize">{{ getRol() }}</div>
+        </div>
+        <button class="power" title="Cerrar sesiÃ³n" aria-label="Cerrar sesiÃ³n" (click)="cerrarSesion()">
+          <i class="bi bi-power"></i>
+        </button>
+      </div>
+    </aside>
+  </div>
+
+  <main class="content">
+    <header class="top">
+      <h1 id="page-title">Decanato</h1>
+      <div class="spacer"></div>
+    </header>
+
+    <!-- Inline status bar for non-push notifications -->
+    <div id="status" class="status" role="status" aria-live="polite" hidden></div>
+    <!-- Push notifications container (emergent) -->
+    <div id="push" class="push-container" aria-live="polite"></div>
+
+    <router-outlet></router-outlet>
+  </main>
+</div>
+
+<app-ai-chat [config]="chatConfig"></app-ai-chat>

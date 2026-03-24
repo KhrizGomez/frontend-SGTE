@@ -1,4 +1,64 @@
-*{
-    /* font-family: "Roboto Slab", serif; */
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Nunito+Sans:wght@400;600;700&display=swap');
+
+:root {
+    /* Core Palette - Aligned with Layout & Login */
+    --uni-bg: #f7f7f5;        /* Matches --layout-bg & --notion-bg */
+    --uni-surface: #ffffff;
+    --uni-text: #262622;      /* Matches --layout-text & --notion-text */
+    --uni-muted: #717169;     /* Matches --layout-muted */
+    --uni-line: #e8e8e4;      /* Matches --layout-border */
+    
+    /* Brand Colors */
+    --uni-brand: #198d30;     /* Matches --layout-brand */
+    --uni-brand-strong: #137126;
+    --uni-accent: #1f8f44;
+    --uni-accent-soft: #ecf8ee;
+    
+    /* Shadows & Radius */
+    --uni-shadow-soft: 0 1px 8px rgba(0, 0, 0, 0.04);
+    --uni-shadow-card: 0 12px 30px rgba(20, 35, 24, 0.07);
+    --uni-radius-lg: 16px;
+    --uni-radius-md: 12px;
+    --uni-radius-sm: 8px;
+
+    /* Typography Scale */
+    --type-xs: 0.875rem;
+    --type-sm: 0.9375rem;
+    --type-md: 1rem;
+    --type-lg: 1.25rem;
+    --type-xl: 1.875rem;
+    
+    /* Spacing */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.25rem;
+    --space-6: 1.5rem;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    min-height: 100%;
+    font-family: 'Manrope', 'Nunito Sans', sans-serif;
+    color: var(--uni-text);
+    background: var(--uni-bg);
+    font-size: var(--type-md);
+    line-height: 1.5;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: 'Manrope', sans-serif;
+    letter-spacing: -0.02em;
     margin: 0;
 }

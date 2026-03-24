@@ -1,18 +1,20 @@
-import { AfterViewInit, Component, ChangeDetectorRef } from '@angular/core';
+import { AfterViewInit, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { NgOptimizedImage } from '@angular/common';
 import { ValidacionUsuarioService } from '../../services/general/validacion-usuario.service';
 import { RegistroUsuarioService } from '../../services/general/registro-usuario.service';
 import { AutenticacionService } from '../../services/general/autenticacion.service';
 import { RegistroUsuarioPayload } from '../../models/general/registro-usuario.model';
+import { ToastService } from '../../services/general/toast.service';
 
 declare var bootstrap: any;
 
 @Component({
     selector: 'app-inicio-sesion',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, NgOptimizedImage],
     templateUrl: './inicio-sesion.component.html',
     styleUrl: './inicio-sesion.component.css',
 })
@@ -30,23 +32,18 @@ export class InicioSesionComponent implements AfterViewInit {
     apellidos: string = '';
     cargandoRegistro: boolean = false;
 
-    // Mensajes Genéricos
-    mensajeTitulo: string = '';
-    mensajeContenido: string = '';
-    esErrorMensaje: boolean = false;
-
     constructor(
         private autenticacionService: AutenticacionService,
         private router: Router,
         private validacionUsuarioService: ValidacionUsuarioService,
         private registroUsuarioService: RegistroUsuarioService,
-        private cdr: ChangeDetectorRef
+        private toastService: ToastService
     ) { }
 
     // Auth login
     iniciarSesion() {
         if (!this.nombreUsuario.trim() || !this.contrasena.trim()) {
-            this.mostrarModalMensaje('Error', 'Por favor ingrese usuario y contraseña.', true);
+            this.toastService.show('Error', 'Por favor ingrese usuario y contraseña.', 'warning');
             return;
         }
 
@@ -60,9 +57,8 @@ export class InicioSesionComponent implements AfterViewInit {
                 this.cargandoInicioSesion = false;
                 console.log('Login exitoso:', response);
                 const ruta = this.autenticacionService.obtenerRutaPorRolUsuarioActual(response.rol);
-                this.mostrarModalMensaje('Bienvenido', `¡Hola, ${response.nombres} ${response.apellidos}!`, false, () => {
-                    void this.router.navigate([ruta]);
-                });
+                this.toastService.show('Inicio de sesión exitoso', `¡Hola, ${response.nombres} ${response.apellidos}!`, 'success');
+                void this.router.navigate([ruta]);
             },
             error: (err) => {
                 this.cargandoInicioSesion = false;
@@ -75,7 +71,7 @@ export class InicioSesionComponent implements AfterViewInit {
                 } else {
                     msj = err.error?.mensaje ?? 'Error al iniciar sesión.';
                 }
-                this.mostrarModalMensaje('Error de Autenticación', msj, true);
+                this.toastService.show('Error de Autenticación', msj, 'error');
             }
         });
     }
@@ -93,7 +89,7 @@ export class InicioSesionComponent implements AfterViewInit {
         const cedulaNormalizada = this.cedula.trim();
 
         if (!cedulaNormalizada) {
-            this.mostrarModalMensaje('Error', 'Por favor ingrese la cedula.', true);
+            this.toastService.show('Error', 'Por favor ingrese la cedula.', 'warning');
             return;
         }
 
@@ -120,28 +116,28 @@ export class InicioSesionComponent implements AfterViewInit {
                                 });
                             }
 
-                            this.mostrarModalMensaje('Registro Exitoso', `¡Registro exitoso! Bienvenido/a, ${payload.nombres} ${payload.apellidos}. Las credenciales han sido enviadas a su correo.`, false);
+                            this.toastService.show('Registro Exitoso', `¡Registro exitoso! Bienvenido/a, ${payload.nombres} ${payload.apellidos}. Las credenciales han sido enviadas a su correo.`, 'success');
                             this.cerrarModalCrearCuenta();
                         },
                         error: (err) => {
                             this.cargandoRegistro = false;
-                            this.mostrarModalMensaje('Error de Registro', this.obtenerMensajeErrorRegistro(err), true);
+                            this.toastService.show('Error de Registro', this.obtenerMensajeErrorRegistro(err), 'error');
                         }
                     });
                 },
                 error: (err) => {
                     this.cargandoRegistro = false;
                     if (err.status === 404) {
-                        this.mostrarModalMensaje('Error de Validación', 'No existe usuario con esa cedula en el servicio de validacion.', true);
+                        this.toastService.show('Error de Validación', 'No existe usuario con esa cedula en el servicio de validacion.', 'error');
                         return;
                     }
-                    this.mostrarModalMensaje('Error de Validación', 'Error al validar usuario. Verifique la cedula.', true);
+                    this.toastService.show('Error de Validación', 'Error al validar usuario. Verifique la cedula.', 'error');
                 }
             });
         } else {
             if (!this.nombres || !this.apellidos) {
                 this.cargandoRegistro = false;
-                this.mostrarModalMensaje('Error', 'Por favor ingrese nombres y apellidos.', true);
+                this.toastService.show('Error', 'Por favor ingrese nombres y apellidos.', 'warning');
                 return;
             }
 
@@ -168,12 +164,12 @@ export class InicioSesionComponent implements AfterViewInit {
                         });
                     }
 
-                    this.mostrarModalMensaje('Registro Exitoso', `¡Registro exitoso! Bienvenido/a, ${payload.nombres} ${payload.apellidos}. Las credenciales han sido enviadas a su correo.`, false);
+                    this.toastService.show('Registro Exitoso', `¡Registro exitoso! Bienvenido/a, ${payload.nombres} ${payload.apellidos}. Las credenciales han sido enviadas a su correo.`, 'success');
                     this.cerrarModalCrearCuenta();
                 },
                 error: (err: any) => {
                     this.cargandoRegistro = false;
-                    this.mostrarModalMensaje('Error de Registro', this.obtenerMensajeErrorRegistro(err), true);
+                    this.toastService.show('Error de Registro', this.obtenerMensajeErrorRegistro(err), 'error');
                 }
             });
         }
@@ -186,26 +182,6 @@ export class InicioSesionComponent implements AfterViewInit {
             if (modal) {
                 modal.hide();
             }
-        }
-    }
-
-    mostrarModalMensaje(titulo: string, mensaje: string, esError: boolean, onClose?: () => void) {
-        this.mensajeTitulo = titulo;
-        this.mensajeContenido = mensaje;
-        this.esErrorMensaje = esError;
-        this.cdr.detectChanges();
-
-        const modalElement = document.getElementById('modalMensaje');
-        if (modalElement) {
-            const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
-            if (onClose) {
-                const handler = () => {
-                    modalElement.removeEventListener('hidden.bs.modal', handler);
-                    onClose();
-                };
-                modalElement.addEventListener('hidden.bs.modal', handler);
-            }
-            modal.show();
         }
     }
 

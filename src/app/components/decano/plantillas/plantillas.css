@@ -1,0 +1,7 @@
+﻿@import '../../../shared/styles/module-airbnb.css';
+
+.panel {
+  min-height: calc(100vh - 182px);
+}
+
+

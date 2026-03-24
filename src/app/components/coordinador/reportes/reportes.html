@@ -1,20 +1,20 @@
-          <div class="rep-toolbar">
+﻿          <div class="rep-toolbar">
             <label class="field field--inline">
               <span class="label">Periodo</span>
               <select id="rep-periodo" class="select">
                 <option value="este_mes">Este mes</option>
                 <option value="mes_anterior">Mes anterior</option>
-                <option value="semestre">Último semestre</option>
-                <option value="anual">Año lectivo 2024-2025</option>
+                <option value="semestre">Ãšltimo semestre</option>
+                <option value="anual">AÃ±o lectivo 2024-2025</option>
               </select>
             </label>
             <label class="field field--inline">
-              <span class="label">Categoría</span>
+              <span class="label">CategorÃ­a</span>
               <select id="rep-cat" class="select">
                 <option value="">Todas</option>
                 <option>Certificados</option>
                 <option>Cambio de carrera</option>
-                <option>Homologación</option>
+                <option>HomologaciÃ³n</option>
               </select>
             </label>
             <button id="rep-clear" class="btn-ghost" type="button" title="Limpiar filtros">Limpiar</button>
@@ -22,7 +22,7 @@
             <div class="spacer"></div>
             <label class="field field--inline" style="margin-right:10px">
               <span class="label">Buscar</span>
-              <input id="rep-q" class="select" placeholder="Estudiante, tipo…" />
+              <input id="rep-q" class="select" placeholder="Estudiante, tipoâ€¦" />
             </label>
             <button id="rep-export" class="btn-ghost" type="button"><i class="bi bi-download"></i> Exportar (CSV/PDF)</button>
             <button id="rep-print" class="btn-ghost" type="button" onclick="window.print()"><i class="bi bi-printer-fill"></i> Imprimir</button>
@@ -32,30 +32,30 @@
             <div class="rep-left">
               <article class="panel">
                 <div class="panel__header">
-                  <h3 id="rep-kpi-title">Métricas de desempeño (KPIs)</h3>
+                  <h3 id="rep-kpi-title">MÃ©tricas de desempeÃ±o (KPIs)</h3>
                 </div>
                 <div class="stats" style="grid-template-columns:repeat(3,1fr);margin:10px 0 0 0">
                   <div class="stat"><div class="stat__icon"><i class="bi bi-stopwatch-fill"></i></div><div class="stat__value">4.2d</div><div class="stat__label">Tiempo prom. respuesta</div></div>
                   <div class="stat"><div class="stat__icon"><i class="bi bi-graph-down"></i></div><div class="stat__value">12%</div><div class="stat__label">Tasa de rechazo</div></div>
-                  <div class="stat"><div class="stat__icon"><i class="bi bi-graph-up-arrow"></i></div><div class="stat__value">88%</div><div class="stat__label">Tasa de aprobación</div></div>
+                  <div class="stat"><div class="stat__icon"><i class="bi bi-graph-up-arrow"></i></div><div class="stat__value">88%</div><div class="stat__label">Tasa de aprobaciÃ³n</div></div>
                 </div>
               </article>
 
               <article class="panel" id="cont-report">
                 <div class="panel__header">
-                  <h3>Registro detallado de trámites</h3>
+                  <h3>Registro detallado de trÃ¡mites</h3>
                 </div>
                 <!-- Controls and Table built in JS -->
                 <div class="rep-table-wrap">
                   <table class="rep-table" id="rep-table">
                     <thead>
                       <tr>
-                        <th data-sort="id">ID ↕</th>
-                        <th data-sort="estudiante">Estudiante ↕</th>
-                        <th data-sort="tipo">Trámite ↕</th>
-                        <th data-sort="fecha">Fecha Ingreso ↕</th>
-                        <th data-sort="estado">Estado ↕</th>
-                        <th data-sort="sla">SLA (Días) ↕</th>
+                        <th data-sort="id">ID â†•</th>
+                        <th data-sort="estudiante">Estudiante â†•</th>
+                        <th data-sort="tipo">TrÃ¡mite â†•</th>
+                        <th data-sort="fecha">Fecha Ingreso â†•</th>
+                        <th data-sort="estado">Estado â†•</th>
+                        <th data-sort="sla">SLA (DÃ­as) â†•</th>
                       </tr>
                     </thead>
                     <tbody id="rep-tbody"></tbody>
@@ -75,7 +75,7 @@
             <div class="rep-right">
               <article class="panel">
                 <div class="panel__header">
-                  <h3>Distribución de estados</h3>
+                  <h3>DistribuciÃ³n de estados</h3>
                 </div>
                 <div class="donut-wrap" style="transform:scale(0.85);transform-origin:top center;margin-bottom:-20px">
                   <div id="rep-donut" class="donut"></div>
@@ -86,10 +86,12 @@
                 </div>
                 <ul class="legend" id="rep-donut-legend" style="margin-top:0">
                   <li><span class="dot" style="background:#a7f3d0"></span> Finalizado</li>
-                  <li><span class="dot" style="background:#bfdbfe"></span> En revisión</li>
+                  <li><span class="dot" style="background:#bfdbfe"></span> En revisiÃ³n</li>
                   <li><span class="dot" style="background:#fde68a"></span> Borrador</li>
                   <li><span class="dot" style="background:#fca5a5"></span> Rechazado</li>
                 </ul>
               </article>
             </div>
           </div>
+
+

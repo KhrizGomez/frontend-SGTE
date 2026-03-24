@@ -1,4 +1,4 @@
-          <section class="stats">
+﻿          <section class="stats">
             <div class="stat"><div class="stat__text"><div class="stat__value" id="co-stat-unread">0</div><div class="stat__label">Mensajes sin leer</div></div><div class="stat__icon" style="background:#fee2e2;"><i class="bi bi-envelope-arrow-down-fill"></i></div></div>
             <div class="stat"><div class="stat__text"><div class="stat__value" id="co-stat-week">0</div><div class="stat__label">Mensajes esta semana</div></div><div class="stat__icon" style="background:#dbeafe;"><i class="bi bi-calendar-week-fill"></i></div></div>
             <div class="stat"><div class="stat__text"><div class="stat__value" id="co-stat-important">0</div><div class="stat__label">Importantes</div></div><div class="stat__icon" style="background:#fef3c7;"><i class="bi bi-star-fill"></i></div></div>
@@ -12,29 +12,29 @@
           </article>
 
           <article class="panel notif-config" aria-labelledby="co-notif-config-title">
-            <div class="panel__header"><h3 id="co-notif-config-title">Preferencias de recepción</h3></div>
+            <div class="panel__header"><h3 id="co-notif-config-title">Preferencias de recepciÃ³n</h3></div>
             <div class="cfg-grid">
               <label class="cfg-item">
                 <span class="cfg-icon"><i class="bi bi-chat-fill"></i></span>
-                <span class="cfg-text"><strong>WhatsApp</strong><br/><small>Mensajes a tu número registrado</small></span>
+                <span class="cfg-text"><strong>WhatsApp</strong><br/><small>Mensajes a tu nÃºmero registrado</small></span>
                 <span class="cfg-spacer"></span>
                 <input type="checkbox" class="switch" id="co-cfg-wa" />
               </label>
               <label class="cfg-item">
                 <span class="cfg-icon"><i class="bi bi-envelope-fill"></i></span>
-                <span class="cfg-text"><strong>Correo electrónico</strong><br/><small>Enviaremos un email a tu cuenta UTEQ</small></span>
+                <span class="cfg-text"><strong>Correo electrÃ³nico</strong><br/><small>Enviaremos un email a tu cuenta UTEQ</small></span>
                 <span class="cfg-spacer"></span>
                 <input type="checkbox" class="switch" id="co-cfg-mail" checked />
               </label>
               <label class="cfg-item">
                 <span class="cfg-icon"><i class="bi bi-phone-fill"></i></span>
-                <span class="cfg-text"><strong>Notificación en la app</strong><br/><small>Alertas dentro del sistema</small></span>
+                <span class="cfg-text"><strong>NotificaciÃ³n en la app</strong><br/><small>Alertas dentro del sistema</small></span>
                 <span class="cfg-spacer"></span>
                 <input type="checkbox" class="switch" id="co-cfg-app" checked />
               </label>
               <label class="cfg-item">
                 <span class="cfg-icon"><i class="bi bi-phone-vibrate-fill"></i></span>
-                <span class="cfg-text"><strong>SMS</strong><br/><small>Mensajes de texto a tu línea</small></span>
+                <span class="cfg-text"><strong>SMS</strong><br/><small>Mensajes de texto a tu lÃ­nea</small></span>
                 <span class="cfg-spacer"></span>
                 <input type="checkbox" class="switch" id="co-cfg-sms" />
               </label>
@@ -49,11 +49,11 @@
               </label>
               <div class="cfg-item">
                 <span class="cfg-icon"><i class="bi bi-alarm-fill"></i></span>
-                <div class="cfg-text"><strong>Horario de recepción</strong><br/><small>Solo enviar entre estas horas</small></div>
+                <div class="cfg-text"><strong>Horario de recepciÃ³n</strong><br/><small>Solo enviar entre estas horas</small></div>
                 <div class="cfg-spacer"></div>
                 <div style="display:flex;gap:8px;align-items:center">
                   <input id="co-cfg-start" type="time" class="select" value="08:00" />
-                  <span>—</span>
+                  <span>â€”</span>
                   <input id="co-cfg-end" type="time" class="select" value="18:00" />
                 </div>
               </div>
@@ -62,15 +62,15 @@
             <div class="cfg-grid" style="margin-top:12px">
               <div class="cfg-item">
                 <span class="cfg-icon"><i class="bi bi-calendar-event-fill"></i></span>
-                <div class="cfg-text"><strong>Días permitidos</strong><br/><small>Selecciona cuándo quieres recibir</small></div>
+                <div class="cfg-text"><strong>DÃ­as permitidos</strong><br/><small>Selecciona cuÃ¡ndo quieres recibir</small></div>
                 <div class="cfg-spacer"></div>
                 <div style="display:flex;gap:8px;flex-wrap:wrap">
                   <label><input type="checkbox" id="co-day-mon" checked /> Lun</label>
                   <label><input type="checkbox" id="co-day-tue" checked /> Mar</label>
-                  <label><input type="checkbox" id="co-day-wed" checked /> Mié</label>
+                  <label><input type="checkbox" id="co-day-wed" checked /> MiÃ©</label>
                   <label><input type="checkbox" id="co-day-thu" checked /> Jue</label>
                   <label><input type="checkbox" id="co-day-fri" checked /> Vie</label>
-                  <label><input type="checkbox" id="co-day-sat" /> Sáb</label>
+                  <label><input type="checkbox" id="co-day-sat" /> SÃ¡b</label>
                   <label><input type="checkbox" id="co-day-sun" /> Dom</label>
                 </div>
               </div>
@@ -80,7 +80,7 @@
                 <div class="cfg-spacer"></div>
                 <div style="display:flex;gap:8px;align-items:center">
                   <input id="co-dnd-start" type="time" class="select" value="22:00" />
-                  <span>—</span>
+                  <span>â€”</span>
                   <input id="co-dnd-end" type="time" class="select" value="07:00" />
                 </div>
               </div>
@@ -92,27 +92,29 @@
             </div>
           </article>
 
-    <!-- Modal: Detalle de notificación -->
+    <!-- Modal: Detalle de notificaciÃ³n -->
     <div id="notif-modal" class="modal" hidden>
       <div class="modal__backdrop" data-close="1"></div>
       <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="notif-modal-title">
         <div class="modal__header">
-          <h3 id="notif-modal-title">Detalle de notificación</h3>
+          <h3 id="notif-modal-title">Detalle de notificaciÃ³n</h3>
           <button id="notif-close" class="btn-ghost" type="button"><i class="bi bi-x-lg"></i></button>
         </div>
         <div class="modal__body">
           <div id="notif-meta" style="display:flex;gap:10px;align-items:flex-start;margin-bottom:8px">
             <div id="notif-ico" class="notif-card__icon"><i class="bi bi-bell-fill"></i></div>
             <div>
-              <div id="notif-title" class="notif-card__title">—</div>
-              <div id="notif-desc" class="notif-card__desc" style="margin-top:4px">—</div>
-              <div id="notif-time" class="notif-card__time" style="margin-top:6px">—</div>
+              <div id="notif-title" class="notif-card__title">â€”</div>
+              <div id="notif-desc" class="notif-card__desc" style="margin-top:4px">â€”</div>
+              <div id="notif-time" class="notif-card__time" style="margin-top:6px">â€”</div>
             </div>
           </div>
           <div class="form-actions">
-            <button id="notif-goto" class="btn-primary" type="button">Ir al trámite</button>
-            <button id="notif-mark" class="btn-ghost" type="button">Marcar como leído</button>
+            <button id="notif-goto" class="btn-primary" type="button">Ir al trÃ¡mite</button>
+            <button id="notif-mark" class="btn-ghost" type="button">Marcar como leÃ­do</button>
           </div>
         </div>
       </div>
     </div>
+
+

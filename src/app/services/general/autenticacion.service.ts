@@ -8,7 +8,7 @@ const SESSION_KEY = 'sgte_user';
 
 const ROLE_ROUTES: Record<string, string> = {
     coordinador: '/coordinacion',
-    decano: '/decano',
+    decano: '/decanato',
     estudiante: '/estudiante',
     administrador: '/administrador',
 };

@@ -1,7 +1,7 @@
-<div class="soli-toolbar">
+﻿<div class="soli-toolbar">
   <div class="spacer"></div>
   <label class="field field--inline">
-    <span class="label">Categoría</span>
+    <span class="label">CategorÃ­a</span>
     <select class="select" [(ngModel)]="filtrCategoria">
       <option value="">Todas</option>
       @for (cat of categorias; track cat) {
@@ -19,7 +19,7 @@
   </label>
   <label class="field field--inline">
     <span class="label">Buscar</span>
-    <input class="select" [(ngModel)]="buscar" placeholder="Nombre, categoría, flujo…" />
+    <input class="select" [(ngModel)]="buscar" placeholder="Nombre, categorÃ­a, flujoâ€¦" />
   </label>
   <button class="btn-ghost" type="button" (click)="limpiarFiltros()">Limpiar</button>
 </div>
@@ -42,7 +42,7 @@
   </div>
 
   @if (cargando) {
-    <app-loading message="Cargando plantillas…" />
+    <app-loading message="Cargando plantillasâ€¦" />
   }
 
   @if (!cargando && !error && plantillasFiltradas.length === 0) {
@@ -62,7 +62,7 @@
           <span class="soli-txt">
             <span class="soli-title">{{ p.nombrePlantilla }}</span>
             <span class="soli-desc">
-              {{ p.categoria }} · {{ p.nombreFlujo }} · {{ p.pasosTramite.length }} pasos · {{ p.diasResolucionEstimados }}d
+              {{ p.categoria }} Â· {{ p.nombreFlujo }} Â· {{ p.pasosTramite.length }} pasos Â· {{ p.diasResolucionEstimados }}d
             </span>
             @if (p.descripcionPlantilla) {
               <span class="soli-desc">{{ p.descripcionPlantilla }}</span>
@@ -100,16 +100,16 @@
       </div>
       <div class="modal__body">
         <dl class="detail-list">
-          <dt>Categoría</dt><dd>{{ plantillaSeleccionada.categoria }}</dd>
+          <dt>CategorÃ­a</dt><dd>{{ plantillaSeleccionada.categoria }}</dd>
           <dt>Carrera</dt><dd>{{ plantillaSeleccionada.carrera }}</dd>
           <dt>Flujo</dt><dd>{{ plantillaSeleccionada.nombreFlujo }}</dd>
-          <dt>Descripción del flujo</dt><dd>{{ plantillaSeleccionada.descripcion }}</dd>
-          <dt>Resolución estimada</dt><dd>{{ plantillaSeleccionada.diasResolucionEstimados }} día(s)</dd>
-          <dt>Disponible para externos</dt><dd>{{ plantillaSeleccionada.disponibleExternos ? 'Sí' : 'No' }}</dd>
+          <dt>DescripciÃ³n del flujo</dt><dd>{{ plantillaSeleccionada.descripcion }}</dd>
+          <dt>ResoluciÃ³n estimada</dt><dd>{{ plantillaSeleccionada.diasResolucionEstimados }} dÃ­a(s)</dd>
+          <dt>Disponible para externos</dt><dd>{{ plantillaSeleccionada.disponibleExternos ? 'SÃ­' : 'No' }}</dd>
           <dt>Estado</dt><dd>{{ plantillaSeleccionada.estaActivo ? 'Activo' : 'Inactivo' }}</dd>
         </dl>
 
-        <h4 class="mt-2">Pasos del trámite</h4>
+        <h4 class="mt-2">Pasos del trÃ¡mite</h4>
         <ol class="timeline timeline--v">
           @for (paso of plantillaSeleccionada.pasosTramite; track paso.idPaso) {
             <li class="tl-item">
@@ -117,8 +117,8 @@
               <div class="tl-body">
                 <div class="tl-title">{{ paso.nombreEtapa }}</div>
                 <div class="tl-meta">
-                  Paso {{ paso.ordenPaso }} · SLA {{ paso.horasSla }}h
-                  @if (paso.rolRequerido) { · {{ paso.rolRequerido }} }
+                  Paso {{ paso.ordenPaso }} Â· SLA {{ paso.horasSla }}h
+                  @if (paso.rolRequerido) { Â· {{ paso.rolRequerido }} }
                 </div>
                 <div class="tl-desc">{{ paso.descripcionEtapa }}</div>
               </div>
@@ -129,3 +129,5 @@
     </div>
   </div>
 }
+
+

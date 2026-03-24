@@ -1,5 +1,5 @@
-/* El panel ocupa al menos toda la pantalla visible mientras carga,
-   y se expande con el contenido una vez que las cartas están listas */
+@import '../../../shared/styles/module-airbnb.css';
+
 .panel {
   min-height: calc(100vh - 182px);
 }

@@ -3,11 +3,13 @@ import {RouterOutlet, RouterLink, RouterLinkActive} from '@angular/router';
 import {CommonModule, NgOptimizedImage} from '@angular/common';
 import { AutenticacionService } from '../../../services/general/autenticacion.service';
 import { AutenticacionRespuesta} from '../../../models/general/autenticacion.model';
+import { AiChatComponent } from '../../shared/ai-chat/ai-chat.component';
+import { ChatbotConfig } from '../../../models/ai/chatbot.model';
 
 @Component({
     selector: 'app-estudiante-layout',
     standalone: true,
-    imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, AiChatComponent],
     templateUrl: './estudiante-layout.component.html',
     styleUrl: './estudiante-layout.component.css',
     encapsulation: ViewEncapsulation.None
@@ -15,10 +17,28 @@ import { AutenticacionRespuesta} from '../../../models/general/autenticacion.mod
 export class EstudianteLayoutComponent implements OnInit, AfterViewInit {
     usuarioActual: AutenticacionRespuesta | null = null;
 
+  chatConfig: ChatbotConfig = {
+    module: 'estudiante',
+    title: 'Asistente SGTE',
+    welcomeMessage: 'Hola, soy tu asistente del SGTE. Te puedo ayudar con solicitudes, requisitos y seguimiento de tus tramites.',
+    quickActions: [
+      { label: 'Como crear solicitud', prompt: 'Como creo una solicitud nueva paso a paso?', icon: 'bi-plus-circle' },
+      { label: 'Requisitos', prompt: 'Que requisitos necesito para homologacion y certificados?', icon: 'bi-list-check' },
+      { label: 'Estado de tramite', prompt: 'Como reviso el estado y trazabilidad de un tramite?', icon: 'bi-search' },
+      { label: 'Tiempos estimados', prompt: 'Cuanto demoran los tramites mas comunes?', icon: 'bi-clock-history' },
+    ],
+  };
+
     constructor(private autenticacionService: AutenticacionService) {}
 
     ngOnInit() {
         this.usuarioActual = this.autenticacionService.obtenerUsuarioActual();
+      this.chatConfig = {
+        ...this.chatConfig,
+        userId: this.usuarioActual?.idUsuario,
+        idCarrera: this.usuarioActual?.idCarrera,
+        //idFacultad: this.usuarioActual?.idFacultad,
+      };
     }
 
     ngAfterViewInit(): void {

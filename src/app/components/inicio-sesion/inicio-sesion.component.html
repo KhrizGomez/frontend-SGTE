@@ -1,45 +1,53 @@
-<main class="page d-flex justify-content-center align-items-center">
-    <!-- Fondo -->
-    <div class="bg position-absolute"></div>
+<main class="login-shell">
+    <div class="paper-bg" aria-hidden="true"></div>
 
-    <!-- Formulario -->
-    <section class="card card border-0 shadow-lg p-4">
-        <!-- Logo -->
-        <header class="logo mb-4">
-            <img src="/assets/logo.png" alt="UTEQ" class="img-fluid" />
-        </header>
+    <section class="login-wrapper" aria-label="Acceso al sistema">
+        <article class="login-card">
+            <header class="login-header">
+                <h1>Bienvenido</h1>
+                <p>Inicia sesión para continuar con tus trámites académicos.</p>
+            </header>
 
-        <form (ngSubmit)="iniciarSesion()">
-            <div class="mb-3">
-                <input type="text" name="usuario" placeholder="Usuario" class="form-control form-control-lg rounded-4"
-                    [(ngModel)]="nombreUsuario" autocomplete="username" required />
+            <form class="login-form" (ngSubmit)="iniciarSesion()">
+                <label for="usuario">Usuario</label>
+                <input id="usuario" type="text" name="usuario" placeholder="usuario@uteq.edu.ec"
+                    class="form-control form-control-lg" [(ngModel)]="nombreUsuario" autocomplete="username" required />
+
+                <label for="contrasena">Contraseña</label>
+                <input id="contrasena" type="password" name="contrasena" placeholder="Contraseña"
+                    class="form-control form-control-lg" [(ngModel)]="contrasena" autocomplete="current-password"
+                    required />
+
+                <button type="submit" class="btn btn-login" [disabled]="cargandoInicioSesion">
+                    @if (cargandoInicioSesion) {
+                    <span class="spinner-border spinner-border-sm me-2"></span>Ingresando...
+                    } @else {
+                    Iniciar sesión
+                    }
+                </button>
+
+                <div class="divider" aria-hidden="true">
+                    <span></span>
+                    <small>o</small>
+                    <span></span>
+                </div>
+
+                <button type="button" class="btn btn-register" (click)="abrirModalCreateAccount()">
+                    Crear cuenta
+                </button>
+
+                <a href="#" class="forgot-link">¿Olvidaste tu contraseña?</a>
+            </form>
+        </article>
+
+        <aside class="login-note" aria-label="Información del sistema">
+            <div class="container-logo">
+                <img ngSrc="/assets/logo.png" width="220" height="72" alt="UTEQ" class="brand-logo ms-auto" priority />
+                <p>
+                    El sistema mantiene una experiencia simple y enfocada para estudiantes, coordinación y decanato.
+                </p>
             </div>
-
-            <div class="mb-3">
-                <input type="password" name="contrasena" placeholder="Contraseña"
-                    class="form-control form-control-lg rounded-4" [(ngModel)]="contrasena"
-                    autocomplete="current-password" required />
-            </div>
-
-            <button type="submit" class="btn btn-success btn-lg w-100 rounded-4 mb-2" [disabled]="cargandoInicioSesion">
-                @if (cargandoInicioSesion) {
-                <span class="spinner-border spinner-border-sm me-2"></span>Ingresando...
-                } @else {
-                Iniciar sesión
-                }
-            </button>
-
-            <button type="button" class="btn btn-dark btn-lg w-100 rounded-4" (click)="abrirModalCreateAccount()">
-                Crear cuenta
-            </button>
-        </form>
-
-        <!-- Enlaces -->
-        <div class="d-flex flex-column align-items-center my-4 mb-0">
-            <a href="#" class="text-dark text-decoration-none small">
-                ¿Olvidaste tu contraseña?
-            </a>
-        </div>
+        </aside>
     </section>
 
     <!-- Modal de creacion de cuenta -->
@@ -90,25 +98,6 @@
                         Registrar
                         }
                     </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="modal fade" id="modalMensaje" tabindex="-1" aria-labelledby="modalMensajeLabel" style="z-index: 1060;">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content rounded-4 border-0 shadow-lg">
-                <div class="modal-header border-0 rounded-top-4" [ngClass]="esErrorMensaje ? 'bg-danger text-white' : 'bg-success text-white'">
-                    <h1 class="modal-title fs-5" id="modalMensajeLabel">
-                        <i class="bi me-2" [ngClass]="esErrorMensaje ? 'bi-exclamation-triangle-fill' : 'bi-check-circle-fill'"></i>
-                        {{ mensajeTitulo }}
-                    </h1>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <p class="mb-0 fs-5">{{ mensajeContenido }}</p>
-                </div>
-                <div class="modal-footer border-0">
-                    <button type="button" class="btn" [ngClass]="esErrorMensaje ? 'btn-danger' : 'btn-success'" data-bs-dismiss="modal">Aceptar</button>
                 </div>
             </div>
         </div>

@@ -1,0 +1,135 @@
+﻿<div class="soli-toolbar">
+  <div class="spacer"></div>
+  <label class="field field--inline">
+    <span class="label">CategorÃ­a</span>
+    <select class="select" [(ngModel)]="filtrCategoria">
+      <option value="">Todas</option>
+      @for (cat of categorias; track cat) {
+        <option [value]="cat">{{ cat }}</option>
+      }
+    </select>
+  </label>
+  <label class="field field--inline">
+    <span class="label">Estado</span>
+    <select class="select" [(ngModel)]="filtrActivo">
+      <option value="">Todos</option>
+      <option value="activo">Activo</option>
+      <option value="inactivo">Inactivo</option>
+    </select>
+  </label>
+  <label class="field field--inline">
+    <span class="label">Buscar</span>
+    <input class="select" [(ngModel)]="buscar" placeholder="Nombre, categorÃ­a, flujoâ€¦" />
+  </label>
+  <button class="btn-ghost" type="button" (click)="limpiarFiltros()">Limpiar</button>
+</div>
+
+@if (error) {
+  <div class="status warn" role="alert">
+    <i class="bi bi-exclamation-triangle-fill"></i> {{ error }}
+    <button class="btn-ghost btn-small" type="button" (click)="cargarPlantillas()">Reintentar</button>
+  </div>
+}
+
+<article class="panel" aria-labelledby="co-cards-title">
+  <div class="panel__header">
+    <h3 id="co-cards-title">
+      Plantillas
+      @if (!cargando) {
+        <span class="badge badge--neutral">{{ plantillasFiltradas.length }}</span>
+      }
+    </h3>
+  </div>
+
+  @if (cargando) {
+    <app-loading message="Cargando plantillasâ€¦" />
+  }
+
+  @if (!cargando && !error && plantillasFiltradas.length === 0) {
+    <div class="empty-state">
+      <i class="bi bi-folder2-open"></i>
+      <p>No hay plantillas disponibles.</p>
+    </div>
+  }
+
+  @if (!cargando) {
+    <div class="soli-grid">
+      @for (p of plantillasFiltradas; track p.idPlantilla) {
+        <div class="soli-card">
+          <span class="soli-ico" aria-hidden="true">
+            <i class="bi bi-file-text-fill"></i>
+          </span>
+          <span class="soli-txt">
+            <span class="soli-title">{{ p.nombrePlantilla }}</span>
+            <span class="soli-desc">
+              {{ p.categoria }} Â· {{ p.nombreFlujo }} Â· {{ p.pasosTramite.length }} pasos Â· {{ p.diasResolucionEstimados }}d
+            </span>
+            @if (p.descripcionPlantilla) {
+              <span class="soli-desc">{{ p.descripcionPlantilla }}</span>
+            }
+            <span class="soli-badges">
+              @if (p.estaActivo) {
+                <span class="pill pill--success">Activo</span>
+              } @else {
+                <span class="pill pill--light">Inactivo</span>
+              }
+              @if (p.disponibleExternos) {
+                <span class="pill pill--info">Externos</span>
+              }
+            </span>
+            <span class="soli-actions">
+              <button class="pill pill--primary" type="button" (click)="abrirDetalle(p)">Ver detalle</button>
+            </span>
+          </span>
+        </div>
+      }
+    </div>
+  }
+</article>
+
+<!-- Modal detalle de plantilla -->
+@if (modalAbierto && plantillaSeleccionada) {
+  <div class="modal">
+    <div class="modal__backdrop" (click)="cerrarModal()"></div>
+    <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="det-modal-title">
+      <div class="modal__header">
+        <h3 id="det-modal-title">{{ plantillaSeleccionada.nombrePlantilla }}</h3>
+        <button class="btn-ghost" type="button" (click)="cerrarModal()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      <div class="modal__body">
+        <dl class="detail-list">
+          <dt>CategorÃ­a</dt><dd>{{ plantillaSeleccionada.categoria }}</dd>
+          <dt>Carrera</dt><dd>{{ plantillaSeleccionada.carrera }}</dd>
+          <dt>Flujo</dt><dd>{{ plantillaSeleccionada.nombreFlujo }}</dd>
+          <dt>DescripciÃ³n del flujo</dt><dd>{{ plantillaSeleccionada.descripcion }}</dd>
+          <dt>ResoluciÃ³n estimada</dt><dd>{{ plantillaSeleccionada.diasResolucionEstimados }} dÃ­a(s)</dd>
+          <dt>Disponible para externos</dt><dd>{{ plantillaSeleccionada.disponibleExternos ? 'SÃ­' : 'No' }}</dd>
+          <dt>Estado</dt><dd>{{ plantillaSeleccionada.estaActivo ? 'Activo' : 'Inactivo' }}</dd>
+        </dl>
+
+        <h4 class="mt-2">Pasos del trÃ¡mite</h4>
+        <ol class="timeline timeline--v">
+          @for (paso of plantillaSeleccionada.pasosTramite; track paso.idPaso) {
+            <li class="tl-item">
+              <div class="tl-dot"><i class="bi bi-circle-fill"></i></div>
+              <div class="tl-body">
+                <div class="tl-title">{{ paso.nombreEtapa }}</div>
+                <div class="tl-meta">
+                  Paso {{ paso.ordenPaso }} Â· SLA {{ paso.horasSla }}h
+                  @if (paso.rolRequerido) { Â· {{ paso.rolRequerido }} }
+                </div>
+                <div class="tl-desc">{{ paso.descripcionEtapa }}</div>
+              </div>
+            </li>
+          }
+        </ol>
+      </div>
+    </div>
+  </div>
+}
+
+
+
+

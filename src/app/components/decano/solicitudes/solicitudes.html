@@ -1,0 +1,97 @@
+﻿          <div class="seg-grid">
+            <article class="panel seg-left" aria-labelledby="seg-list-title">
+              <div class="panel__header">
+                <h3 id="seg-list-title">TrÃ¡mites vigentes</h3>
+                <label class="field field--inline">
+                  <span class="label">Buscar</span>
+                  <input id="seg-q" class="select" placeholder="#ID, estudiante, tÃ­tuloâ€¦" />
+                </label>
+              </div>
+              <ul id="seg-list" class="seg-list" aria-label="Lista de trÃ¡mites"></ul>
+            </article>
+
+            <article class="panel seg-right" aria-labelledby="seg-det-title">
+              <div class="panel__header">
+                <h3 id="seg-det-title">Detalle del trÃ¡mite</h3>
+                <span id="seg-det-id" class="seg-id"></span>
+              </div>
+
+              <div id="seg-empty" class="seg-empty">Selecciona un trÃ¡mite de la lista para ver detalles.</div>
+
+              <div id="seg-detail" class="seg-detail" hidden>
+                <div class="seg-summary">
+                  <div>
+                    <div class="seg-title" id="seg-title">â€”</div>
+                    <div class="seg-meta"><span id="seg-est">â€”</span> Â· <span id="seg-tipo">â€”</span> Â· <span id="seg-prio">â€”</span> Â· <span id="seg-estado">â€”</span></div>
+                  </div>
+                  <div class="seg-dates">
+                    <div><small>Creado</small><div id="seg-creado">â€”</div></div>
+                    <div><small>Actualizado</small><div id="seg-actual">â€”</div></div>
+                  </div>
+                </div>
+
+                <div class="seg-section">
+                  <h4 class="seg-h4">Archivos adjuntos</h4>
+                  <ul id="seg-files" class="files"></ul>
+                </div>
+
+                <div class="seg-section">
+                  <h4 class="seg-h4">Trazabilidad</h4>
+                  <ol id="seg-tl" class="timeline timeline--v"></ol>
+                </div>
+
+                <div id="seg-reject" class="seg-reject" hidden></div>
+
+                <div class="seg-actions">
+                  <button id="seg-next" class="btn-primary" type="button">Pasar a la siguiente etapa</button>
+                  <button id="seg-resol" class="btn-ghost" type="button" hidden>Generar resoluciÃ³n</button>
+                  <button id="seg-rechazar" class="btn-danger" type="button">Rechazar solicitud</button>
+                </div>
+              </div>
+            </article>
+          </div>
+
+        <!-- Modal: Vista previa de archivo -->
+        <div id="file-modal" class="modal" hidden>
+          <div class="modal__backdrop" data-close="1"></div>
+          <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="file-modal-title">
+            <div class="modal__header">
+              <h3 id="file-modal-title">Vista previa</h3>
+              <button id="file-close" class="btn-ghost" type="button"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="modal__body">
+              <div id="file-meta" style="margin-bottom:8px;color:#6b7280;font-size:12px"></div>
+              <div id="file-preview" style="height:360px;display:grid;place-items:center;background:#f8fafb;border:1px solid #e5e7eb;border-radius:10px;color:#6b7280">
+                No hay vista previa disponible para este archivo.
+              </div>
+              <div class="form-actions" style="margin-top:10px">
+                <button id="file-dl" class="btn-primary" type="button">Descargar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal: Motivo de rechazo -->
+        <div id="rej-modal" class="modal" hidden>
+          <div class="modal__backdrop" data-close="1"></div>
+          <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="rej-modal-title">
+            <div class="modal__header">
+              <h3 id="rej-modal-title">Rechazar solicitud</h3>
+              <button id="rej-close" class="btn-ghost" type="button"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="modal__body">
+              <label class="field field--col-2">
+                <span class="label">Motivo del rechazo</span>
+                <textarea id="rej-reason" class="textarea" placeholder="Explica brevemente el motivoâ€¦" required></textarea>
+              </label>
+              <div class="form-actions">
+                <button id="rej-cancel" type="button" class="btn-ghost">Cancelar</button>
+                <button id="rej-confirm" type="button" class="btn-danger">Rechazar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+

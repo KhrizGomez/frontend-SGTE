@@ -1,13 +1,13 @@
-<div class="soli-toolbar">
+﻿<div class="soli-toolbar">
   <div class="spacer"></div>
   <label class="field field--inline">
     <span class="label">Tipo</span>
     <select id="st-fil-tipo" class="select">
       <option value="">Todos</option>
-      <option>Certificados académicos</option>
+      <option>Certificados acadÃ©micos</option>
       <option>Cambio de carrera</option>
-      <option>Homologación</option>
-      <option>Baja de matrícula</option>
+      <option>HomologaciÃ³n</option>
+      <option>Baja de matrÃ­cula</option>
       <option>Otro</option>
     </select>
   </label>
@@ -26,12 +26,12 @@
     <select id="st-fil-estado" class="select">
       <option value="">Todos</option>
       <option>Disponible</option>
-      <option>Requiere revisión</option>
+      <option>Requiere revisiÃ³n</option>
     </select>
   </label>
   <label class="field field--inline">
     <span class="label">Buscar</span>
-    <input id="st-buscar" class="select" placeholder="Título, tipo…" />
+    <input id="st-buscar" class="select" placeholder="TÃ­tulo, tipoâ€¦" />
   </label>
   <button id="st-fil-clear" class="btn-ghost" type="button" title="Limpiar filtros">Limpiar</button>
 </div>
@@ -43,14 +43,14 @@
   <div class="modal__backdrop" data-close="1"></div>
   <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="st-modal-title">
     <div class="modal__header">
-      <h3 id="st-modal-title">Trámite</h3>
-      <button id="st-close" class="btn-ghost" type="button">✕</button>
+      <h3 id="st-modal-title">TrÃ¡mite</h3>
+      <button id="st-close" class="btn-ghost" type="button">âœ•</button>
     </div>
     <div class="modal__body">
       <form id="st-form" class="form-grid form-modal" autocomplete="off">
         <input type="hidden" id="st-id" />
         <label class="field field--col-2">
-          <span class="label">Trámite</span>
+          <span class="label">TrÃ¡mite</span>
           <input id="st-tramite" class="select" readonly />
         </label>
         <div id="st-cert-wrap" class="field field--col-2" hidden>
@@ -58,33 +58,33 @@
             <label class="field">
               <span class="label">Tipo de certificado</span>
               <select id="st-cert-tipo" class="select">
-                <option selected>Seleccione una opción</option>
+                <option selected>Seleccione una opciÃ³n</option>
                 <option>Certificado de notas</option>
-                <option>Récord académico</option>
+                <option>RÃ©cord acadÃ©mico</option>
                 <option>Constancia de estudios</option>
               </select>
             </label>
           </div>
         </div>
-        <!-- Campos adicionales (dependen del trámite) -->
+        <!-- Campos adicionales (dependen del trÃ¡mite) -->
         <div id="st-extra" class="extra-grid field--col-2"></div>
         <div class="field field--col-2">
           <span class="label">Tiempo estimado (ETA)</span>
-          <input id="st-eta" class="select" readonly placeholder="—" />
+          <input id="st-eta" class="select" readonly placeholder="â€”" />
         </div>
         <div class="field field--col-2">
-          <span class="label">Requisitos del trámite</span>
+          <span class="label">Requisitos del trÃ¡mite</span>
           <ul id="st-reqs" class="files" aria-label="Requisitos previos"></ul>
         </div>
         <label id="st-obs-wrap" class="field field--col-2">
           <span class="label">Observaciones</span>
-          <textarea id="st-obs" class="textarea" placeholder="Descripción"></textarea>
+          <textarea id="st-obs" class="textarea" placeholder="DescripciÃ³n"></textarea>
         </label>
         <div id="st-attach-wrap" class="field field--col-2">
           <span class="label">Adjuntar documentos</span>
           <div id="st-dropzone" class="dropzone" tabindex="0" role="button" aria-label="Arrastra o selecciona archivos">
-            <div class="dz-ico">📄</div>
-            <div class="dz-text">Arrastra o selecciona los archivos aquí</div>
+            <div class="dz-ico">ðŸ“„</div>
+            <div class="dz-text">Arrastra o selecciona los archivos aquÃ­</div>
             <input id="st-file-input" type="file" multiple hidden />
           </div>
           <div id="st-dz-list" class="dz-list"></div>
@@ -97,3 +97,5 @@
     </div>
   </div>
 </div>
+
+
