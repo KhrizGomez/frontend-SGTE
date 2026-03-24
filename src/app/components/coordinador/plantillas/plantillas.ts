@@ -1,14 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AutenticacionService } from '../../../services/autenticacion.service';
 import { TramitesService } from '../../../services/tramites.service';
-import { PlantillaCarrera } from '../../../models/tramite-detalle.model';
+import { LoadingService } from '../../../services/loading.service';
+import { PlantillaCarrera } from '../../../models/coordinador/tramite-detalle.model';
+import { LoadingComponent } from '../../shared/loading/loading.component';
 
 @Component({
   selector: 'app-plantillas',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, LoadingComponent],
   templateUrl: './plantillas.html',
   styleUrl: './plantillas.css',
 })
@@ -28,6 +30,8 @@ export class Plantillas implements OnInit {
   constructor(
     private tramitesService: TramitesService,
     private authService: AutenticacionService,
+    private loadingService: LoadingService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -43,15 +47,20 @@ export class Plantillas implements OnInit {
 
     this.cargando = true;
     this.error = '';
+    this.cdr.detectChanges();
 
-    this.tramitesService.getPlantillasPorCarrera(usuario.idCarrera).subscribe({
+    const peticion$ = this.tramitesService.getPlantillasPorCarrera(usuario.idCarrera);
+
+    this.loadingService.withMinDuration(peticion$).subscribe({
       next: (data) => {
         this.plantillas = data;
         this.cargando = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.error = 'Error al cargar las plantillas. Intente nuevamente.';
         this.cargando = false;
+        this.cdr.detectChanges();
       },
     });
   }

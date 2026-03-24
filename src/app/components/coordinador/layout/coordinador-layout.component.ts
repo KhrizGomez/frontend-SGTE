@@ -5,6 +5,7 @@ import {AutenticacionService} from '../../../services/autenticacion.service';
 import {AutenticacionRespuesta} from '../../../models/autenticacion.model';
 import {AiChatComponent} from '../../shared/ai-chat/ai-chat.component';
 import {ChatbotConfig} from '../../../models/ai/chatbot.model';
+import {AutenticacionRespuesta} from '../../../models/general/autenticacion.model';
 
 @Component({
     selector: 'app-coordinador-layout',
