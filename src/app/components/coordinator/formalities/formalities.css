@@ -21,3 +21,21 @@
 .btn .dropdown-toggle{
     max-width: 200px;
 }
+
+.tramite-card {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.tramite-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.08);
+}
+
+.detalle-bloque {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 0.5rem;
+    padding: 0.9rem;
+    background-color: #f8f9fa;
+}
+

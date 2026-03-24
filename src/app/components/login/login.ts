@@ -16,13 +16,13 @@ declare var bootstrap: any;
 })
 export class Login implements AfterViewInit {
 
-    // Login 
+    // Login
     nombreUsuario: string = '';
     contrasena: string = '';
     loginError: string = '';
     loginLoading: boolean = false;
 
-    // Registro 
+    // Registro
     estudianteExterno: Boolean = false;
     cedula: string = '';
     nombres: string = '';
@@ -35,7 +35,7 @@ export class Login implements AfterViewInit {
         private userRegistrationService: UserRegistrationService
     ) { }
 
-    // Auth login 
+    // Auth login
     iniciarSesion() {
         this.loginError = '';
 
@@ -70,7 +70,7 @@ export class Login implements AfterViewInit {
         });
     }
 
-    // Modal crear cuenta 
+    // Modal crear cuenta
     abrirModalCreateAccount() {
         const modalElement = document.getElementById('modalCreateAccount');
         if (modalElement) {
@@ -92,6 +92,7 @@ export class Login implements AfterViewInit {
                         next: () => alert('Usuario registrado correctamente'),
                         error: () => alert('Error al registrar usuario')
                     });
+                    console.log(data);
                 },
                 error: () => alert('Error al validar usuario. Verifique la cédula')
             });

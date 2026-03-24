@@ -63,7 +63,11 @@
             <!-- Boton para agregar nuevo tramite -->
 
             <div class="mt-auto ms-auto">
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalNuevoTramite">
+                <button
+                    class="btn btn-primary"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modalTramite"
+                    (click)="abrirModalRegistro()">
                     Nuevo tramite
                 </button>
             </div>
@@ -77,14 +81,27 @@
         </h4>
 
         <div class="mt-4">
+            @if (estaCargando) {
+                <div class="alert alert-info mb-0">Cargando tramites...</div>
+            }
+
+            @if (errorCarga) {
+                <div class="alert alert-danger mb-0">{{ errorCarga }}</div>
+            }
+
             <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4">
-                @for (tramite of listaTramites; track tramite.id) {
+                @for (tramite of listaTramites; track tramite.idTipoTramite) {
 
                     <!-- Generacion de tarjeta -->
 
                     <div class="col">
-                        <div class="card h-100 border-1 bg-light rounded-3 p-3 shadow-sm">
-                            <div class="d-flex gap-3 h-100">
+                        <button
+                            class="card tramite-card h-100 border-1 bg-light rounded-3 p-3 shadow-sm text-start"
+                            type="button"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalTramite"
+                            (click)="abrirModalDetalle(tramite)">
+                            <div class="d-flex gap-3 h-100 w-100">
 
                                 <div class="bg-success text-white rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 50px; height: 50px;">
                                     <i class="bi bi-file-earmark-text fs-4"></i>
@@ -94,25 +111,20 @@
 
                                 <div class="d-flex flex-column flex-grow-1">
                                     <h6 class="fw-bold text-dark mb-1 lh-sm" style="font-size: 1rem;">
-                                        {{ tramite.titulo }}
+                                        {{ tramite.nombreTramite }}
                                     </h6>
                                     <small class="text-secondary lh-sm mb-3" style="font-size: 0.8rem;">
-                                        {{ tramite.categoria }} - {{ tramite.prioridad }} - {{ tramite.estado }} - {{ tramite.fechaVence }}
+                                        {{ tramite.categoria }} - {{ tramite.nombreFlujo }} - v{{ tramite.version }}
                                     </small>
-
-                                    <!--<div class="d-flex gap-2 mt-auto">
-                                        <button class="btn btn-success btn-sm rounded-pill px-3 fw-bold" style="font-size: 0.8rem;">
-                                            Editar
-                                        </button>
-                                        <button class="btn btn-secondary text-dark bg-opacity-10 border-0 btn-sm rounded-pill px-3 fw-bold" style="background-color: #e2e8f0; font-size: 0.8rem;">
-                                            Duplicar
-                                        </button>
-                                    </div>-->
+                                    <small class="text-muted lh-sm" style="font-size: 0.78rem;">
+                                        Cierre: {{ tramite.fechaCierre || 'Sin fecha' }} - Estado:
+                                        {{ tramite.estaActivo ? 'Activo' : 'Inactivo' }}
+                                    </small>
 
                                 </div>
                             </div>
 
-                        </div>
+                        </button>
                     </div>
                 }
             </div>
@@ -124,7 +136,7 @@
 
 <!-- Modal para registrar un nuevo tramite -->
 
-<div class="modal fade" id="modalNuevoTramite" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="tituloModal" aria-hidden="true">
+<div class="modal fade" id="modalTramite" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="tituloModal" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-personalizado">
         <div class="modal-content border-0 shadow">
 
@@ -133,10 +145,14 @@
             <div class="modal-header bg-light border-bottom pt-3 ps-4 pe-4 pb-1 align-items-center">
                 <div class="d-inline">
                     <h5 class="modal-title fw-bold text-primary text-black" id="tituloModal">
-                        Registrar nuevo tramite
+                        {{ modalModo === 'registro' ? 'Registrar nuevo tramite' : 'Detalle del tramite' }}
                     </h5>
                     <p class="text-muted">
-                        Complete los datos para iniciar un nuevo tramite en el sistema.
+                        {{
+                            modalModo === 'registro'
+                                ? 'Complete los datos para iniciar un nuevo tramite en el sistema.'
+                                : 'Visualice los datos completos del tramite seleccionado.'
+                        }}
                     </p>
                 </div>
                 <div class="align-items-center ms-auto">
@@ -147,45 +163,209 @@
             <!-- Cuerpo del modal -->
 
             <div class="modal-body p-4">
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Titulo del tramite</label>
-                    <input type="text" class="form-control" placeholder="...">
-                </div>
+                @if (mensajeGuardado) {
+                    <div class="alert alert-success">{{ mensajeGuardado }}</div>
+                }
+                @if (errorGuardado) {
+                    <div class="alert alert-danger">{{ errorGuardado }}</div>
+                }
 
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Descripcion</label>
-                    <input type="text" class="form-control" placeholder="...">
-                </div>
+                @if (modalModo === 'registro') {
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Titulo del tramite</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            placeholder="Ej. Certificado de Matricula"
+                            [(ngModel)]="formularioRegistro.nombreTramite"
+                            name="nombreTramite" />
+                    </div>
 
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Categoria</label>
-                    <select class="form-select" [(ngModel)]="categoriaTramiteSeleccion" name="tipoTramite">
-                        <option value="" disabled selected>Seleccione un trámite...</option>
-                        @for (item of listaCategoriasTramites; track item.id_categoria) {
-                            <option [value]="item.id_categoria">
-                                {{ item.nombre_categoria }}
-                            </option>
-                        }
-                    </select>
-                </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Descripcion</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            placeholder="Descripcion del tramite"
+                            [(ngModel)]="formularioRegistro.descripcionTramite"
+                            name="descripcionTramite" />
+                    </div>
 
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Seguimiento</label>
-                    <select class="form-select" [(ngModel)]="seguimientoTramiteSelecccion" name="tipoTramite">
-                        <option value="" disabled selected>Seleccione un flujo...</option>
-                        @for (item of listaSeguimientosTramites; track item.id_flujo) {
-                            <option [value]="item.id_flujo">
-                                {{ item.nombre_flujo }}
-                            </option>
-                        }
-                    </select>
-                </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Categoria</label>
+                        <select
+                            class="form-select"
+                            [(ngModel)]="formularioRegistro.idCategoria"
+                            name="idCategoria">
+                            <option [ngValue]="null">Seleccione una categoria...</option>
+                            @for (item of listaCategoriasTramites; track item.idCategoria) {
+                                <option [ngValue]="item.idCategoria">
+                                    {{ item.nombreCategoria }}
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Seguimiento</label>
+                        <select class="form-select" [(ngModel)]="formularioRegistro.idFlujo" name="idFlujo">
+                            <option [ngValue]="null">Seleccione un flujo...</option>
+                            @for (item of listaSeguimientosTramites; track item.idFlujo) {
+                                <option [ngValue]="item.idFlujo">
+                                    {{ item.nombreFlujo }}
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Fecha apertura</label>
+                            <input
+                                type="date"
+                                class="form-control"
+                                [(ngModel)]="formularioRegistro.fechaApertura"
+                                name="fechaApertura" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Fecha cierre</label>
+                            <input
+                                type="date"
+                                class="form-control"
+                                [(ngModel)]="formularioRegistro.fechaCierre"
+                                name="fechaCierre" />
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mt-1">
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Dias estimados</label>
+                            <input
+                                type="number"
+                                min="0"
+                                class="form-control"
+                                [(ngModel)]="formularioRegistro.diasEstimados"
+                                name="diasEstimados" />
+                        </div>
+                        <div class="col-md-8 d-flex gap-4 align-items-end">
+                            <div class="form-check">
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    id="permiteExtension"
+                                    [(ngModel)]="formularioRegistro.permiteExtension"
+                                    name="permiteExtension" />
+                                <label class="form-check-label" for="permiteExtension">
+                                    Permite extension
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    id="disponibleExternos"
+                                    [(ngModel)]="formularioRegistro.disponibleExternos"
+                                    name="disponibleExternos" />
+                                <label class="form-check-label" for="disponibleExternos">
+                                    Disponible para externos
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                } @else {
+                    @if (tramiteSeleccionado) {
+                        <div class="detalle-bloque">
+                            <h6 class="fw-semibold mb-1">{{ tramiteSeleccionado.nombreTramite }}</h6>
+                            <p class="text-muted mb-2">{{ tramiteSeleccionado.descripcionTramite }}</p>
+                            <div class="small text-secondary">
+                                Categoria: {{ tramiteSeleccionado.categoria }} | Flujo:
+                                {{ tramiteSeleccionado.nombreFlujo }} | Version:
+                                {{ tramiteSeleccionado.version }}
+                            </div>
+                            <div class="small text-secondary">
+                                Apertura: {{ tramiteSeleccionado.fechaApertura || 'N/A' }} | Cierre:
+                                {{ tramiteSeleccionado.fechaCierre || 'N/A' }} | Dias:
+                                {{ tramiteSeleccionado.diasEstimados }}
+                            </div>
+                            <div class="small text-secondary">
+                                Activo: {{ tramiteSeleccionado.estaActivo ? 'Si' : 'No' }} | Externos:
+                                {{ tramiteSeleccionado.disponibleExternos ? 'Si' : 'No' }}
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <h6 class="fw-semibold">Pasos del tramite</h6>
+                            @if (tramiteSeleccionado.pasosTramite.length === 0) {
+                                <p class="text-muted mb-0">Sin pasos configurados.</p>
+                            } @else {
+                                <div class="table-responsive">
+                                    <table class="table table-sm align-middle">
+                                        <thead>
+                                        <tr>
+                                            <th>Orden</th>
+                                            <th>Etapa</th>
+                                            <th>Rol</th>
+                                            <th>Horas SLA</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                            @for (paso of tramiteSeleccionado.pasosTramite; track paso.idPaso) {
+                                                <tr>
+                                                    <td>{{ paso.ordenPaso }}</td>
+                                                    <td>{{ paso.nombreEtapa }}</td>
+                                                    <td>{{ paso.rolRequerido || 'Sin rol' }}</td>
+                                                    <td>{{ paso.horasSla }}</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="mt-4">
+                            <h6 class="fw-semibold">Requisitos del tramite</h6>
+                            @if (tramiteSeleccionado.requisitosTramite.length === 0) {
+                                <p class="text-muted mb-0">Sin requisitos configurados.</p>
+                            } @else {
+                                <div class="table-responsive">
+                                    <table class="table table-sm align-middle">
+                                        <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Requisito</th>
+                                            <th>Tipo</th>
+                                            <th>Obligatorio</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                            @for (requisito of tramiteSeleccionado.requisitosTramite; track requisito.idRequisito) {
+                                                <tr>
+                                                    <td>{{ requisito.numeroOrden }}</td>
+                                                    <td>{{ requisito.nombreRequisito }}</td>
+                                                    <td>{{ requisito.tipoDocumento }}</td>
+                                                    <td>{{ requisito.esObligatorio ? 'Si' : 'No' }}</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                        </div>
+                    } @else {
+                        <p class="text-muted mb-0">No hay un tramite seleccionado.</p>
+                    }
+                }
             </div>
 
 
             <div class="modal-footer border-top-0 bg-light">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary">Guardar Trámite</button>
+                @if (modalModo === 'registro') {
+                    <button type="button" class="btn btn-primary" (click)="guardarTramite()" [disabled]="guardando">
+                        {{ guardando ? 'Guardando...' : 'Guardar Trámite' }}
+                    </button>
+                }
             </div>
 
         </div>
