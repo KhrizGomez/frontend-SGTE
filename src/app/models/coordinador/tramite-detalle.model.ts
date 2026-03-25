@@ -46,6 +46,7 @@ export interface TipoTramiteDetalle {
     diasEstimados: number;
     estaActivo: boolean;
     disponibleExternos: boolean;
+    pasos: number | null;
 }
 
 export interface RegistrarTipoTramitePayload {
@@ -84,6 +85,7 @@ export interface PlantillaCarrera {
     diasResolucionEstimados: number;
     estaActivo: boolean;
     disponibleExternos: boolean;
+    pasos: number | null;
 }
 
 export interface CategoriaTramite {

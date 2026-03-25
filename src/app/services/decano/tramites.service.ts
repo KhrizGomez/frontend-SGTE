@@ -1,4 +1,4 @@
-﻿import { Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { PlantillaCarrera, TipoTramiteDetalle, RegistrarTipoTramitePayload } from '../../models/decano/tramite-detalle.model';
@@ -52,6 +52,7 @@ export class TramitesService {
             diasEstimados: item.diasEstimados ?? 0,
             estaActivo: item.estaActivo ?? false,
             disponibleExternos: item.disponibleExternos ?? false,
+            pasos: item.pasos ?? null,
         };
     }
 }

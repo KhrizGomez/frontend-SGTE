@@ -1,4 +1,4 @@
-﻿<div class="soli-toolbar">
+<div class="soli-toolbar">
   <div class="spacer"></div>
   <label class="field field--inline">
     <span class="label">CategorÃ­a</span>
@@ -62,7 +62,7 @@
           <span class="soli-txt">
             <span class="soli-title">{{ p.nombrePlantilla }}</span>
             <span class="soli-desc">
-              {{ p.categoria }} Â· {{ p.nombreFlujo }} Â· {{ p.pasosTramite.length }} pasos Â· {{ p.diasResolucionEstimados }}d
+              {{ p.categoria }} Â· {{ p.nombreFlujo }} Â· {{ p.pasos ?? p.pasosTramite.length }} pasos Â· {{ p.diasResolucionEstimados }}d
             </span>
             @if (p.descripcionPlantilla) {
               <span class="soli-desc">{{ p.descripcionPlantilla }}</span>
