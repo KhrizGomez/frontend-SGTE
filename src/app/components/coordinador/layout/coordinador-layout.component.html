@@ -17,7 +17,7 @@
         <div class="avatar text-white" style="background:#04873C">{{ getIniciales() }}</div>
         <div class="user__info">
           <div class="user__name">{{ getNombre() }}</div>
-          <div class="user__role">Coordinador(a)</div>
+          <div class="user__role text-capitalize">{{ getRol() }}</div>
         </div>
         <button class="power" title="Cerrar sesión" aria-label="Cerrar sesión" (click)="cerrarSesion()">
           <i class="bi bi-power"></i>

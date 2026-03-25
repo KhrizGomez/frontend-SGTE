@@ -52,6 +52,10 @@ export class CoordinadorLayoutComponent implements OnInit, AfterViewInit {
         return `${this.usuarioActual?.nombres?.split(' ', 1) ?? ''} ${this.usuarioActual?.apellidos?.split(' ', 1) ?? ''}`;
     }
 
+    getRol(){
+        return this.usuarioActual?.rol;
+    }
+
     getIniciales(){
         return `${this.usuarioActual?.nombres?.substring(0, 1) ?? ''}${this.usuarioActual?.apellidos?.substring(0, 1) ?? ''}`;
     }

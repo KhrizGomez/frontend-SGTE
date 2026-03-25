@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import {
+    PlantillaCarrera,
     RegistrarTipoTramitePayload,
     TipoTramiteDetalle,
 } from '../models/tramite-detalle.model';
@@ -19,6 +20,12 @@ export class TramitesService {
         return this.http
             .get<TipoTramiteDetalle[]>(`${this.apiBaseUrl}/detalles`)
             .pipe(map((items) => (items ?? []).map((item) => this.normalizarTipoTramite(item))));
+    }
+
+    getPlantillasPorCarrera(idCarrera: number): Observable<PlantillaCarrera[]> {
+        return this.http
+            .get<PlantillaCarrera[]>(`${environment.apiUrl}/api/tramites/detalles/carrera/${idCarrera}`)
+            .pipe(map((items) => items ?? []));
     }
 
     registrarTipoTramite(payload: RegistrarTipoTramitePayload): Observable<TipoTramiteDetalle> {
