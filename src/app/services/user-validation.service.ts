@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserValidationService {
-  private apiUrl = 'http://localhost:9090/api/validation/user';
+  private readonly apiUrl = `${environment.validationApiUrl}/api/validation/usuario`;
 
   constructor(private http: HttpClient) { }
 

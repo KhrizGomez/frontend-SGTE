@@ -5,7 +5,7 @@ import {
     RegistrarTipoTramitePayload,
     TipoTramiteDetalle,
 } from '../models/tramite-detalle.model';
-import { environment } from '../../environments/environment.development';
+import { environment } from '../../environments/environment';
 
 @Injectable({
     providedIn: 'root',

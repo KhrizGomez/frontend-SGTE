@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { LoginRequest, LoginResponse } from '../models/auth.model';
-import { environment } from '../../environments/environment.development';
+import { environment } from '../../environments/environment';
 
 const SESSION_KEY = 'sgte_user';
 
@@ -16,7 +16,7 @@ const ROLE_ROUTES: Record<string, string> = {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
-    private apiUrl = environment.apiUrl + '/api/sistema/auth/login';
+    private apiUrl = environment.apiUrl + '/api/sistema/autenticacion/iniciar-sesion';
 
     constructor(private http: HttpClient) { }
 

@@ -21,13 +21,6 @@
                     autocomplete="current-password" required />
             </div>
 
-            <!-- Mensaje de error -->
-            @if (loginError) {
-            <div class="alert alert-danger py-2 rounded-4 small mb-3">
-                <i class="bi bi-exclamation-circle-fill me-1"></i>{{ loginError }}
-            </div>
-            }
-
             <button type="submit" class="btn btn-success btn-lg w-100 rounded-4 mb-2" [disabled]="loginLoading">
                 @if (loginLoading) {
                 <span class="spinner-border spinner-border-sm me-2"></span>Ingresando...
@@ -84,15 +77,41 @@
                                 class="form-control form-control-lg rounded-4" [(ngModel)]="apellidos" required />
                         </div>
                         }
+
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-primary" (click)="registrarCuenta()">Registrar</button>
+                    <button type="button" class="btn btn-primary" (click)="registrarCuenta()"
+                        [disabled]="registroLoading">
+                        @if (registroLoading) {
+                        <span class="spinner-border spinner-border-sm me-2"></span>Registrando...
+                        } @else {
+                        Registrar
+                        }
+                    </button>
                 </div>
             </div>
         </div>
     </div>
-
+    <div class="modal fade" id="modalMensaje" tabindex="-1" aria-labelledby="modalMensajeLabel" aria-hidden="true" style="z-index: 1060;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow-lg">
+                <div class="modal-header border-0 rounded-top-4" [ngClass]="esErrorMensaje ? 'bg-danger text-white' : 'bg-success text-white'">
+                    <h1 class="modal-title fs-5" id="modalMensajeLabel">
+                        <i class="bi me-2" [ngClass]="esErrorMensaje ? 'bi-exclamation-triangle-fill' : 'bi-check-circle-fill'"></i>
+                        {{ mensajeTitulo }}
+                    </h1>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <p class="mb-0 fs-5">{{ mensajeContenido }}</p>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn" [ngClass]="esErrorMensaje ? 'btn-danger' : 'btn-success'" data-bs-dismiss="modal">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </main>

@@ -1,0 +1,21 @@
+[
+  {
+    "context": [
+      "/api/sistema",
+      "/api/tramites"
+    ],
+    "target": "http://localhost:8080",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
+  {
+    "context": [
+      "/api/validation"
+    ],
+    "target": "http://localhost:9090",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+]
