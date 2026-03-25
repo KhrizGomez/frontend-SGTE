@@ -5,6 +5,7 @@ import {AutenticacionService } from '../../../services/general/autenticacion.ser
 import {AutenticacionRespuesta} from '../../../models/general/autenticacion.model';
 import {AiChatComponent} from '../../shared/ai-chat/ai-chat.component';
 import {ChatbotConfig} from '../../../models/ai/chatbot.model';
+import { ToastService } from '../../../services/general/toast.service';
 
 
 @Component({
@@ -30,7 +31,7 @@ export class CoordinadorLayoutComponent implements OnInit, AfterViewInit {
         ],
     };
 
-    constructor(private autenticacionService: AutenticacionService) {}
+    constructor(private autenticacionService: AutenticacionService, private toastService: ToastService) {}
 
     ngOnInit() {
         this.usuarioActual = this.autenticacionService.obtenerUsuarioActual();
@@ -42,27 +43,9 @@ export class CoordinadorLayoutComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit(): void {
-        const pushContainer = document.getElementById('push');
-        function pushNotification(title: string, msg: string, id?: string){
-          if(!pushContainer) return;
-          const toast = document.createElement('div');
-          toast.className = 'push-toast';
-          toast.innerHTML = `<strong>${title}</strong><div>${msg}</div>`;
-          toast.addEventListener('click', ()=> {
-            if(id) {
-              const sb = document.getElementById('status');
-              if(sb) { sb.textContent='Abriendo: ' + id; sb.className='status success'; sb.hidden=false; setTimeout(()=>sb.hidden=true, 2600); }
-              window.location.href = '/coordinacion/solicitudes';
-            }
-            toast.remove();
-          });
-          pushContainer.appendChild(toast);
-          setTimeout(()=> { if(toast.parentNode) toast.remove(); }, 5000);
-        }
-
         if (!sessionStorage.getItem('demoPushShown')) {
           setTimeout(()=>{
-            pushNotification('Nuevo trámite', 'Juan Pérez ha solicitado Cambio de carrera', 'C-2111');
+            this.toastService.show('Nuevo trámite', 'Juan Pérez ha solicitado Cambio de carrera', 'info');
             sessionStorage.setItem('demoPushShown', 'true');
           }, 8000);
         }

@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { of } from 'rxjs';
 import { LoadingService } from '../../../services/general/loading.service';
 import { LoadingComponent } from '../../shared/loading/loading.component';
+import { ToastService } from '../../../services/general/toast.service';
 
 interface Notificacion {
   id: string;
@@ -72,7 +73,7 @@ export class EstudianteNotificaciones implements OnInit {
   notificacionSeleccionada = signal<Notificacion | null>(null);
   showModal = signal(false);
 
-  constructor(private router: Router, private loadingService: LoadingService) {}
+  constructor(private router: Router, private loadingService: LoadingService, private toastService: ToastService) {}
 
   ngOnInit() {
     this.cargarNotificaciones();
@@ -141,7 +142,7 @@ export class EstudianteNotificaciones implements OnInit {
 
   guardarPrefs() {
     localStorage.setItem('sgte_notif_prefs', JSON.stringify(this.prefs()));
-    alert('Preferencias guardadas exitosamente.');
+    this.toastService.show('Éxito', 'Preferencias guardadas exitosamente.', 'success');
   }
 
   restablecerPrefs() {

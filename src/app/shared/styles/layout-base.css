@@ -160,17 +160,22 @@
   position: relative;
 }
 
-.top {
-  display: flex;
-  align-items: center;
+.page-header {
   margin-bottom: 32px;
 }
 
-.top h1 {
-  margin: 0;
-  font-size: clamp(var(--layout-type-xl), 3vw, 2.2rem);
+.page-header h2 {
+  font-size: clamp(1.8rem, 3vw, 2.2rem);
   font-weight: 800;
+  color: #1a1a1a;
+  margin: 0 0 8px 0;
   letter-spacing: -0.02em;
+}
+
+.page-header p {
+  font-size: 1.05rem;
+  color: #686860;
+  margin: 0;
 }
 
 .status {

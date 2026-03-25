@@ -1,14 +1,27 @@
 <div class="toast-container">
   @for (toast of toastService.toasts(); track toast) {
-    <div class="toast" [ngClass]="toast.type" role="alert" aria-live="assertive" aria-atomic="true">
-      <div class="toast-header">
-        <strong class="me-auto">{{ toast.title }}</strong>
-        <button type="button" class="btn-close" (click)="remove(toast)" aria-label="Close">
-            <i class="bi bi-x"></i>
-        </button>
+    <div class="toast-card" [ngClass]="toast.type" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-icon-wrap">
+        @if (toast.type === 'success') {
+          <i class="bi bi-check-circle-fill"></i>
+        } @else if (toast.type === 'error') {
+          <i class="bi bi-x-circle-fill"></i>
+        } @else if (toast.type === 'warning') {
+          <i class="bi bi-exclamation-triangle-fill"></i>
+        } @else {
+          <i class="bi bi-info-circle-fill"></i>
+        }
       </div>
-      <div class="toast-body">
-        {{ toast.message }}
+      <div class="toast-content">
+        <div class="toast-header-custom">
+          <strong>{{ toast.title }}</strong>
+          <button type="button" class="btn-ghost-icon" (click)="remove(toast)" aria-label="Close">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+        <div class="toast-body-custom">
+          {{ toast.message }}
+        </div>
       </div>
     </div>
   }

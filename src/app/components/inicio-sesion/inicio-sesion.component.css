@@ -3,20 +3,15 @@
 }
 
 .login-shell {
-    --notion-bg: #f7f7f5;
-    --notion-panel: #ffffff;
-    --notion-border: #e8e8e4;
-    --notion-text: #262622;
-    --notion-muted: #717169;
-    --notion-primary: #198d30;
-    --notion-primary-hover: #137126;
-    --type-title: clamp(var(--type-xl, 1.875rem), 3.1vw, 2.35rem);
-    --type-body: var(--type-md, 1rem);
-    --type-label: var(--type-sm, 0.9375rem);
-    --type-meta: var(--type-xs, 0.875rem);
+    --notion-primary: #0f6a1d;
+    --notion-primary-hover: #0b5015;
+    --type-title: clamp(1.875rem, 3vw, 2.5rem);
+    --type-body: 1rem;
+    --type-label: 0.9375rem;
+    --type-meta: 0.875rem;
     position: relative;
     min-height: 100dvh;
-    background: var(--notion-bg);
+    background: #ffffff;
     overflow: hidden;
     font-family: 'Manrope', 'Segoe UI Variable', sans-serif;
     font-size: var(--type-body);
@@ -24,122 +19,107 @@
 }
 
 .paper-bg {
-    position: absolute;
-    inset: 0;
-    background:
-        radial-gradient(circle at 14% 20%, rgba(25, 141, 48, 0.08), transparent 32%),
-        radial-gradient(circle at 84% 78%, rgba(25, 141, 48, 0.05), transparent 24%);
-    pointer-events: none;
+    display: none; /* Removed for a cleaner split screen */
 }
 
 .login-wrapper {
     position: relative;
     z-index: 1;
     min-height: 100dvh;
-    width: min(1040px, calc(100vw - 2.4rem));
-    margin: 0 auto;
+    width: 100%;
+    margin: 0;
     display: grid;
-    grid-template-columns: minmax(340px, 470px) minmax(260px, 1fr);
-    align-items: center;
-    gap: 5vw;
+    grid-template-columns: 1fr 1.1fr; /* Left form, Right brand */
+    align-items: stretch;
 }
 
 .login-card {
-    background: var(--notion-panel);
-    border: 1px solid var(--notion-border);
-    border-radius: 16px;
-    box-shadow: 0 20px 46px rgba(15, 32, 20, 0.07);
-    padding: clamp(1.2rem, 4vw, 2rem);
+    background: #ffffff;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    padding: clamp(2rem, 5vw, 4rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 440px; /* Reduced for better proportion */
+    margin: 0 auto;
+    width: 100%;
 }
 
 .login-header {
-    margin-bottom: 1.2rem;
-}
-
-.brand-logo {
-    width: 100%;
-    height: auto;
-    display: block;
-}
-
-.workspace-chip {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    height: 1.65rem;
-    padding: 0 0.72rem;
-    border-radius: 999px;
-    border: 1px solid #dfe7df;
-    background: #f2faf3;
-    color: #2f6d3e;
-    font-size: 0.77rem;
-    font-weight: 700;
-    letter-spacing: 0.03em;
-    margin-bottom: 0.85rem;
+    margin-bottom: 2rem;
+    text-align: center;
 }
 
 .login-header h1 {
     font-size: var(--type-title);
     line-height: 1.1;
     font-weight: 800;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.03em;
     margin: 0;
-    color: var(--notion-text);
+    color: #1a1a1a;
 }
 
 .login-header p {
-    color: var(--notion-muted);
-    margin: 0.55rem 0 0;
-    font-size: var(--type-body);
+    color: #686860;
+    margin: 0.75rem 0 0;
+    font-size: 1.05rem;
 }
 
 .login-form {
     display: flex;
     flex-direction: column;
-    gap: var(--space-3, 0.75rem);
+    gap: 1rem;
 }
 
 .login-form label {
     font-size: var(--type-label);
-    color: #4f4f48;
+    color: #31312c;
     font-weight: 700;
     margin-top: 0.25rem;
 }
 
 .login-form .form-control {
-    border-radius: 10px;
-    border: 1px solid #deded8;
+    border-radius: 12px;
+    border: 1px solid #d4d4d0;
     background: #ffffff;
     color: #2b2b27;
-    min-height: 3.05rem;
-    padding: var(--space-3, 0.75rem) calc(var(--space-4, 1rem) - 1px);
-    font-size: var(--type-body);
-    line-height: 1.35;
-}
-
-.login-form .form-control.form-control-lg {
-    font-size: var(--type-body);
+    min-height: 3.2rem;
+    padding: 0.85rem 1rem;
+    font-size: 1.05rem;
+    line-height: 1.4;
+    transition: all 0.2s ease;
 }
 
 .login-form .form-control::placeholder {
-    color: #96968d;
+    color: #a3a39e;
 }
 
 .login-form .form-control:focus {
     background: #ffffff;
-    border-color: #8ec19a;
-    box-shadow: 0 0 0 0.18rem rgba(25, 141, 48, 0.16);
+    border-color: var(--notion-primary);
+    box-shadow: 0 0 0 0.25rem rgba(15, 106, 29, 0.15);
     color: #2b2b27;
+    outline: none;
+}
+
+/* Fix browser autocomplete blue/yellow background */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active{
+    -webkit-box-shadow: 0 0 0 50px white inset !important;
+    -webkit-text-fill-color: #2b2b27 !important;
 }
 
 .login-form .btn {
-    border-radius: 10px;
-    min-height: 2.9rem;
+    border-radius: 12px;
+    min-height: 3.2rem;
     font-weight: 700;
-    margin-top: var(--space-2, 0.5rem);
-    transition: background-color 150ms ease, transform 120ms ease;
-    font-size: var(--type-body);
-    line-height: 1.2;
+    margin-top: 0.5rem;
+    transition: background-color 150ms ease, transform 120ms ease, box-shadow 150ms ease;
+    font-size: 1.05rem;
 }
 
 .login-form .btn:active {
@@ -148,82 +128,125 @@
 
 .btn-login {
     color: #ffffff;
-    border: 1px solid transparent;
+    border: none;
     background: var(--notion-primary);
+    box-shadow: 0 4px 12px rgba(15, 106, 29, 0.25);
 }
 
 .btn-login:hover,
 .btn-login:focus-visible {
     background: var(--notion-primary-hover);
     color: #ffffff;
+    box-shadow: 0 6px 16px rgba(15, 106, 29, 0.35);
+}
+
+.btn-login:disabled {
+    background: #8ec19a;
+    box-shadow: none;
+    transform: none;
 }
 
 .btn-register {
     color: #31312c;
-    border: 1px solid #ddddda;
+    border: 1px solid #d4d4d0;
     background: #ffffff;
 }
 
 .btn-register:hover,
 .btn-register:focus-visible {
     color: #1d1d1a;
-    border-color: #c9d8cc;
-    background: #f6faf7;
+    border-color: #b5b5af;
+    background: #fdfdfc;
 }
 
 .divider {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    gap: 0.8rem;
-    margin-top: 0.45rem;
+    gap: 1rem;
+    margin-top: 0.5rem;
 }
 
 .divider span {
     display: block;
     height: 1px;
-    background: #ecece9;
+    background: #e8e8e4;
 }
 
 .divider small {
     color: #9b9b91;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     text-transform: uppercase;
     font-weight: 700;
+    letter-spacing: 0.05em;
 }
 
 .forgot-link {
-    color: #5f5f57;
+    color: #717169;
     text-decoration: none;
-    margin-top: var(--space-3, 0.75rem);
-    font-size: var(--type-meta);
+    margin-top: 1rem;
+    font-size: 0.95rem;
     width: fit-content;
+    font-weight: 600;
+    transition: color 0.2s;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .forgot-link:hover {
-    color: #2f6d3e;
+    color: var(--notion-primary);
     text-decoration: underline;
 }
 
+/* Right Side: Brand Panel */
 .login-note {
-    padding: var(--space-4, 1rem);
-    text-align: right;
+    background: var(--notion-primary);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: clamp(2rem, 5vw, 4rem);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
 }
 
-.container-logo{
-    margin-left: auto;
+/* Optional background pattern for the brand side */
+.login-note::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 80% 20%, rgba(255,255,255,0.08) 0%, transparent 40%),
+                radial-gradient(circle at 20% 80%, rgba(255,255,255,0.05) 0%, transparent 40%);
+    pointer-events: none;
 }
 
-.login-note h2 {
-    font-size: 1.25rem;
-    color: #2d2d28;
-    font-weight: 750;
+.container-logo {
+    position: relative;
+    z-index: 2;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+}
+
+.brand-logo {
+    width: 540px;
+    max-width: 90%;
+    height: auto;
+    filter: brightness(0) invert(1); /* Turns the colored logo into pure white */
+    display: block;
+    margin: 0;
 }
 
 .login-note p {
-    color: #686860;
+    color: rgba(255, 255, 255, 0.9);
     line-height: 1.6;
-    font-size: var(--type-body);
+    font-size: 1.05rem;
+    max-width: 480px;
+    margin: 0;
+    font-weight: 400;
 }
 
 .form-check-input {
@@ -242,35 +265,28 @@
 
 @media (max-width: 1060px) {
     .login-wrapper {
-        width: min(640px, calc(100vw - 1.6rem));
         grid-template-columns: 1fr;
-        align-content: center;
-        gap: 1rem;
-        padding: 2.2rem 0;
+        grid-template-rows: auto 1fr;
     }
 
     .login-note {
-        padding: 0.2rem 0.5rem;
-        text-align: left;
+        padding: 3rem 2rem;
+        background: var(--notion-primary);
+        order: -1; /* Puts the logo on top in mobile */
     }
 
     .brand-logo {
-        margin: 0 0 0.8rem 0;
+        width: 260px;
+        margin-bottom: 1rem;
     }
-}
 
-@media (max-width: 640px) {
-    .login-wrapper {
-        width: min(500px, calc(100vw - 1.2rem));
-        padding: 1.2rem 0;
+    .login-note p {
+        font-size: 1.05rem;
+        max-width: 100%;
     }
 
     .login-card {
-        padding: 1rem;
-        border-radius: 12px;
-    }
-
-    .login-header h1 {
-        font-size: 1.9rem;
+        padding: 3rem 2rem;
+        max-width: 500px;
     }
 }

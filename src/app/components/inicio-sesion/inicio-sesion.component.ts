@@ -63,15 +63,23 @@ export class InicioSesionComponent implements AfterViewInit {
             error: (err) => {
                 this.cargandoInicioSesion = false;
                 console.error('Error de autenticación:', err);
+                
                 let msj = 'Error al iniciar sesión.';
+                const serverMsg = err.error?.mensaje || err.error?.message || (typeof err.error === 'string' ? err.error : '');
+
                 if (err.status === 401 || err.status === 403) {
                     msj = 'Usuario o contraseña incorrectos.';
+                } else if (err.status === 500 && (serverMsg.toLowerCase().includes('bad') || serverMsg.toLowerCase().includes('credential') || serverMsg.toLowerCase().includes('usuario'))) {
+                    msj = 'Usuario o contraseña incorrectos.';
                 } else if (err.status === 0) {
-                    msj = 'No se pudo conectar con el servidor.';
+                    msj = 'Usuario o contraseña incorrectos (o el servidor no responde).';
+                } else if (serverMsg && serverMsg !== 'Internal Server Error' && serverMsg !== 'Error') {
+                    msj = serverMsg;
                 } else {
-                    msj = err.error?.mensaje ?? 'Error al iniciar sesión.';
+                    msj = 'Usuario o contraseña incorrectos.';
                 }
-                this.toastService.show('Error de Autenticación', msj, 'error');
+
+                this.toastService.show('Error', msj, 'error');
             }
         });
     }
