@@ -1,96 +1,245 @@
-﻿          <div class="seg-grid">
-            <article class="panel seg-left" aria-labelledby="seg-list-title">
-              <div class="panel__header">
-                <h3 id="seg-list-title">TrÃ¡mites vigentes</h3>
-                <label class="field field--inline">
-                  <span class="label">Buscar</span>
-                  <input id="seg-q" class="select" placeholder="#ID, estudiante, tÃ­tuloâ€¦" />
-                </label>
-              </div>
-              <ul id="seg-list" class="seg-list" aria-label="Lista de trÃ¡mites"></ul>
-            </article>
+﻿<div class="dashboard-container">
 
-            <article class="panel seg-right" aria-labelledby="seg-det-title">
-              <div class="panel__header">
-                <h3 id="seg-det-title">Detalle del trÃ¡mite</h3>
-                <span id="seg-det-id" class="seg-id"></span>
-              </div>
+  <!-- TOP SECTION: Trámites Grid -->
+  <section class="top-section">
+    <div class="section-header">
+      <h3 class="section-title"><i class="bi bi-clock-history"></i> Gestión de Solicitudes</h3>
 
-              <div id="seg-empty" class="seg-empty">Selecciona un trÃ¡mite de la lista para ver detalles.</div>
+      <div class="search-wrap" style="flex: 1; max-width: 400px; margin-left: auto;">
+        <i class="bi bi-search"></i>
+        <input class="search-input" [ngModel]="buscar()" (ngModelChange)="buscar.set($event)" placeholder="Buscar (#ID, título, estudiante)..." />
+      </div>
 
-              <div id="seg-detail" class="seg-detail" hidden>
-                <div class="seg-summary">
-                  <div>
-                    <div class="seg-title" id="seg-title">â€”</div>
-                    <div class="seg-meta"><span id="seg-est">â€”</span> Â· <span id="seg-tipo">â€”</span> Â· <span id="seg-prio">â€”</span> Â· <span id="seg-estado">â€”</span></div>
-                  </div>
-                  <div class="seg-dates">
-                    <div><small>Creado</small><div id="seg-creado">â€”</div></div>
-                    <div><small>Actualizado</small><div id="seg-actual">â€”</div></div>
-                  </div>
-                </div>
+      <!-- PAGINATOR -->
+      <div class="d-flex align-items-center gap-2">
+        <span style="font-size: 0.85rem; color: #6c757d; font-weight: 600;">
+          Pág. {{paginacion().actual}} de {{paginacion().maxPagina}}
+        </span>
+        <div class="btn-group">
+            <button class="btn btn-outline-secondary btn-sm" (click)="cambiarPagina(-1)" [disabled]="paginacion().actual === 1">&laquo;</button>
+            <button class="btn btn-outline-secondary btn-sm" (click)="cambiarPagina(1)" [disabled]="paginacion().actual >= paginacion().maxPagina">&raquo;</button>
+        </div>
+      </div>
+    </div>
 
-                <div class="seg-section">
-                  <h4 class="seg-h4">Archivos adjuntos</h4>
-                  <ul id="seg-files" class="files"></ul>
-                </div>
+    @if (paginacion().items.length === 0) {
+      <div class="empty-state">
+        <i class="bi bi-folder2-open" style="font-size: 2.5rem; color: #ced4da;"></i>
+        <p style="margin-top: 10px; color: #6c757d;">No se encontraron trámites.</p>
+      </div>
+    }
 
-                <div class="seg-section">
-                  <h4 class="seg-h4">Trazabilidad</h4>
-                  <ol id="seg-tl" class="timeline timeline--v"></ol>
-                </div>
-
-                <div id="seg-reject" class="seg-reject" hidden></div>
-
-                <div class="seg-actions">
-                  <button id="seg-next" class="btn-primary btn-icon" type="button" title="Siguiente etapa"><i class="bi bi-chevron-right"></i></button>
-                  <button id="seg-resol" class="btn-ghost btn-icon" type="button" title="Generar resolución" hidden><i class="bi bi-file-earmark-check"></i></button>
-                  <button id="seg-rechazar" class="btn-danger btn-icon" type="button" title="Rechazar"><i class="bi bi-ban"></i></button>
-                </div>
-              </div>
-            </article>
+    <div class="cards-grid">
+      @for (t of paginacion().items; track t.id) {
+        <div class="info-card pointer" [class.selected]="tramiteSeleccionado()?.id === t.id" (click)="seleccionarTramite(t)">
+          <!-- Top Row -->
+          <div class="card-header-row">
+            <span class="card-badge"><i class="bi bi-bookmark-fill"></i> {{ t.tipo }}</span>
+            <span class="card-date" style="color: #6c757d; font-weight: 600;"><i class="bi bi-calendar"></i> Act: {{ t.actualizado }}</span>
           </div>
 
-        <!-- Modal: Vista previa de archivo -->
-        <div id="file-modal" class="modal" hidden>
-          <div class="modal__backdrop" data-close="1"></div>
-          <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="file-modal-title">
-            <div class="modal__header">
-              <h3 id="file-modal-title">Vista previa</h3>
-              <button id="file-close" class="btn-ghost" type="button"><i class="bi bi-x-lg"></i></button>
-            </div>
-            <div class="modal__body">
-              <div id="file-meta" style="margin-bottom:8px;color:#6b7280;font-size:12px"></div>
-              <div id="file-preview" style="height:360px;display:grid;place-items:center;background:#f8fafb;border:1px solid #e5e7eb;border-radius:10px;color:#6b7280">
-                No hay vista previa disponible para este archivo.
-              </div>
-              <div class="form-actions" style="margin-top:10px">
-                <button id="file-dl" class="btn-primary" type="button">Descargar</button>
-              </div>
-            </div>
+          <!-- Main Info -->
+          <div class="card-main">
+            <h4 class="card-title" style="text-transform: uppercase;">{{ t.titulo }}</h4>
+            <span class="card-subtitle"><i class="bi bi-hash"></i> Ref. #{{ t.id }}</span>
+            <span class="card-comment"><i class="bi bi-person-fill"></i> Estudiante: {{ t.estudiante }}</span>
+            <span class="card-comment"><i class="bi bi-info-circle"></i> Prioridad: {{ t.prioridad }}</span>
+          </div>
+
+          <!-- Status -->
+          <div class="card-status-row">
+            <span class="status-badge" [ngClass]="t.estado === 'Rechazado' ? 'danger' : (t.estado === 'Finalizado' ? 'success' : 'warning')">
+              {{ t.estado }}
+            </span>
+            <span class="participants"><i class="bi bi-paperclip"></i> {{ t.files.length }} adjuntos</span>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- BOTTOM SECTION: Timeline & Details -->
+  <section class="bottom-section">
+    <div class="dash-panel detail-panel" [class.no-sel]="!tramiteSeleccionado()">
+      @if (!tramiteSeleccionado()) {
+        <div class="empty-detail">
+          <i class="bi bi-hand-index-thumb"></i>
+          <h4>Selecciona un trámite</h4>
+          <p>Haz clic en cualquiera de los trámites listados arriba para gestionar su línea de tiempo y detalles.</p>
+        </div>
+      } @else {
+        <div class="detail-header">
+          <div class="detail-h-left">
+            <h3 class="panel-title" style="text-transform: uppercase;">{{ tramiteSeleccionado()?.titulo }}</h3>
+            <span class="detail-id">Ref. #{{ tramiteSeleccionado()?.id }}</span>
+          </div>
+          <div class="detail-h-right">
+            <span class="status-badge" [ngClass]="tramiteSeleccionado()?.estado === 'Rechazado' ? 'danger' : (tramiteSeleccionado()?.estado === 'Finalizado' ? 'success' : 'warning')">
+                {{ tramiteSeleccionado()?.estado }}
+            </span>
           </div>
         </div>
 
-        <!-- Modal: Motivo de rechazo -->
-        <div id="rej-modal" class="modal" hidden>
-          <div class="modal__backdrop" data-close="1"></div>
-          <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="rej-modal-title">
-            <div class="modal__header">
-              <h3 id="rej-modal-title">Rechazar solicitud</h3>
-              <button id="rej-close" class="btn-ghost" type="button"><i class="bi bi-x-lg"></i></button>
-            </div>
-            <div class="modal__body">
-              <label class="field field--col-2">
-                <span class="label">Motivo del rechazo</span>
-                <textarea id="rej-reason" class="textarea" placeholder="Explica brevemente el motivoâ€¦" required></textarea>
-              </label>
-              <div class="form-actions">
-                <button id="rej-cancel" type="button" class="btn-ghost">Cancelar</button>
-                <button id="rej-confirm" type="button" class="btn-danger">Rechazar</button>
+        <div class="detail-body">
+          <div class="info-column">
+            <h4 class="seg-h4"><i class="bi bi-journal-text"></i> Datos Generales</h4>
+            <div class="data-grid">
+              <div class="data-item">
+                <small>Estudiante</small>
+                <strong>{{ tramiteSeleccionado()?.estudiante }}</strong>
+              </div>
+              <div class="data-item">
+                <small>Tipo de Trámite</small>
+                <strong>{{ tramiteSeleccionado()?.tipo }}</strong>
+              </div>
+              <div class="data-item">
+                <small>Prioridad</small>
+                <strong>{{ tramiteSeleccionado()?.prioridad }}</strong>
+              </div>
+              <div class="data-item">
+                <small>Última Actualización</small>
+                <strong>{{ tramiteSeleccionado()?.actualizado }}</strong>
               </div>
             </div>
+
+            <h4 class="seg-h4 mt-4"><i class="bi bi-folder2-open"></i> Archivos Adjuntos</h4>
+            @if (tramiteSeleccionado()?.files?.length === 0) {
+              <p class="text-muted" style="font-size: 0.85rem;">No hay archivos adjuntos.</p>
+            }
+            <div class="files-list">
+              @for (f of tramiteSeleccionado()?.files; track f.name) {
+                <div class="file-item" (click)="abrirArchivo(tramiteSeleccionado()!, f)">
+                  <i class="bi bi-file-earmark-pdf-fill" style="color: #dc2626; font-size: 1.5rem;"></i>
+                  <div class="file-info">
+                    <div class="file-name">{{ f.name }}</div>
+                    <div class="file-size">{{ f.size }}</div>
+                  </div>
+                  <i class="bi bi-download ms-auto" style="color: #6c757d;"></i>
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="timeline-column overflow-auto" style="max-height: 500px; padding-right: 15px;">
+            <h4 class="seg-h4"><i class="bi bi-signpost-split"></i> Gestión de Trazabilidad</h4>
+            <ol class="timeline timeline--v" style="padding-left: 10px;">
+              @for (step of tramiteSeleccionado()!.steps; track step.name; let i = $index) {
+                <li class="tl-item" [ngClass]="{
+                    'done': i < tramiteSeleccionado()!.current && tramiteSeleccionado()!.estado !== 'Rechazado',
+                    'current': i === tramiteSeleccionado()!.current && tramiteSeleccionado()!.estado !== 'Rechazado',
+                    'pending': i > tramiteSeleccionado()!.current,
+                    'rejected': tramiteSeleccionado()!.estado === 'Rechazado' && i === tramiteSeleccionado()!.current
+                }">
+                  <div class="tl-dot">
+                    <i class="bi"
+                      [class.bi-check-circle-fill]="i < tramiteSeleccionado()!.current && tramiteSeleccionado()!.estado !== 'Rechazado'"
+                      [class.bi-play-circle-fill]="i === tramiteSeleccionado()!.current && tramiteSeleccionado()!.estado !== 'Rechazado'"
+                      [class.bi-x-circle-fill]="tramiteSeleccionado()!.estado === 'Rechazado' && i === tramiteSeleccionado()!.current"
+                      [class.bi-clock-fill]="i > tramiteSeleccionado()!.current">
+                    </i>
+                  </div>
+                  <div class="tl-body w-100">
+                    <div class="tl-title">{{ step.name }}</div>
+                    <div class="tl-meta">
+                      Responsable: {{ step.role }}
+                      @if (i === tramiteSeleccionado()!.current && tramiteSeleccionado()!.estado !== 'Rechazado') {
+                        <span class="badge-current ms-2">En proceso</span>
+                      }
+                    </div>
+                    
+                    <div class="tl-desc d-flex justify-content-between align-items-center">
+                        <div>
+                            @if(step.done) {
+                                <i class="bi bi-check2-all text-success"></i> Completado: {{step.done}}
+                            } @else if(step.started) {
+                                <i class="bi bi-calendar-event"></i> Iniciado: {{step.started}}
+                            } @else {
+                                <span class="opacity-50">Esperando turno...</span>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- BOTONES ACCION -->
+                    @if(tramiteSeleccionado()!.current === i && tramiteSeleccionado()!.estado !== 'Rechazado' && tramiteSeleccionado()!.estado !== 'Finalizado' && step.role === 'Coordinador') {
+                        <div class="action-buttons">
+                            <button class="btn-action-ap" (click)="abrirConfirmacion('aprobar')">
+                                <i class="bi bi-check-lg"></i> Aprobar
+                            </button>
+                            <button class="btn-action-re" (click)="abrirConfirmacion('rechazar')">
+                                <i class="bi bi-x-lg"></i> Rechazar
+                            </button>
+                        </div>
+                    }
+                  </div>
+                </li>
+              }
+            </ol>
           </div>
         </div>
+      }
+    </div>
+  </section>
 
+</div>
 
+<!-- Confirmation Modal -->
+@if(showConfirmModal()) {
+<div class="modal fade show d-block" style="background-color: rgba(0,0,0,0.5); z-index: 1055;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header" [class.bg-danger]="confirmAccion() === 'rechazar'" [class.text-white]="confirmAccion() === 'rechazar'" [class.bg-success]="confirmAccion() === 'aprobar'" [class.text-white]="confirmAccion() === 'aprobar'">
+                <h5 class="modal-title fw-bold">
+                    <i class="bi" [class.bi-exclamation-triangle]="confirmAccion() === 'rechazar'" [class.bi-check-circle]="confirmAccion() === 'aprobar'"></i> 
+                    {{confirmAccion() === 'aprobar' ? 'Confirmar Aprobación' : 'Confirmar Rechazo'}}
+                </h5>
+                <button type="button" class="btn-close" [class.btn-close-white]="true" (click)="cerrarConfirmacion()"></button>
+            </div>
+            <div class="modal-body p-4">
+                <p>Está a punto de <strong style="text-transform: uppercase;">{{confirmAccion()}}</strong> la etapa actual del trámite "{{tramiteAConfirmar()?.id}} - {{tramiteAConfirmar()?.titulo}}".</p>
+                <p>Esta acción cambiará el estado de la solicitud de forma permanente y se notificará al estudiante.</p>
+                
+                <div class="alert alert-warning mb-0 border-0 bg-light">
+                    <label class="form-label fw-bold" style="color: #d97706;">Doble Verificación Requerida</label>
+                    <p class="small mb-2 text-muted">Para continuar, por favor escriba la siguiente frase exactamente como aparece:</p>
+                    <div class="user-select-none bg-white p-2 text-center font-monospace fw-bold mb-3 border rounded shadow-sm fs-6" style="color: #212529;">
+                        {{textoRequerido}}
+                    </div>
+                    <input type="text" class="form-control" placeholder="Escriba aquí..." [ngModel]="confirmInput()" (ngModelChange)="confirmInput.set($event)">
+                </div>
+            </div>
+            <div class="modal-footer border-top-0 pt-0 justify-content-between px-4 pb-4">
+                <button type="button" class="btn btn-light fw-bold px-4" (click)="cerrarConfirmacion()">Cancelar</button>
+                <button type="button" class="btn text-white fw-bold px-4" style="transition: all 0.2s;"
+                        [class.btn-success]="confirmAccion() === 'aprobar'"
+                        [class.btn-danger]="confirmAccion() === 'rechazar'"
+                        [disabled]="confirmInput() !== textoRequerido"
+                        (click)="ejecutarAccion()">
+                    <i class="bi bi-shield-check me-1"></i> Ejecutar Acción
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+}
 
+<!-- Modal Vista previa -->
+@if (fileModalOpen() && fileSelected()) {
+<div class="modal" style="display: block; opacity: 1; z-index: 1060;">
+  <div class="modal__backdrop" (click)="cerrarArchivo()" style="position: fixed; inset: 0; background: rgba(0,0,0,0.5);"></div>
+  <div class="modal__dialog" role="dialog" aria-modal="true" style="position: relative; margin: 40px auto; max-width: 500px; z-index: 1061;">
+    <div class="modal__header" style="background: white; padding: 20px; border-radius: 8px 8px 0 0; display: flex; justify-content: space-between;">
+      <h3 style="margin: 0; font-size: 1.1rem;"><i class="bi bi-file-earmark-pdf text-danger me-2"></i> Vista previa</h3>
+      <button class="modal__close" (click)="cerrarArchivo()" style="background: none; border: none; font-size: 1.2rem; cursor: pointer;">&times;</button>
+    </div>
+    <div class="modal__body text-center p-5" style="background: white; border-radius: 0 0 8px 8px;">
+      <i class="bi bi-file-earmark-pdf" style="font-size: 4rem; color: #dc3545;"></i>
+      <p class="mt-3 text-muted">Documento correspondiente a trámite {{fileSelected()?.id}}</p>
+      <p class="small text-muted mb-4">Tamaño: {{fileSelected()?.file?.size}}</p>
+      
+      <button class="btn btn-primary w-100" (click)="descargarArchivo()">
+        <i class="bi bi-download"></i> Descargar Original
+      </button>
+    </div>
+  </div>
+</div>
+}

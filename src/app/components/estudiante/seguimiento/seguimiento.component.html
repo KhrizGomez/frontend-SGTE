@@ -1,66 +1,170 @@
-﻿<div class="seg-grid">
-  <article class="panel seg-left" aria-labelledby="seg-list-title">
-    <div class="panel__header">
-      <h3 id="seg-list-title">TrÃ¡mites vigentes</h3>
-      <label class="field field--inline">
-        <span class="label">Buscar</span>
-        <input id="seg-q" class="select" placeholder="#ID, tÃ­tulo, estadoâ€¦" />
-      </label>
-    </div>
-    <ul id="seg-list" class="seg-list" aria-label="Lista de trÃ¡mites"></ul>
-  </article>
+﻿<div class="dashboard-container">
 
-  <article class="panel seg-right" aria-labelledby="seg-det-title">
-    <div class="panel__header">
-      <h3 id="seg-det-title">Detalle del trÃ¡mite</h3>
-      <span id="seg-det-id" class="seg-id"></span>
+  <!-- TOP SECTION: Trámites Grid -->
+  <section class="top-section">
+    <div class="section-header">
+      <h3 class="section-title"><i class="bi bi-clock-history"></i> Mis Trámites Vigentes</h3>
+      
+      <div class="search-wrap">
+        <i class="bi bi-search"></i>
+        <input class="search-input" [ngModel]="buscar()" (ngModelChange)="buscar.set($event)" placeholder="Buscar (#ID, título, estado)..." />
+      </div>
     </div>
 
-    <div id="seg-empty" class="seg-empty">Selecciona un trÃ¡mite de la lista para ver detalles.</div>
+    @if (tramitesFiltrados().length === 0) {
+      <div class="empty-state">
+        <i class="bi bi-folder2-open" style="font-size: 2.5rem; color: #ced4da;"></i>
+        <p style="margin-top: 10px; color: #6c757d;">No se encontraron trámites que coincidan con la búsqueda.</p>
+      </div>
+    }
 
-    <div id="seg-detail" class="seg-detail" hidden>
-      <div class="seg-summary">
-        <div>
-          <div class="seg-title" id="seg-title">â€”</div>
-          <div class="seg-meta"><span id="seg-tipo">â€”</span> Â· <span id="seg-prio">â€”</span> Â· <span id="seg-estado">â€”</span></div>
+    <div class="cards-grid">
+      @for (t of tramitesFiltrados(); track t.id) {
+        <div class="info-card pointer" [class.selected]="tramiteSeleccionado()?.id === t.id" (click)="seleccionarTramite(t)">
+          <!-- Top Row -->
+          <div class="card-header-row">
+            <span class="card-badge"><i class="bi bi-bookmark-fill"></i> {{ t.tipo }}</span>
+            <span class="card-date" style="color: #d97706; font-weight: 600;"><i class="bi bi-exclamation-triangle-fill"></i> Vence {{ t.fecha }}</span>
+          </div>
+
+          <!-- Main Info -->
+          <div class="card-main">
+            <h4 class="card-title" style="text-transform: uppercase;">{{ t.titulo }}</h4>
+            <span class="card-subtitle"><i class="bi bi-hash"></i> Ref. #{{ t.id }}</span>
+            <span class="card-comment"><i class="bi bi-info-circle"></i> Prioridad: {{ t.prioridad }}</span>
+          </div>
+
+          <!-- Status -->
+          <div class="card-status-row">
+            <span class="status-badge" [ngClass]="t.prioridad === 'Urgente' ? 'danger' : 'success'">
+              {{ t.estado }}
+            </span>
+            <span class="participants"><i class="bi bi-paperclip"></i> {{ t.files.length }} adjuntos</span>
+          </div>
         </div>
-        <div class="seg-dates">
-          <div><small>Creado</small><div id="seg-creado">â€”</div></div>
-          <div><small>Actualizado</small><div id="seg-actual">â€”</div></div>
-        </div>
-      </div>
-
-      <div class="seg-section">
-        <h4 class="seg-h4">Archivos adjuntos</h4>
-        <ul id="seg-files" class="files"></ul>
-      </div>
-
-      <div class="seg-section">
-        <h4 class="seg-h4">Trazabilidad</h4>
-        <ol id="seg-tl" class="timeline"></ol>
-      </div>
+      }
     </div>
-  </article>
+  </section>
+
+  <!-- BOTTOM SECTION: Timeline & Details -->
+  <section class="bottom-section">
+    <div class="dash-panel detail-panel" [class.no-sel]="!tramiteSeleccionado()">
+      @if (!tramiteSeleccionado()) {
+        <div class="empty-detail">
+          <i class="bi bi-hand-index-thumb"></i>
+          <h4>Selecciona un trámite</h4>
+          <p>Haz clic en cualquiera de tus trámites listados arriba para ver su línea de tiempo y detalles.</p>
+        </div>
+      } @else {
+        <div class="detail-header">
+          <div class="detail-h-left">
+            <h3 class="panel-title" style="text-transform: uppercase;">{{ tramiteSeleccionado()?.titulo }}</h3>
+            <span class="detail-id">Ref. #{{ tramiteSeleccionado()?.id }}</span>
+          </div>
+          <div class="detail-h-right">
+            <span class="status-badge warning">{{ tramiteSeleccionado()?.estado }}</span>
+          </div>
+        </div>
+
+        <div class="detail-body">
+          <div class="info-column">
+            <h4 class="seg-h4"><i class="bi bi-journal-text"></i> Datos Generales</h4>
+            <div class="data-grid">
+              <div class="data-item">
+                <small>Tipo de Trámite</small>
+                <strong>{{ tramiteSeleccionado()?.tipo }}</strong>
+              </div>
+              <div class="data-item">
+                <small>Prioridad</small>
+                <strong>{{ tramiteSeleccionado()?.prioridad }}</strong>
+              </div>
+              <div class="data-item">
+                <small>Fecha de Creación</small>
+                <strong>{{ tramiteSeleccionado()?.creado }}</strong>
+              </div>
+              <div class="data-item">
+                <small>Última Actualización</small>
+                <strong>{{ tramiteSeleccionado()?.actual }}</strong>
+              </div>
+            </div>
+
+            <h4 class="seg-h4 mt-4"><i class="bi bi-folder2-open"></i> Archivos Adjuntos</h4>
+            @if (tramiteSeleccionado()?.files?.length === 0) {
+              <p class="text-muted" style="font-size: 0.85rem;">No hay archivos adjuntos.</p>
+            }
+            <div class="files-list">
+              @for (f of tramiteSeleccionado()?.files; track f.name) {
+                <div class="file-item" (click)="abrirArchivo(tramiteSeleccionado()!, f)">
+                  <i class="bi bi-file-earmark-pdf-fill" style="color: #dc2626; font-size: 1.5rem;"></i>
+                  <div class="file-info">
+                    <div class="file-name">{{ f.name }}</div>
+                    <div class="file-size">{{ f.size }}</div>
+                  </div>
+                  <i class="bi bi-download ms-auto" style="color: #6c757d;"></i>
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="timeline-column">
+            <h4 class="seg-h4"><i class="bi bi-signpost-split"></i> Trazabilidad del trámite</h4>
+            <ol class="timeline timeline--v">
+              @for (paso of tramiteSeleccionado()?.tl; track paso.name) {
+                <li class="tl-item" [ngClass]="paso.state">
+                  <div class="tl-dot">
+                    <i class="bi" 
+                      [class.bi-check-circle-fill]="paso.state === 'done'"
+                      [class.bi-play-circle-fill]="paso.state === 'current'"
+                      [class.bi-clock-fill]="paso.state === 'pending'">
+                    </i>
+                  </div>
+                  <div class="tl-body">
+                    <div class="tl-title">{{ paso.name }}</div>
+                    <div class="tl-meta">
+                      {{ paso.meta }}
+                      @if (paso.state === 'current') {
+                        <span class="badge-current">En proceso</span>
+                      }
+                    </div>
+                    @if (paso.desc) {
+                      <div class="tl-desc">{{ paso.desc }}</div>
+                    }
+                  </div>
+                </li>
+              }
+            </ol>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
 </div>
 
-<!-- Modal: Vista previa de archivo (Estudiante) -->
-<div id="st-file-modal" class="modal" hidden>
-  <div class="modal__backdrop" data-close="1"></div>
-  <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="st-file-modal-title">
-    <div class="modal__header">
-      <h3 id="st-file-modal-title">Vista previa</h3>
-      <button id="st-file-close" class="btn-ghost" type="button">âœ•</button>
-    </div>
-    <div class="modal__body">
-      <div id="st-file-meta" style="margin-bottom:8px;color:#6b7280;font-size:12px"></div>
-      <div id="st-file-preview" style="height:360px;display:grid;place-items:center;background:#f8fafb;border:1px solid #e5e7eb;border-radius:10px;color:#6b7280">
-        No hay vista previa disponible para este archivo.
+<!-- Modal Vista previa -->
+@if (fileModalOpen() && fileSelected()) {
+  <div class="modal">
+    <div class="modal__backdrop" (click)="cerrarArchivo()"></div>
+    <div class="modal__dialog" role="dialog" aria-modal="true">
+      <div class="modal__header">
+        <h3>Vista previa documento</h3>
+        <button class="btn-ghost" type="button" (click)="cerrarArchivo()">
+          <i class="bi bi-x-lg"></i>
+        </button>
       </div>
-      <div class="form-actions" style="margin-top:10px">
-        <button id="st-file-dl" class="btn-primary" type="button">Descargar</button>
+      <div class="modal__body">
+        <div style="margin-bottom:8px;color:#6c757d;font-size:12px">
+          {{ fileSelected()?.file?.name }} · {{ fileSelected()?.file?.size }}
+        </div>
+        <div style="height:360px;display:grid;place-items:center;background:#f8f9fa;border:1px solid #dee2e6;border-radius:10px;color:#6c757d;">
+          No hay vista previa disponible para este archivo mockeado.
+        </div>
+        <div class="form-actions" style="margin-top:15px; display:flex; justify-content:flex-end;">
+          <button class="btn btn-outline-full" style="width: auto; padding: 8px 20px;" (click)="descargarArchivo()">
+            <i class="bi bi-download"></i> Descargar
+          </button>
+        </div>
       </div>
     </div>
   </div>
-</div>
-
-
+}
