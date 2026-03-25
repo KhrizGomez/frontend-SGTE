@@ -1,4 +1,4 @@
-export interface RegisterUserPayload {
+export interface RegistroUsuarioPayload {
     cedula: string;
     nombres: string;
     apellidos: string;
@@ -52,7 +52,7 @@ export interface RegisterUserPayload {
     extensionTelefonica?: string;
 }
 
-export interface RegisterUserResponse {
+export interface RegistroUsuarioRespuesta {
     idUsuario?: number;
     nombreUsuario?: string;
     mensaje?: string;

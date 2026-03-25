@@ -1,13 +1,13 @@
 import { Routes } from '@angular/router';
-import { Login } from './components/login/login';
+import { InicioSesionComponent } from './components/inicio-sesion/inicio-sesion.component';
 
 export const routes: Routes = [
-    { path: 'login', component: Login },
-    { path: '', redirectTo: 'login', pathMatch: 'full' },
+    { path: 'inicio-sesion', component: InicioSesionComponent },
+    { path: '', redirectTo: 'inicio-sesion', pathMatch: 'full' },
     { path: 'coordinacion',
         loadChildren: () =>
-            import('./components/coordinator/coordinator.routes').then(m => m.coordinatorRoutes) },
+            import('./components/coordinador/coordinador.routes').then(m => m.coordinadorRoutes) },
 
-    { path: '**', redirectTo: 'login' }
+    { path: '**', redirectTo: 'inicio-sesion' }
 
 ];

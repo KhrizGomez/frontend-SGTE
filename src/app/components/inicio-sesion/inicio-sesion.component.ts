@@ -2,33 +2,33 @@ import { AfterViewInit, Component, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { UserValidationService } from '../../services/user-validation.service';
-import { UserRegistrationService } from '../../services/user-registration.service';
-import { AuthService } from '../../services/auth.service';
-import { RegisterUserPayload } from '../../models/user-registration.model';
+import { ValidacionUsuarioService } from '../../services/validacion-usuario.service';
+import { RegistroUsuarioService } from '../../services/registro-usuario.service';
+import { AutenticacionService } from '../../services/autenticacion.service';
+import { RegistroUsuarioPayload } from '../../models/registro-usuario.model';
 
 declare var bootstrap: any;
 
 @Component({
-    selector: 'app-login',
+    selector: 'app-inicio-sesion',
     standalone: true,
     imports: [CommonModule, FormsModule],
-    templateUrl: './login.html',
-    styleUrl: './login.css',
+    templateUrl: './inicio-sesion.component.html',
+    styleUrl: './inicio-sesion.component.css',
 })
-export class Login implements AfterViewInit {
+export class InicioSesionComponent implements AfterViewInit {
 
     // Login
     nombreUsuario: string = '';
     contrasena: string = '';
-    loginLoading: boolean = false;
+    cargandoInicioSesion: boolean = false;
 
     // Registro
     estudianteExterno: boolean = false;
     cedula: string = '';
     nombres: string = '';
     apellidos: string = '';
-    registroLoading: boolean = false;
+    cargandoRegistro: boolean = false;
 
     // Mensajes Genéricos
     mensajeTitulo: string = '';
@@ -36,10 +36,10 @@ export class Login implements AfterViewInit {
     esErrorMensaje: boolean = false;
 
     constructor(
-        private authService: AuthService,
+        private autenticacionService: AutenticacionService,
         private router: Router,
-        private userValidationService: UserValidationService,
-        private userRegistrationService: UserRegistrationService,
+        private validacionUsuarioService: ValidacionUsuarioService,
+        private registroUsuarioService: RegistroUsuarioService,
         private cdr: ChangeDetectorRef
     ) { }
 
@@ -50,22 +50,22 @@ export class Login implements AfterViewInit {
             return;
         }
 
-        this.loginLoading = true;
+        this.cargandoInicioSesion = true;
 
-        this.authService.login({
+        this.autenticacionService.iniciarSesion({
             nombreUsuario: this.nombreUsuario.trim(),
             contrasena: this.contrasena.trim()
         }).subscribe({
             next: (response) => {
-                this.loginLoading = false;
+                this.cargandoInicioSesion = false;
                 console.log('Login exitoso:', response);
-                const ruta = this.authService.getRouteForRoleCurrentUser(response.rol);
+                const ruta = this.autenticacionService.obtenerRutaPorRolUsuarioActual(response.rol);
                 this.mostrarModalMensaje('Bienvenido', `¡Hola, ${response.nombres} ${response.apellidos}!`, false, () => {
                     void this.router.navigate([ruta]);
                 });
             },
             error: (err) => {
-                this.loginLoading = false;
+                this.cargandoInicioSesion = false;
                 console.error('Error de autenticación:', err);
                 let msj = 'Error al iniciar sesión.';
                 if (err.status === 401 || err.status === 403) {
@@ -99,21 +99,21 @@ export class Login implements AfterViewInit {
 
         this.cedula = cedulaNormalizada;
 
-        this.registroLoading = true;
+        this.cargandoRegistro = true;
 
         if (!this.estudianteExterno) {
-            this.userValidationService.validarUsuario(cedulaNormalizada).subscribe({
+            this.validacionUsuarioService.validarUsuario(cedulaNormalizada).subscribe({
                 next: (data) => {
                     const payload = this.mapToRegistroPayload(data);
-                    this.userRegistrationService.registrarUsuario(payload).subscribe({
+                    this.registroUsuarioService.registrarUsuario(payload).subscribe({
                         next: (response) => {
-                            this.registroLoading = false;
+                            this.cargandoRegistro = false;
                             const usernameGenerado = response.nombreUsuario ?? payload.cedula;
                             const correos = [payload.correoInstitucional, payload.correoPersonal].filter(c => c && c.trim() !== '');
                             
                             if (correos.length > 0) {
                                 correos.forEach(email => {
-                                    this.userRegistrationService.enviarCorreoCredenciales(email!, usernameGenerado, payload.cedula).subscribe({
+                                    this.registroUsuarioService.enviarCorreoCredenciales(email!, usernameGenerado, payload.cedula).subscribe({
                                         next: () => console.log('Correo de credenciales enviado a', email),
                                         error: (err: any) => console.error('Error enviando correo', err)
                                     });
@@ -124,13 +124,13 @@ export class Login implements AfterViewInit {
                             this.cerrarModalCrearCuenta();
                         },
                         error: (err) => {
-                            this.registroLoading = false;
+                            this.cargandoRegistro = false;
                             this.mostrarModalMensaje('Error de Registro', this.obtenerMensajeErrorRegistro(err), true);
                         }
                     });
                 },
                 error: (err) => {
-                    this.registroLoading = false;
+                    this.cargandoRegistro = false;
                     if (err.status === 404) {
                         this.mostrarModalMensaje('Error de Validación', 'No existe usuario con esa cedula en el servicio de validacion.', true);
                         return;
@@ -140,12 +140,12 @@ export class Login implements AfterViewInit {
             });
         } else {
             if (!this.nombres || !this.apellidos) {
-                this.registroLoading = false;
+                this.cargandoRegistro = false;
                 this.mostrarModalMensaje('Error', 'Por favor ingrese nombres y apellidos.', true);
                 return;
             }
 
-            const payload: RegisterUserPayload = {
+            const payload: RegistroUsuarioPayload = {
                 cedula: this.cedula.trim(),
                 nombres: this.nombres.trim(),
                 apellidos: this.apellidos.trim(),
@@ -153,15 +153,15 @@ export class Login implements AfterViewInit {
                 estadoUsuario: true,
             };
 
-            this.userRegistrationService.registrarUsuario(payload).subscribe({
+            this.registroUsuarioService.registrarUsuario(payload).subscribe({
                 next: (response) => {
-                    this.registroLoading = false;
+                    this.cargandoRegistro = false;
                     const usernameGenerado = response.nombreUsuario ?? payload.cedula;
                     const correos = [payload.correoInstitucional, payload.correoPersonal].filter(c => c && c.trim() !== '');
 
                     if (correos.length > 0) {
                         correos.forEach(email => {
-                            this.userRegistrationService.enviarCorreoCredenciales(email!, usernameGenerado, payload.cedula).subscribe({
+                            this.registroUsuarioService.enviarCorreoCredenciales(email!, usernameGenerado, payload.cedula).subscribe({
                                 next: () => console.log('Correo de credenciales enviado a', email),
                                 error: (err: any) => console.error('Error enviando correo', err)
                             });
@@ -172,7 +172,7 @@ export class Login implements AfterViewInit {
                     this.cerrarModalCrearCuenta();
                 },
                 error: (err: any) => {
-                    this.registroLoading = false;
+                    this.cargandoRegistro = false;
                     this.mostrarModalMensaje('Error de Registro', this.obtenerMensajeErrorRegistro(err), true);
                 }
             });
@@ -209,7 +209,7 @@ export class Login implements AfterViewInit {
         }
     }
 
-    private mapToRegistroPayload(data: any): RegisterUserPayload {
+    private mapToRegistroPayload(data: any): RegistroUsuarioPayload {
         return {
             cedula: String(data?.cedula ?? this.cedula).trim(),
             nombres: String(data?.nombres ?? this.nombres).trim(),
@@ -291,7 +291,7 @@ export class Login implements AfterViewInit {
                 this.cedula = '';
                 this.nombres = '';
                 this.apellidos = '';
-                this.registroLoading = false;
+                this.cargandoRegistro = false;
             });
         }
     }

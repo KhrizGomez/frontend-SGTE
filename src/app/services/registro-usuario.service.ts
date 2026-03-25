@@ -1,21 +1,21 @@
 import { Injectable } from '@angular/core';
 import { HttpClient} from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { RegisterUserPayload, RegisterUserResponse } from '../models/user-registration.model';
+import { RegistroUsuarioPayload, RegistroUsuarioRespuesta } from '../models/registro-usuario.model';
 import { environment } from '../../environments/environment';
 import { getCredencialesTemplate } from '../core/templates/email-credenciales.template';
 
 @Injectable({
   providedIn: 'root',
 })
-export class UserRegistrationService {
+export class RegistroUsuarioService {
   private readonly apiUrl = `${environment.apiUrl}/api/sistema/registro`;
 
   constructor(private http: HttpClient) {}
 
-  registrarUsuario(userData: RegisterUserPayload): Observable<RegisterUserResponse> {
+  registrarUsuario(userData: RegistroUsuarioPayload): Observable<RegistroUsuarioRespuesta> {
     const payload = this.normalizarPayload(userData);
-    return this.http.post<RegisterUserResponse>(this.apiUrl, payload);
+    return this.http.post<RegistroUsuarioRespuesta>(this.apiUrl, payload);
   }
 
   enviarCorreoCredenciales(destinatario: string, username: string, contrasena: string): Observable<any> {
@@ -28,8 +28,8 @@ export class UserRegistrationService {
     return this.http.post(url, payload, {responseType: 'text'});
   }
 
-  private normalizarPayload(userData: RegisterUserPayload): RegisterUserPayload {
-    const normalizado: RegisterUserPayload = {
+  private normalizarPayload(userData: RegistroUsuarioPayload): RegistroUsuarioPayload {
+    const normalizado: RegistroUsuarioPayload = {
       ...userData,
       cedula: userData.cedula.trim(),
       nombres: userData.nombres.trim(),
@@ -37,6 +37,6 @@ export class UserRegistrationService {
     };
 
     // JSON.stringify omite propiedades con valor undefined.
-    return JSON.parse(JSON.stringify(normalizado)) as RegisterUserPayload;
+    return JSON.parse(JSON.stringify(normalizado)) as RegistroUsuarioPayload;
   }
 }

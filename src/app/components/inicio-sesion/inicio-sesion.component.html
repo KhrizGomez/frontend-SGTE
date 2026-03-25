@@ -21,8 +21,8 @@
                     autocomplete="current-password" required />
             </div>
 
-            <button type="submit" class="btn btn-success btn-lg w-100 rounded-4 mb-2" [disabled]="loginLoading">
-                @if (loginLoading) {
+            <button type="submit" class="btn btn-success btn-lg w-100 rounded-4 mb-2" [disabled]="cargandoInicioSesion">
+                @if (cargandoInicioSesion) {
                 <span class="spinner-border spinner-border-sm me-2"></span>Ingresando...
                 } @else {
                 Iniciar sesión
@@ -44,7 +44,7 @@
 
     <!-- Modal de creacion de cuenta -->
     <div class="modal fade" id="modalCreateAccount" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-        aria-labelledby="modalCreateAccountLabel" aria-hidden="true">
+        aria-labelledby="modalCreateAccountLabel">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content rounded-4">
                 <div class="modal-header">
@@ -83,8 +83,8 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                     <button type="button" class="btn btn-primary" (click)="registrarCuenta()"
-                        [disabled]="registroLoading">
-                        @if (registroLoading) {
+                        [disabled]="cargandoRegistro">
+                        @if (cargandoRegistro) {
                         <span class="spinner-border spinner-border-sm me-2"></span>Registrando...
                         } @else {
                         Registrar
@@ -94,7 +94,7 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="modalMensaje" tabindex="-1" aria-labelledby="modalMensajeLabel" aria-hidden="true" style="z-index: 1060;">
+    <div class="modal fade" id="modalMensaje" tabindex="-1" aria-labelledby="modalMensajeLabel" style="z-index: 1060;">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content rounded-4 border-0 shadow-lg">
                 <div class="modal-header border-0 rounded-top-4" [ngClass]="esErrorMensaje ? 'bg-danger text-white' : 'bg-success text-white'">

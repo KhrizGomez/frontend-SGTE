@@ -10,7 +10,7 @@ import { environment } from '../../environments/environment';
 @Injectable({
     providedIn: 'root',
 })
-export class FormalitiesService {
+export class TramitesService {
     private readonly apiBaseUrl = `${environment.apiUrl}/api/tramites/tipos`;
 
     constructor(private readonly http: HttpClient) {}
