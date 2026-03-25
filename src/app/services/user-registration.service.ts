@@ -24,7 +24,7 @@ export class UserRegistrationService {
       asunto: 'Credenciales de Acceso - SGTE UTEQ',
       mensaje: `<h1>Estimado usuario,\n\nSu cuenta ha sido creada exitosamente en el Sistema de Gestión de Trámites Estudiantiles.\n\nSus credenciales de acceso son:\nUsuario: ${username}\nContraseña: ${contrasena}\n\nRecomendamos cambiar su contraseña al iniciar sesión por primera vez.\n\nAtentamente,\nEquipo SGTE UTEQ </h1>`
     };
-    return this.http.post(url, payload);
+    return this.http.post(url, payload, {responseType: 'text'});
   }
 
   private normalizarPayload(userData: RegisterUserPayload): RegisterUserPayload {

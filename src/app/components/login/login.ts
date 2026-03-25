@@ -158,7 +158,7 @@ export class Login implements AfterViewInit {
                     this.registroLoading = false;
                     const usernameGenerado = response.nombreUsuario ?? payload.cedula;
                     const correos = [payload.correoInstitucional, payload.correoPersonal].filter(c => c && c.trim() !== '');
-                            
+
                     if (correos.length > 0) {
                         correos.forEach(email => {
                             this.userRegistrationService.enviarCorreoCredenciales(email!, usernameGenerado, payload.cedula).subscribe({
@@ -194,7 +194,7 @@ export class Login implements AfterViewInit {
         this.mensajeContenido = mensaje;
         this.esErrorMensaje = esError;
         this.cdr.detectChanges();
-        
+
         const modalElement = document.getElementById('modalMensaje');
         if (modalElement) {
             const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
