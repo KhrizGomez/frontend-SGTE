@@ -1,8 +1,8 @@
-﻿import { ChangeDetectorRef, Component, OnInit, signal, computed } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AutenticacionService } from '../../../services/general/autenticacion.service';
-import { TramitesService } from './../../../services/decano/tramites.service';
+import { TramitesService } from '../../../services/decano/tramites.service';
 import { LoadingService } from '../../../services/general/loading.service';
 import { PlantillaCarrera } from '../../../models/decano/tramite-detalle.model';
 import { LoadingComponent } from '../../shared/loading/loading.component';
@@ -24,6 +24,16 @@ export class Plantillas implements OnInit {
   porPagina = 5;
 
   plantillaSeleccionada = signal<PlantillaCarrera | null>(null);
+
+  stats = computed(() => {
+    const all = this.plantillas();
+    return {
+      activas: all.filter(p => p.estaActivo).length,
+      inactivas: all.filter(p => !p.estaActivo).length,
+      externos: all.filter(p => p.disponibleExternos).length,
+      total: all.length
+    };
+  });
 
   plantillasFiltradas = computed(() => {
     const q = this.buscar().trim().toLowerCase();
@@ -56,6 +66,8 @@ export class Plantillas implements OnInit {
   ngOnInit(): void {
     this.cargarPlantillas();
   }
+
+
 
   cambiarPagina(dir: number) {
     const nueva = this.paginaActual() + dir;

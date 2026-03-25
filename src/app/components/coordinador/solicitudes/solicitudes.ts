@@ -1,6 +1,9 @@
-﻿import { Component, computed, signal } from '@angular/core';
+import { Component, computed, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { of } from 'rxjs';
+import { LoadingService } from '../../../services/general/loading.service';
+import { LoadingComponent } from '../../shared/loading/loading.component';
 
 interface TimelineStep {
   name: string;
@@ -31,14 +34,15 @@ interface Tramite {
 @Component({
   selector: 'app-solicitudes',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, LoadingComponent],
   templateUrl: './solicitudes.html',
   styleUrls: ['./solicitudes.css']
 })
-export class Solicitudes {
+export class Solicitudes implements OnInit {
   buscar = signal('');
   paginaActual = signal(1);
   porPagina = 5;
+  cargando = signal(false);
 
   // Modals state
   showConfirmModal = signal(false);
@@ -70,15 +74,36 @@ export class Solicitudes {
     ]
   };
 
-  tramites = signal<Tramite[]>([
-    { id:'C-2101', titulo:'Cambio de carrera - Juan Pérez', estudiante:'Juan Pérez', tipo:'Cambio de carrera', prioridad:'Alta', estado:'En revisión', creado:'2025-09-02', actualizado:'2025-09-04', files:[ {name:'Solicitud.pdf', size:'120 KB'}, {name:'HistorialAcademico.pdf', size:'340 KB'} ], steps: this.flowMap.validacion.map((s,idx)=>({ ...s, started: idx===0? '2025-09-02': null, done: idx<1? '2025-09-03': null })), current: 1 },
-    { id:'C-2102', titulo:'Homologación de materias - María López', estudiante:'María López', tipo:'Homologación', prioridad:'Urgente', estado:'Evaluación requerida', creado:'2025-09-01', actualizado:'2025-09-05', files:[ {name:'Programas.pdf', size:'1.2 MB'} ], steps: this.flowMap.homologacion.map((s,idx)=>({ ...s, started: idx===0? '2025-09-01': null, done: idx<2? (idx===0? '2025-09-02':'2025-09-04') : null })), current: 2 },
-    { id:'C-2103', titulo:'Certificado de matrícula - Carlos Ruiz', estudiante:'Carlos Ruiz', tipo:'Certificados', prioridad:'Media', estado:'Pendiente', creado:'2025-09-03', actualizado:'2025-09-03', files:[ {name:'Comprobante.pdf', size:'85 KB'} ], steps: this.flowMap.basico.map((s,idx)=>({ ...s, started: idx===0? '2025-09-03': null, done: idx<1? '2025-09-03' : null })), current: 1 },
-    { id:'C-2104', titulo:'Anulación de matrícula - Ana Torres', estudiante:'Ana Torres', tipo:'Anulación', prioridad:'Alta', estado:'Rechazado', creado:'2025-08-20', actualizado:'2025-08-23', files:[], steps: this.flowMap.basico.map((s,idx)=>({ ...s, started: idx===0? '2025-08-20': null, done: idx===0? '2025-08-21' : null })), current: 99 },
-    { id:'C-2105', titulo:'Justificación inasistencia - Luis Silva', estudiante:'Luis Silva', tipo:'Justificación', prioridad:'Baja', estado:'Finalizado', creado:'2025-08-10', actualizado:'2025-08-15', files:[ {name:'Certmedico.pdf', size:'400 KB'} ], steps: this.flowMap.basico.map((s)=>({ ...s, started: '2025-08-10', done: '2025-08-14' })), current: 100 },
-    { id:'C-2106', titulo:'Cambio de periodo - Pedro Páez', estudiante:'Pedro Páez', tipo:'Cambio de periodo', prioridad:'Media', estado:'Pendiente', creado:'2025-09-04', actualizado:'2025-09-04', files:[], steps: this.flowMap.basico.map((s,idx)=>({ ...s, started: idx===0? '2025-09-04': null, done: idx<1? '2025-09-04' : null })), current: 1 },
-    { id:'C-2107', titulo:'Homologación de materias - Sara León', estudiante:'Sara León', tipo:'Homologación', prioridad:'Media', estado:'Evaluación requerida', creado:'2025-09-05', actualizado:'2025-09-06', files:[ {name:'Syllabus.pdf', size:'3.1 MB'} ], steps: this.flowMap.homologacion.map((s,idx)=>({ ...s, started: idx===0? '2025-09-05': null, done: idx<2? (idx===0? '2025-09-05':'2025-09-06') : null })), current: 2 }
-  ]);
+  tramites = signal<Tramite[]>([]);
+
+  constructor(private loadingService: LoadingService) {}
+
+  ngOnInit(): void {
+    this.cargarSolicitudes();
+  }
+
+  cargarSolicitudes(): void {
+    const mockData: Tramite[] = [
+      { id:'C-2101', titulo:'Cambio de carrera - Juan Pérez', estudiante:'Juan Pérez', tipo:'Cambio de carrera', prioridad:'Alta', estado:'En revisión', creado:'2025-09-02', actualizado:'2025-09-04', files:[ {name:'Solicitud.pdf', size:'120 KB'}, {name:'HistorialAcademico.pdf', size:'340 KB'} ], steps: this.flowMap.validacion.map((s,idx)=>({ ...s, started: idx===0? '2025-09-02': null, done: idx<1? '2025-09-03': null })), current: 1 },
+      { id:'C-2102', titulo:'Homologación de materias - María López', estudiante:'María López', tipo:'Homologación', prioridad:'Urgente', estado:'Evaluación requerida', creado:'2025-09-01', actualizado:'2025-09-05', files:[ {name:'Programas.pdf', size:'1.2 MB'} ], steps: this.flowMap.homologacion.map((s,idx)=>({ ...s, started: idx===0? '2025-09-01': null, done: idx<2? (idx===0? '2025-09-02':'2025-09-04') : null })), current: 2 },
+      { id:'C-2103', titulo:'Certificado de matrícula - Carlos Ruiz', estudiante:'Carlos Ruiz', tipo:'Certificados', prioridad:'Media', estado:'Pendiente', creado:'2025-09-03', actualizado:'2025-09-03', files:[ {name:'Comprobante.pdf', size:'85 KB'} ], steps: this.flowMap.basico.map((s,idx)=>({ ...s, started: idx===0? '2025-09-03': null, done: idx<1? '2025-09-03' : null })), current: 1 },
+      { id:'C-2104', titulo:'Anulación de matrícula - Ana Torres', estudiante:'Ana Torres', tipo:'Anulación', prioridad:'Alta', estado:'Rechazado', creado:'2025-08-20', actualizado:'2025-08-23', files:[], steps: this.flowMap.basico.map((s,idx)=>({ ...s, started: idx===0? '2025-08-20': null, done: idx===0? '2025-08-21' : null })), current: 99 },
+      { id:'C-2105', titulo:'Justificación inasistencia - Luis Silva', estudiante:'Luis Silva', tipo:'Justificación', prioridad:'Baja', estado:'Finalizado', creado:'2025-08-10', actualizado:'2025-08-15', files:[ {name:'Certmedico.pdf', size:'400 KB'} ], steps: this.flowMap.basico.map((s)=>({ ...s, started: '2025-08-10', done: '2025-08-14' })), current: 100 },
+      { id:'C-2106', titulo:'Cambio de periodo - Pedro Páez', estudiante:'Pedro Páez', tipo:'Cambio de periodo', prioridad:'Media', estado:'Pendiente', creado:'2025-09-04', actualizado:'2025-09-04', files:[], steps: this.flowMap.basico.map((s,idx)=>({ ...s, started: idx===0? '2025-09-04': null, done: idx<1? '2025-09-04' : null })), current: 1 },
+      { id:'C-2107', titulo:'Homologación de materias - Sara León', estudiante:'Sara León', tipo:'Homologación', prioridad:'Media', estado:'Evaluación requerida', creado:'2025-09-05', actualizado:'2025-09-06', files:[ {name:'Syllabus.pdf', size:'3.1 MB'} ], steps: this.flowMap.homologacion.map((s,idx)=>({ ...s, started: idx===0? '2025-09-05': null, done: idx<2? (idx===0? '2025-09-05':'2025-09-06') : null })), current: 2 }
+    ];
+
+    this.cargando.set(true);
+    this.loadingService.withMinDuration(of(mockData)).subscribe({
+      next: (data) => {
+        this.tramites.set(data);
+        this.cargando.set(false);
+      },
+      error: () => {
+        this.cargando.set(false);
+      }
+    });
+  }
 
   stats = computed(() => {
     const all = this.tramites();

@@ -1,4 +1,4 @@
-﻿<div class="dashboard-container">
+<div class="dashboard-container">
 
   <!-- KPI ROW -->
   <section class="kpi-row">
@@ -66,18 +66,23 @@
         <button class="view-btn active"><i class="bi bi-grid-fill"></i></button>
       </div>
 
-      <div class="d-flex align-items-center gap-2" style="margin-left: 15px;">
-        <span style="font-size: 0.85rem; color: #6c757d; font-weight: 600;">
-          Pág. {{paginacion().actual}} de {{paginacion().maxPagina}}
+      <!-- PAGINATOR -->
+      <div class="d-flex align-items-center gap-2 ms-2 ps-3" style="border-left: 1px solid #e9ecef;">
+        <span style="font-size: 0.85rem; color: #6c757d; font-weight: 600; white-space: nowrap;">
+          Pág. {{ paginacion().actual }} de {{ paginacion().maxPagina }}
         </span>
         <div class="btn-group">
-            <button class="btn btn-outline-secondary btn-sm" style="border-radius: 4px 0 0 4px;" (click)="cambiarPagina(-1)" [disabled]="paginacion().actual === 1">&laquo;</button>
-            <button class="btn btn-outline-secondary btn-sm" style="border-radius: 0 4px 4px 0;" (click)="cambiarPagina(1)" [disabled]="paginacion().actual >= paginacion().maxPagina">&raquo;</button>
+            <button class="btn btn-outline-secondary btn-sm" (click)="cambiarPagina(-1)" [disabled]="paginacion().actual === 1">&laquo;</button>
+            <button class="btn btn-outline-secondary btn-sm" (click)="cambiarPagina(1)" [disabled]="paginacion().actual >= paginacion().maxPagina">&raquo;</button>
         </div>
       </div>
     </section>
 
-    @if (paginacion().items.length === 0) {
+    @if (cargando()) {
+      <app-loading message="Cargando solicitudes..."></app-loading>
+    }
+
+    @if (paginacion().items.length === 0 && !cargando()) {
       <div class="empty-state">
         <i class="bi bi-folder2-open" style="font-size: 2.5rem; color: #ced4da;"></i>
         <p style="margin-top: 10px; color: #6c757d;">No se encontraron trámites.</p>

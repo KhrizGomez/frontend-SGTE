@@ -1,4 +1,4 @@
-﻿<div class="dashboard-container">
+<div class="dashboard-container">
 
   <!-- KPI ROW -->
   <section class="kpi-row">
@@ -72,11 +72,15 @@
       </div>
     </section>
 
-    @if (paginacion().items.length === 0) {
+    @if (paginacion().items.length === 0 && !cargando()) {
       <div class="empty-state">
         <i class="bi bi-folder2-open" style="font-size: 2.5rem; color: #ced4da;"></i>
         <p style="margin-top: 10px; color: #6c757d;">No se encontraron trámites que coincidan con la búsqueda.</p>
       </div>
+    }
+
+    @if (cargando()) {
+      <app-loading message="Cargando trámites..."></app-loading>
     }
 
     <div class="cards-grid">

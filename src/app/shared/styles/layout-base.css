@@ -1,4 +1,4 @@
-﻿:host {
+:host {
   /* Typography Variables Only */
   --layout-type-xs: 0.875rem;
   --layout-type-sm: 0.9375rem;
@@ -51,7 +51,7 @@
   padding: 0;
   border: none;
   width: auto;
-  max-width: 160px;
+  max-width: 200px;
   height: auto;
   min-height: 48px;
   object-fit: contain;

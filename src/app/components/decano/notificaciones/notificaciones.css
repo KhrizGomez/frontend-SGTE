@@ -1,3 +1,359 @@
-﻿@import '../../../shared/styles/module-airbnb.css';
+@import '../../../shared/styles/module-airbnb.css';
 
+/* ─── LAYOUT ────────────────────────────────────────── */
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
 
+/* ─── KPI GRID (igual que dashboard) ────────────────── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.kpi-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  border: 1px solid #eaeaea;
+}
+
+.kpi-content { display: flex; flex-direction: column; }
+
+.kpi-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #6c757d;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.kpi-value { font-size: 2.2rem; font-weight: 800; line-height: 1; }
+
+.kpi-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+}
+
+.kpi-primary .kpi-value { color: #2563eb; }
+.kpi-primary .kpi-icon  { color: #2563eb; background: #eff6ff; border-color: #dbeafe; }
+.kpi-warning .kpi-value { color: #d97706; }
+.kpi-warning .kpi-icon  { color: #d97706; background: #fffbeb; border-color: #fce7f3; }
+.kpi-danger  .kpi-value { color: #dc2626; }
+.kpi-danger  .kpi-icon  { color: #dc2626; background: #fef2f2; border-color: #fee2e2; }
+.kpi-success .kpi-value { color: #059669; }
+.kpi-success .kpi-icon  { color: #059669; background: #ecfdf5; border-color: #d1fae5; }
+
+/* ─── LAYOUT ROW ─────────────────────────────────────── */
+.main-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+}
+
+/* ─── PANEL BASE (igual que dashboard) ──────────────── */
+.dash-panel {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #eaeaea;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Evita que los paneles secundarios se estiren a la misma altura en un grid */
+.main-grid > .dash-panel:nth-child(2) {
+  align-self: start;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f1f3f5;
+}
+
+.panel-header i { color: #0f6a1d; font-size: 1.2rem; }
+
+.panel-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #343a40;
+  margin: 0;
+}
+
+/* ─── SESSION LIST (mismo que dashboard) ────────────── */
+.session-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  flex: 1;
+}
+
+.session-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid #f1f3f5;
+  transition: background 0.15s;
+}
+
+.session-item:last-child { border-bottom: none; }
+
+.session-item:hover { background: #f8f9fa; margin: 0 -20px; padding-left: 20px; padding-right: 20px; }
+
+.pref-item { cursor: pointer; }
+.pref-item:hover { background: #f8f9fa; margin: 0 -20px; padding-left: 20px; padding-right: 20px; }
+
+.session-info { flex: 1; }
+
+.session-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #212529;
+  margin: 0 0 4px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.session-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: #fff3cd;
+  color: #d97706;
+}
+
+.session-time-label {
+  font-size: 0.75rem;
+  color: #adb5bd;
+  white-space: nowrap;
+  font-weight: 600;
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+/* ─── NOTIF ICON ─────────────────────────────────────── */
+.notif-icon-wrap {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fee2e2;
+}
+
+.notif-icon--info    { background: #eff6ff; color: #2563eb; border-color: #dbeafe; }
+.notif-icon--warning { background: #fffbeb; color: #d97706; border-color: #fde68a; }
+.notif-icon--success { background: #ecfdf5; color: #059669; border-color: #d1fae5; }
+.notif-icon--danger  { background: #fef2f2; color: #dc2626; border-color: #fee2e2; }
+
+/* ─── UNREAD DOT ─────────────────────────────────────── */
+.unread-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #0f6a1d;
+  flex-shrink: 0;
+}
+
+/* ─── NOTIFICATION ACTIONS ───────────────────────────── */
+.notif-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.notif-btn {
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid #dee2e6;
+  background: transparent;
+  color: #495057;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.notif-btn:hover { background: #f8f9fa; border-color: #adb5bd; }
+
+.notif-btn--primary {
+  background: #0f6a1d;
+  color: white;
+  border-color: #0f6a1d;
+}
+
+.notif-btn--primary:hover { background: #0a5217; border-color: #0a5217; }
+
+/* ─── SEARCH ─────────────────────────────────────────── */
+.search-wrap {
+  display: flex;
+  align-items: center;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 5px 10px;
+  gap: 6px;
+  max-width: 220px;
+}
+
+.search-wrap i { color: #adb5bd; font-size: 0.85rem; }
+
+.search-input {
+  border: none;
+  outline: none;
+  font-size: 0.83rem;
+  background: transparent;
+  color: #495057;
+  width: 100%;
+}
+
+/* ─── PAGINATOR ──────────────────────────────────────── */
+.notif-paginator {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #f1f3f5;
+  font-size: 0.83rem;
+  color: #6c757d;
+  font-weight: 600;
+}
+
+/* ─── PREFERENCIAS FOOTER ────────────────────────────── */
+.pref-footer {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #f1f3f5;
+}
+
+.btn-outline-full {
+  flex: 1;
+  padding: 9px;
+  background: transparent;
+  border: 1px solid #0f6a1d;
+  color: #0f6a1d;
+  font-weight: 600;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-outline-full:hover { background: #0f6a1d; color: white; }
+
+/* ─── TOGGLE SWITCH ──────────────────────────────────── */
+.cfg-switch {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 38px;
+  height: 21px;
+  border-radius: 11px;
+  background: #dee2e6;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.cfg-switch::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: white;
+  transition: left 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.cfg-switch:checked { background: #0f6a1d; }
+.cfg-switch:checked::after { left: 20px; }
+
+/* ─── MODAL ──────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.modal-dialog-panel {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+.btn-ghost-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+  background: transparent;
+  color: #495057;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-left: auto;
+}
+
+.btn-ghost-icon:hover { background: #f8f9fa; }
+
+/* ─── RESPONSIVE ─────────────────────────────────────── */
+@media (max-width: 900px) {
+  .main-grid { grid-template-columns: 1fr; }
+}

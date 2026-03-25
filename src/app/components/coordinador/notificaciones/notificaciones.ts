@@ -1,165 +1,150 @@
-// @ts-nocheck
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, computed, signal, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { of } from 'rxjs';
+import { LoadingService } from '../../../services/general/loading.service';
+import { LoadingComponent } from '../../shared/loading/loading.component';
+
+interface Notificacion {
+  id: string;
+  icono: string;
+  titulo: string;
+  mensaje: string;
+  tiempo: string;
+  leida: boolean;
+  tipo: string;
+  prioridad: string;
+}
 
 @Component({
-  selector: 'app-notificaciones',
+  selector: 'app-coordinador-notificaciones',
   standalone: true,
-  imports: [],
+  imports: [CommonModule, FormsModule, LoadingComponent],
   templateUrl: './notificaciones.html',
-  styleUrl: './notificaciones.css',
+  styleUrls: ['./notificaciones.css'],
 })
-export class Notificaciones implements AfterViewInit {
-  ngAfterViewInit() {
-    function showStatus(msg, kind='info'){ 
-      const sb = document.getElementById('status');
-      if(sb) { sb.textContent=msg; sb.className=`status ${kind}`; sb.hidden=false; setTimeout(()=>sb.hidden=true, 2600); }
-    }
+export class Notificaciones implements OnInit {
+  buscar = signal('');
+  paginaActual = signal(1);
+  porPagina = 5;
+  cargando = signal(false);
 
-    const coNotifList = document.getElementById('co-notif-list');
-    const statUnread = document.getElementById('co-stat-unread');
-    const statWeek = document.getElementById('co-stat-week');
-    const statImportant = document.getElementById('co-stat-important');
-    const statTotal = document.getElementById('co-stat-total');
-    const statSched = document.getElementById('co-stat-sched');
+  notificaciones = signal<Notificacion[]>([]);
 
-    const cfg = {
-      wa: document.getElementById('co-cfg-wa'),
-      mail: document.getElementById('co-cfg-mail'),
-      app: document.getElementById('co-cfg-app'),
-      sms: document.getElementById('co-cfg-sms'),
-      available: document.getElementById('co-cfg-available'),
-      start: document.getElementById('co-cfg-start'),
-      end: document.getElementById('co-cfg-end'),
-      dndStart: document.getElementById('co-dnd-start'),
-      dndEnd: document.getElementById('co-dnd-end'),
-      days: {
-        mon: document.getElementById('co-day-mon'), tue: document.getElementById('co-day-tue'),
-        wed: document.getElementById('co-day-wed'), thu: document.getElementById('co-day-thu'),
-        fri: document.getElementById('co-day-fri'), sat: document.getElementById('co-day-sat'),
-        sun: document.getElementById('co-day-sun'),
-      },
-      saveBtn: document.getElementById('co-cfg-save'),
-      resetBtn: document.getElementById('co-cfg-reset'),
+  prefs = signal({
+    wa: false,
+    mail: true,
+    app: true,
+    sms: false
+  });
+
+  notificacionesFiltradas = computed(() => {
+    const q = this.buscar().toLowerCase();
+    return this.notificaciones().filter(n =>
+      n.titulo.toLowerCase().includes(q) ||
+      n.mensaje.toLowerCase().includes(q) ||
+      n.tipo.toLowerCase().includes(q)
+    );
+  });
+
+  stats = computed(() => {
+    const all = this.notificaciones();
+    return {
+      sinLeer: all.filter(n => !n.leida).length,
+      importantes: all.filter(n => n.prioridad === 'Alta').length,
+      recibidas: all.length,
+      tasa: '95%'
     };
+  });
 
-    let coNotifs = [
-      { id:'N-3001', icon:'⚠️', title:'Falta documento en trámite C-2102', desc:'Sube el sustentante de convalidación.', time:'Hace 6 minutos', important:true, read:false },
-      { id:'N-3002', icon:'🔁', title:'Recordatorio de etapa pendiente', desc:'Caso C-2101 lleva 2 días en la misma etapa.', time:'Hace 1 hora', important:false, read:false },
-      { id:'N-3003', icon:'📥', title:'Nueva solicitud recibida', desc:'Caso C-2110 creado por Secretaría.', time:'Hoy 09:10', important:false, read:false },
-      { id:'N-3004', icon:'🗓', title:'Vence plazo de revisión', desc:'Caso C-2105 vence mañana.', time:'Ayer 18:30', important:true, read:true }
+  paginacion = computed(() => {
+    const total = this.notificacionesFiltradas().length;
+    const maxPagina = Math.ceil(total / this.porPagina) || 1;
+    let actual = this.paginaActual();
+    if (actual > maxPagina) actual = maxPagina;
+
+    const inicio = (actual - 1) * this.porPagina;
+    const items = this.notificacionesFiltradas().slice(inicio, inicio + this.porPagina);
+    return { items, actual, maxPagina, total };
+  });
+
+  notificacionSeleccionada = signal<Notificacion | null>(null);
+  showModal = signal(false);
+
+  constructor(private router: Router, private loadingService: LoadingService) {}
+
+  ngOnInit() {
+    this.cargarNotificaciones();
+
+    try {
+      const saved = JSON.parse(localStorage.getItem('coNotifPrefs') || '{}');
+      this.prefs.set({ ...this.prefs(), ...saved });
+    } catch {}
+  }
+
+  cargarNotificaciones(): void {
+    const mockData: Notificacion[] = [
+      { id: 'N-3001', icono: 'bi-exclamation-triangle-fill', titulo: 'Falta documento en trámite C-2102', mensaje: 'Sube el sustentante de convalidación.', tiempo: 'Hace 6 minutos', leida: false, tipo: 'Urgente', prioridad: 'Alta' },
+      { id: 'N-3002', icono: 'bi-arrow-repeat', titulo: 'Recordatorio de etapa pendiente', mensaje: 'Caso C-2101 lleva 2 días en la misma etapa.', tiempo: 'Hace 1 hora', leida: false, tipo: 'Seguimiento', prioridad: 'Media' },
+      { id: 'N-3003', icono: 'bi-inbox-fill', titulo: 'Nueva solicitud recibida', mensaje: 'Caso C-2110 creado por Secretaría.', tiempo: 'Hoy 09:10', leida: false, tipo: 'Sistema', prioridad: 'Baja' },
+      { id: 'N-3004', icono: 'bi-calendar-check-fill', titulo: 'Vence plazo de revisión', mensaje: 'Caso C-2105 vence mañana.', tiempo: 'Ayer 18:30', leida: true, tipo: 'Resolución', prioridad: 'Alta' }
     ];
 
-    function loadCoPrefs(){
-      try{
-        const raw = localStorage.getItem('coNotifPrefs');
-        if(!raw) return;
-        const p = JSON.parse(raw);
-        if(cfg.wa) cfg.wa.checked = !!p.wa;
-        if(cfg.mail) cfg.mail.checked = !!p.mail;
-        if(cfg.app) cfg.app.checked = !!p.app;
-        if(cfg.sms) cfg.sms.checked = !!p.sms;
-        if(cfg.available) cfg.available.checked = p.available !== false;
-        if(cfg.start && p.start) cfg.start.value = p.start;
-        if(cfg.end && p.end) cfg.end.value = p.end;
-        if(cfg.dndStart && p.dndStart) cfg.dndStart.value = p.dndStart;
-        if(cfg.dndEnd && p.dndEnd) cfg.dndEnd.value = p.dndEnd;
-        if(cfg.days){
-          Object.keys(cfg.days).forEach(k => { if(p.days && k in p.days) cfg.days[k].checked = !!p.days[k]; });
-        }
-      }catch{}
-    }
-    function saveCoPrefs(){
-      const p = {
-        wa: !!cfg.wa?.checked, mail: !!cfg.mail?.checked, app: !!cfg.app?.checked, sms: !!cfg.sms?.checked,
-        available: !!cfg.available?.checked, start: cfg.start?.value || '08:00', end: cfg.end?.value || '18:00',
-        dndStart: cfg.dndStart?.value || '22:00', dndEnd: cfg.dndEnd?.value || '07:00',
-        days: {
-          mon: !!cfg.days?.mon?.checked, tue: !!cfg.days?.tue?.checked, wed: !!cfg.days?.wed?.checked,
-          thu: !!cfg.days?.thu?.checked, fri: !!cfg.days?.fri?.checked, sat: !!cfg.days?.sat?.checked, sun: !!cfg.days?.sun?.checked,
-        },
-      };
-      localStorage.setItem('coNotifPrefs', JSON.stringify(p));
-      updateCoStats();
-      showStatus('Preferencias guardadas', 'success');
-    }
-    function resetCoPrefs(){
-      localStorage.removeItem('coNotifPrefs');
-      loadCoPrefs();
-      updateCoStats();
-    }
-
-    function renderCoNotifs(){
-      if(!coNotifList) return;
-      coNotifList.innerHTML = '';
-      coNotifs.forEach(n => {
-        const li = document.createElement('li');
-        li.className = 'notif-card';
-        li.innerHTML = `
-          <div class="notif-card__icon">${n.icon}</div>
-          <div class="notif-card__body">
-            <div class="notif-card__title">${n.title}${n.important? ' <span style="color:#dc2626">•</span>':''}</div>
-            <div class="notif-card__desc">${n.desc}</div>
-            <div class="notif-card__actions">
-              <button class="pill pill--primary js-detail">Ver detalle</button>
-              <button class="pill pill--light js-read">${n.read? 'Leído':'Marcar leído'}</button>
-            </div>
-          </div>
-          <div class="notif-card__time">${n.time}</div>
-        `;
-        li.querySelector('.js-read')?.addEventListener('click', ()=>{ n.read = true; renderCoNotifs(); updateCoStats(); try{ showStatus('Notificación marcada como leída','success'); }catch{} });
-        li.querySelector('.js-detail')?.addEventListener('click', ()=> openNotifModal(n));
-        coNotifList.appendChild(li);
-      });
-      updateCoStats();
-    }
-
-    const notifModal = document.getElementById('notif-modal');
-    const notifClose = document.getElementById('notif-close');
-    const notifIco = document.getElementById('notif-ico');
-    const notifTitle = document.getElementById('notif-title');
-    const notifDesc = document.getElementById('notif-desc');
-    const notifTime = document.getElementById('notif-time');
-    const notifGoto = document.getElementById('notif-goto');
-    const notifMark = document.getElementById('notif-mark');
-    let notifCtx = { id:null };
-
-    function openNotifModal(n){
-      notifCtx = { id: n.id, caseId: (n.desc.match(/(C-\d{4})/)||[])[1] };
-      if(notifIco) notifIco.textContent = n.icon || '🔔';
-      if(notifTitle) notifTitle.textContent = n.title || 'Notificación';
-      if(notifDesc) notifDesc.textContent = n.desc || '';
-      if(notifTime) notifTime.textContent = n.time || '';
-      if(notifModal) notifModal.hidden = false;
-    }
-    function closeNotifModal(){ if(notifModal) notifModal.hidden = true; }
-    notifClose?.addEventListener('click', closeNotifModal);
-    notifModal?.addEventListener('click', (e)=>{ if(e.target?.dataset?.close) closeNotifModal(); });
-    notifMark?.addEventListener('click', ()=>{ const n = coNotifs.find(x=>x.id===notifCtx.id); if(n){ n.read = true; renderCoNotifs(); try{ showStatus('Notificación marcada como leída','success'); }catch{} } closeNotifModal(); });
-    notifGoto?.addEventListener('click', ()=>{
-      window.location.href = '/coordinacion/seguimiento';
-      closeNotifModal();
-    });
-
-    function updateCoStats(){
-      const unread = coNotifs.filter(n => !n.read).length;
-      const important = coNotifs.filter(n => n.important).length;
-      const total = coNotifs.length;
-      if(statUnread) statUnread.textContent = String(unread);
-      if(statImportant) statImportant.textContent = String(important);
-      if(statTotal) statTotal.textContent = String(total);
-      if(statWeek) statWeek.textContent = String(Math.max(5, Math.ceil(total*0.6)));
-      const pRaw = localStorage.getItem('coNotifPrefs');
-      if(pRaw){
-        try{
-          const p = JSON.parse(pRaw);
-          if(statSched) statSched.textContent = p.available === false ? 'Pausado' : `${p.start||'08:00'}-${p.end||'18:00'}`;
-        }catch{}
+    this.cargando.set(true);
+    this.loadingService.withMinDuration(of(mockData)).subscribe({
+      next: (data) => {
+        this.notificaciones.set(data);
+        this.cargando.set(false);
+      },
+      error: () => {
+        this.cargando.set(false);
       }
-    }
+    });
+  }
 
-    cfg.saveBtn?.addEventListener('click', saveCoPrefs);
-    cfg.resetBtn?.addEventListener('click', resetCoPrefs);
-    loadCoPrefs();
-    renderCoNotifs();
+  cambiarPagina(dir: number) {
+    const nueva = this.paginaActual() + dir;
+    const m = Math.ceil(this.notificacionesFiltradas().length / this.porPagina);
+    if (nueva >= 1 && nueva <= m) {
+      this.paginaActual.set(nueva);
+    }
+  }
+
+  abrirNotificacion(n: Notificacion) {
+    this.notificacionSeleccionada.set(n);
+    this.showModal.set(true);
+  }
+
+  cerrarModal() {
+    this.showModal.set(false);
+    this.notificacionSeleccionada.set(null);
+  }
+
+  marcarLeida(id: string, e?: Event) {
+    if (e) e.stopPropagation();
+    this.notificaciones.update(arr => {
+      const i = arr.findIndex(x => x.id === id);
+      if (i > -1) arr[i] = { ...arr[i], leida: true };
+      return [...arr];
+    });
+    if (this.notificacionSeleccionada()?.id === id) {
+      this.cerrarModal();
+    }
+  }
+
+  irAlTramite() {
+    this.cerrarModal();
+    this.router.navigate(['/coordinacion/solicitudes']);
+  }
+
+  guardarPrefs() {
+    localStorage.setItem('coNotifPrefs', JSON.stringify(this.prefs()));
+    alert('Preferencias guardadas exitosamente.');
+  }
+
+  restablecerPrefs() {
+    this.prefs.set({ wa: false, mail: true, app: true, sms: false });
+    localStorage.removeItem('coNotifPrefs');
   }
 }

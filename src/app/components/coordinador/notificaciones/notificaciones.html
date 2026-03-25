@@ -1,120 +1,185 @@
-﻿          <section class="stats">
-            <div class="stat"><div class="stat__text"><div class="stat__value" id="co-stat-unread">0</div><div class="stat__label">Mensajes sin leer</div></div><div class="stat__icon" style="background:#fee2e2;"><i class="bi bi-envelope-arrow-down-fill"></i></div></div>
-            <div class="stat"><div class="stat__text"><div class="stat__value" id="co-stat-week">0</div><div class="stat__label">Mensajes esta semana</div></div><div class="stat__icon" style="background:#dbeafe;"><i class="bi bi-calendar-week-fill"></i></div></div>
-            <div class="stat"><div class="stat__text"><div class="stat__value" id="co-stat-important">0</div><div class="stat__label">Importantes</div></div><div class="stat__icon" style="background:#fef3c7;"><i class="bi bi-star-fill"></i></div></div>
-            <div class="stat"><div class="stat__text"><div class="stat__value" id="co-stat-total">0</div><div class="stat__label">Entregadas</div></div><div class="stat__icon" style="background:#d1fae5;"><i class="bi bi-inbox-fill"></i></div></div>
-            <div class="stat"><div class="stat__text"><div class="stat__value" id="co-stat-sched">24/7</div><div class="stat__label">Horario</div></div><div class="stat__icon" style="background:#ede9fe;"><i class="bi bi-clock-fill"></i></div></div>
-          </section>
+<div class="dashboard-container">
 
-          <article class="panel">
-            <div class="panel__header"><h3>Historial de notificaciones</h3></div>
-            <ul id="co-notif-list" class="notif-list"></ul>
-          </article>
+  <!-- KPI ROW -->
+  <section class="kpi-grid">
+    <div class="kpi-card kpi-primary">
+      <div class="kpi-content">
+        <span class="kpi-label">Sin leer</span>
+        <span class="kpi-value">{{ stats().sinLeer }}</span>
+      </div>
+      <div class="kpi-icon"><i class="bi bi-envelope-fill"></i></div>
+    </div>
+    <div class="kpi-card kpi-warning">
+      <div class="kpi-content">
+        <span class="kpi-label">Esta semana</span>
+        <span class="kpi-value">{{ paginacion().total }}</span>
+      </div>
+      <div class="kpi-icon"><i class="bi bi-calendar-week"></i></div>
+    </div>
+    <div class="kpi-card kpi-danger">
+      <div class="kpi-content">
+        <span class="kpi-label">Importantes</span>
+        <span class="kpi-value">{{ stats().importantes }}</span>
+      </div>
+      <div class="kpi-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
+    </div>
+    <div class="kpi-card kpi-success">
+      <div class="kpi-content">
+        <span class="kpi-label">Tasa de entrega</span>
+        <span class="kpi-value">{{ stats().tasa }}</span>
+      </div>
+      <div class="kpi-icon"><i class="bi bi-check-circle-fill"></i></div>
+    </div>
+  </section>
 
-          <article class="panel notif-config" aria-labelledby="co-notif-config-title">
-            <div class="panel__header"><h3 id="co-notif-config-title">Preferencias de recepciÃ³n</h3></div>
-            <div class="cfg-grid">
-              <label class="cfg-item">
-                <span class="cfg-icon"><i class="bi bi-chat-fill"></i></span>
-                <span class="cfg-text"><strong>WhatsApp</strong><br/><small>Mensajes a tu nÃºmero registrado</small></span>
-                <span class="cfg-spacer"></span>
-                <input type="checkbox" class="switch" id="co-cfg-wa" />
-              </label>
-              <label class="cfg-item">
-                <span class="cfg-icon"><i class="bi bi-envelope-fill"></i></span>
-                <span class="cfg-text"><strong>Correo electrÃ³nico</strong><br/><small>Enviaremos un email a tu cuenta UTEQ</small></span>
-                <span class="cfg-spacer"></span>
-                <input type="checkbox" class="switch" id="co-cfg-mail" checked />
-              </label>
-              <label class="cfg-item">
-                <span class="cfg-icon"><i class="bi bi-phone-fill"></i></span>
-                <span class="cfg-text"><strong>NotificaciÃ³n en la app</strong><br/><small>Alertas dentro del sistema</small></span>
-                <span class="cfg-spacer"></span>
-                <input type="checkbox" class="switch" id="co-cfg-app" checked />
-              </label>
-              <label class="cfg-item">
-                <span class="cfg-icon"><i class="bi bi-phone-vibrate-fill"></i></span>
-                <span class="cfg-text"><strong>SMS</strong><br/><small>Mensajes de texto a tu lÃ­nea</small></span>
-                <span class="cfg-spacer"></span>
-                <input type="checkbox" class="switch" id="co-cfg-sms" />
-              </label>
-            </div>
+  <!-- MAIN ROW -->
+  <section class="main-grid">
 
-            <div class="cfg-grid" style="margin-top:12px">
-              <label class="cfg-item">
-                <span class="cfg-icon"><i class="bi bi-circle-fill" style="color:#22c55e"></i></span>
-                <span class="cfg-text"><strong>Disponible</strong><br/><small>Recibir notificaciones ahora</small></span>
-                <span class="cfg-spacer"></span>
-                <input type="checkbox" class="switch" id="co-cfg-available" checked />
-              </label>
-              <div class="cfg-item">
-                <span class="cfg-icon"><i class="bi bi-alarm-fill"></i></span>
-                <div class="cfg-text"><strong>Horario de recepciÃ³n</strong><br/><small>Solo enviar entre estas horas</small></div>
-                <div class="cfg-spacer"></div>
-                <div style="display:flex;gap:8px;align-items:center">
-                  <input id="co-cfg-start" type="time" class="select" value="08:00" />
-                  <span>â€”</span>
-                  <input id="co-cfg-end" type="time" class="select" value="18:00" />
-                </div>
-              </div>
-            </div>
-
-            <div class="cfg-grid" style="margin-top:12px">
-              <div class="cfg-item">
-                <span class="cfg-icon"><i class="bi bi-calendar-event-fill"></i></span>
-                <div class="cfg-text"><strong>DÃ­as permitidos</strong><br/><small>Selecciona cuÃ¡ndo quieres recibir</small></div>
-                <div class="cfg-spacer"></div>
-                <div style="display:flex;gap:8px;flex-wrap:wrap">
-                  <label><input type="checkbox" id="co-day-mon" checked /> Lun</label>
-                  <label><input type="checkbox" id="co-day-tue" checked /> Mar</label>
-                  <label><input type="checkbox" id="co-day-wed" checked /> MiÃ©</label>
-                  <label><input type="checkbox" id="co-day-thu" checked /> Jue</label>
-                  <label><input type="checkbox" id="co-day-fri" checked /> Vie</label>
-                  <label><input type="checkbox" id="co-day-sat" /> SÃ¡b</label>
-                  <label><input type="checkbox" id="co-day-sun" /> Dom</label>
-                </div>
-              </div>
-              <div class="cfg-item">
-                <span class="cfg-icon"><i class="bi bi-bell-slash-fill"></i></span>
-                <div class="cfg-text"><strong>No molestar</strong><br/><small>Silenciar en este horario</small></div>
-                <div class="cfg-spacer"></div>
-                <div style="display:flex;gap:8px;align-items:center">
-                  <input id="co-dnd-start" type="time" class="select" value="22:00" />
-                  <span>â€”</span>
-                  <input id="co-dnd-end" type="time" class="select" value="07:00" />
-                </div>
-              </div>
-            </div>
-
-            <div class="form-actions">
-              <button type="button" class="btn-ghost" id="co-cfg-reset">Restablecer</button>
-              <button type="button" class="btn-primary" id="co-cfg-save">Guardar preferencias</button>
-            </div>
-          </article>
-
-    <!-- Modal: Detalle de notificaciÃ³n -->
-    <div id="notif-modal" class="modal" hidden>
-      <div class="modal__backdrop" data-close="1"></div>
-      <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="notif-modal-title">
-        <div class="modal__header">
-          <h3 id="notif-modal-title">Detalle de notificaciÃ³n</h3>
-          <button id="notif-close" class="btn-ghost" type="button"><i class="bi bi-x-lg"></i></button>
+    <!-- HISTORIAL -->
+    <div class="dash-panel">
+      <div class="panel-header">
+        <i class="bi bi-bell-fill"></i>
+        <h3 class="panel-title">Historial de notificaciones</h3>
+        <div class="search-wrap ms-auto">
+          <i class="bi bi-search"></i>
+          <input class="search-input" [ngModel]="buscar()" (ngModelChange)="buscar.set($event)" placeholder="Buscar..." />
         </div>
-        <div class="modal__body">
-          <div id="notif-meta" style="display:flex;gap:10px;align-items:flex-start;margin-bottom:8px">
-            <div id="notif-ico" class="notif-card__icon"><i class="bi bi-bell-fill"></i></div>
-            <div>
-              <div id="notif-title" class="notif-card__title">â€”</div>
-              <div id="notif-desc" class="notif-card__desc" style="margin-top:4px">â€”</div>
-              <div id="notif-time" class="notif-card__time" style="margin-top:6px">â€”</div>
-            </div>
-          </div>
-          <div class="form-actions">
-            <button id="notif-goto" class="btn-primary" type="button">Ir al trÃ¡mite</button>
-            <button id="notif-mark" class="btn-ghost" type="button">Marcar como leÃ­do</button>
+        <!-- PAGINACIÓN (mismo estilo toolbar que seguimiento) -->
+        <div class="d-flex align-items-center gap-2 ms-2 ps-3" style="border-left: 1px solid #e9ecef;">
+          <span style="font-size: 0.85rem; color: #6c757d; font-weight: 600; white-space: nowrap;">
+            Pág. {{ paginacion().actual }} de {{ paginacion().maxPagina }}
+          </span>
+          <div class="btn-group">
+            <button class="btn btn-outline-secondary btn-sm" (click)="cambiarPagina(-1)" [disabled]="paginacion().actual === 1">&laquo;</button>
+            <button class="btn btn-outline-secondary btn-sm" (click)="cambiarPagina(1)" [disabled]="paginacion().actual >= paginacion().maxPagina">&raquo;</button>
           </div>
         </div>
       </div>
+
+      <div class="session-list">
+        @if (cargando()) {
+          <app-loading message="Cargando notificaciones..."></app-loading>
+        }
+
+        @if (!cargando()) {
+          @for (n of paginacion().items; track n.id) {
+            <div class="session-item" (click)="abrirNotificacion(n)" style="cursor:pointer;">
+              <div class="notif-icon-wrap"
+                   [class.notif-icon--danger]="n.prioridad === 'Alta'"
+                   [class.notif-icon--info]="n.tipo === 'Seguimiento'"
+                   [class.notif-icon--warning]="n.tipo === 'Sistema'"
+                   [class.notif-icon--success]="n.tipo === 'Resolución'">
+                <i class="bi {{ n.icono }}"></i>
+              </div>
+              <div class="session-info">
+                <h4 class="session-title">{{ n.titulo }}</h4>
+                <div style="font-size: 0.8rem; color: #6c757d; margin-bottom: 8px;">{{ n.mensaje }}</div>
+                <div class="notif-actions">
+                  <button class="notif-btn notif-btn--primary" (click)="$event.stopPropagation(); abrirNotificacion(n)">
+                    <i class="bi bi-eye"></i> Ver solicitud
+                  </button>
+                </div>
+              </div>
+              <div class="session-time-label">{{ n.tiempo }}</div>
+            </div>
+          }
+
+          @if (paginacion().items.length === 0) {
+            <div style="text-align:center; padding: 40px; color: #6c757d;">
+              <i class="bi bi-bell-slash" style="font-size: 2rem; display: block; margin-bottom: 10px; color: #dee2e6;"></i>
+              No hay notificaciones.
+            </div>
+          }
+        }
+      </div><!-- /session-list -->
     </div>
 
 
+    <!-- PREFERENCIAS -->
+    <div class="dash-panel">
+      <div class="panel-header">
+        <i class="bi bi-sliders"></i>
+        <h3 class="panel-title">Preferencias de recepción</h3>
+      </div>
+
+      <div class="session-list">
+        <label class="session-item pref-item">
+          <div class="notif-icon-wrap notif-icon--success"><i class="bi bi-whatsapp"></i></div>
+          <div class="session-info">
+            <h4 class="session-title" style="font-size: 0.88rem;">WhatsApp</h4>
+            <div style="font-size: 0.78rem; color: #6c757d;">Mensajes a tu número registrado</div>
+          </div>
+          <input type="checkbox" class="cfg-switch" [checked]="prefs().wa" (change)="prefs.set({...prefs(), wa: !prefs().wa})" />
+        </label>
+
+        <label class="session-item pref-item">
+          <div class="notif-icon-wrap notif-icon--info"><i class="bi bi-envelope-fill"></i></div>
+          <div class="session-info">
+            <h4 class="session-title" style="font-size: 0.88rem;">Correo electrónico</h4>
+            <div style="font-size: 0.78rem; color: #6c757d;">Email a tu cuenta UTEQ</div>
+          </div>
+          <input type="checkbox" class="cfg-switch" [checked]="prefs().mail" (change)="prefs.set({...prefs(), mail: !prefs().mail})" />
+        </label>
+
+        <label class="session-item pref-item">
+          <div class="notif-icon-wrap notif-icon--warning"><i class="bi bi-bell-fill"></i></div>
+          <div class="session-info">
+            <h4 class="session-title" style="font-size: 0.88rem;">Notificación en la app</h4>
+            <div style="font-size: 0.78rem; color: #6c757d;">Alertas dentro del sistema</div>
+          </div>
+          <input type="checkbox" class="cfg-switch" [checked]="prefs().app" (change)="prefs.set({...prefs(), app: !prefs().app})" />
+        </label>
+
+        <label class="session-item pref-item" style="border-bottom: none;">
+          <div class="notif-icon-wrap notif-icon--danger"><i class="bi bi-phone-fill"></i></div>
+          <div class="session-info">
+            <h4 class="session-title" style="font-size: 0.88rem;">SMS</h4>
+            <div style="font-size: 0.78rem; color: #6c757d;">Mensajes de texto a tu línea</div>
+          </div>
+          <input type="checkbox" class="cfg-switch" [checked]="prefs().sms" (change)="prefs.set({...prefs(), sms: !prefs().sms})" />
+        </label>
+      </div>
+
+      <div class="pref-footer">
+        <button type="button" class="btn-outline-full" style="border-color:#dee2e6; color:#6c757d;" (click)="restablecerPrefs()">Restablecer</button>
+        <button type="button" class="btn-outline-full" (click)="guardarPrefs()">Guardar preferencias</button>
+      </div>
+    </div>
+
+  </section>
+
+</div>
+
+<!-- MODAL -->
+@if (showModal() && notificacionSeleccionada()) {
+  <div class="modal-overlay">
+    <div class="modal-backdrop" (click)="cerrarModal()"></div>
+    <div class="dash-panel modal-dialog-panel" role="dialog">
+      <div class="panel-header">
+        <i class="bi bi-bell-fill"></i>
+        <h3 class="panel-title">Detalle de notificación</h3>
+        <button class="btn-ghost-icon ms-auto" type="button" (click)="cerrarModal()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      <div class="session-list">
+        <div class="session-item" style="cursor:default; pointer-events:none;">
+          <div class="notif-icon-wrap"><i class="bi {{ notificacionSeleccionada()!.icono }}"></i></div>
+          <div class="session-info">
+            <h4 class="session-title">{{ notificacionSeleccionada()!.titulo }}</h4>
+            <div style="font-size: 0.8rem; color: #6c757d; margin-bottom: 4px;">{{ notificacionSeleccionada()!.mensaje }}</div>
+            <span class="session-badge">{{ notificacionSeleccionada()!.tiempo }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="pref-footer">
+        <button class="btn-outline-full" style="border-color:#dee2e6; color:#6c757d;" type="button" (click)="marcarLeida(notificacionSeleccionada()!.id)">
+          <i class="bi bi-check2"></i> Marcar como leído
+        </button>
+        <button class="btn-outline-full" type="button" (click)="irAlTramite()">
+          <i class="bi bi-arrow-right"></i> Ir a la solicitud
+        </button>
+      </div>
+    </div>
+  </div>
+}
