@@ -80,6 +80,16 @@ export class Solicitudes {
     { id:'C-2107', titulo:'Homologación de materias - Sara León', estudiante:'Sara León', tipo:'Homologación', prioridad:'Media', estado:'Evaluación requerida', creado:'2025-09-05', actualizado:'2025-09-06', files:[ {name:'Syllabus.pdf', size:'3.1 MB'} ], steps: this.flowMap.homologacion.map((s,idx)=>({ ...s, started: idx===0? '2025-09-05': null, done: idx<2? (idx===0? '2025-09-05':'2025-09-06') : null })), current: 2 }
   ]);
 
+  stats = computed(() => {
+    const all = this.tramites();
+    return {
+      pendientes: all.filter(t => t.estado === 'Pendiente' || t.estado.includes('requerida')).length,
+      enRevision: all.filter(t => t.estado === 'En revisión' || t.estado.includes('progreso')).length,
+      finalizadas: all.filter(t => t.estado === 'Finalizado' || t.estado === 'Rechazado').length,
+      total: all.length
+    };
+  });
+
   tramitesFiltrados = computed(() => {
     const q = this.buscar().toLowerCase();
     return this.tramites().filter(t => 
@@ -197,3 +207,4 @@ export class Solicitudes {
     }
   }
 }
+

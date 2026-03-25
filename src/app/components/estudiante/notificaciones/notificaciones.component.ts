@@ -1,104 +1,135 @@
-import { Component, AfterViewInit } from '@angular/core';
+﻿import { Component, computed, signal, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+
+interface Notificacion {
+  id: string;
+  icono: string;
+  titulo: string;
+  mensaje: string;
+  tiempo: string;
+  leida: boolean;
+  tipo: string;
+  prioridad: string;
+}
 
 @Component({
   selector: 'app-estudiante-notificaciones',
   standalone: true,
-  imports: [],
+  imports: [CommonModule, FormsModule],
   templateUrl: './notificaciones.component.html',
-  styleUrl: './notificaciones.component.css',
+  styleUrls: ['./notificaciones.component.css'],
 })
-export class EstudianteNotificaciones implements AfterViewInit {
+export class EstudianteNotificaciones implements OnInit {
+  buscar = signal('');
+  paginaActual = signal(1);
+  porPagina = 5;
 
-  ngAfterViewInit() {
-    const notifList = document.getElementById('notif-list');
-    const stNotifModal = document.getElementById('st-notif-modal');
-    const stNotifClose = document.getElementById('st-notif-close');
-    const stNotifIco = document.getElementById('st-notif-ico');
-    const stNotifHead = document.getElementById('st-notif-head');
-    const stNotifDesc = document.getElementById('st-notif-desc');
-    const stNotifTime = document.getElementById('st-notif-time');
-    const stNotifGoto = document.getElementById('st-notif-goto');
-    const stNotifMark = document.getElementById('st-notif-mark');
-    let stNotifCtx: {li: HTMLElement | null, caseId: string | null} = { li:null, caseId:null };
+  notificaciones = signal<Notificacion[]>([
+    { id: 'N-101', icono: 'bi-exclamation-triangle-fill', titulo: 'Acción requerida, ¡Urgente!', mensaje: 'Completa los documentos faltantes, tu solicitud vence HOY.', tiempo: 'Hace 10 minutos', leida: false, tipo: 'Urgente', prioridad: 'Alta' },
+    { id: 'N-102', icono: 'bi-arrow-repeat', titulo: 'Solicitud de cambio de carrera, ¡Enviada!', mensaje: 'En evaluación, respuesta en 15 días aproximadamente.', tiempo: 'Hoy', leida: false, tipo: 'Seguimiento', prioridad: 'Media' },
+    { id: 'N-103', icono: 'bi-file-earmark-check', titulo: 'Solicitud de validación para tu sílabo, ¡Está en revisión!', mensaje: 'Este proceso toma entre 1 - 3 días hábiles.', tiempo: 'Esta semana', leida: true, tipo: 'Sistema', prioridad: 'Baja' },
+    { id: 'N-104', icono: 'bi-envelope-paper', titulo: 'Tienes un nuevo mensaje de coordinación', mensaje: 'Revisa los comentarios en tu solicitud.', tiempo: 'Hace 2 días', leida: true, tipo: 'Mensaje', prioridad: 'Alta' },
+    { id: 'N-105', icono: 'bi-check-circle-fill', titulo: 'Resolución aprobada', mensaje: 'Se ha aprobado tu justificación de inasistencia.', tiempo: 'Hace 1 semana', leida: true, tipo: 'Resolución', prioridad: 'Media' }
+  ]);
 
-    function stOpenNotifModal(fromLi: HTMLElement){
-      stNotifCtx.li = fromLi;
-      const icon = fromLi.querySelector('.notif-card__icon')?.textContent?.trim() || '🔔';
-      const title = fromLi.querySelector('.notif-card__title')?.textContent?.trim() || 'Notificación';
-      const desc = fromLi.querySelector('.notif-card__desc')?.textContent?.trim() || '';
-      const time = fromLi.querySelector('.notif-card__time')?.textContent?.trim() || '';
-      stNotifCtx.caseId = (desc.match(/(C-\d{4})/)||[])[1] || null;
-      if(stNotifIco) stNotifIco.textContent = icon;
-      if(stNotifHead) stNotifHead.textContent = title;
-      if(stNotifDesc) stNotifDesc.textContent = desc;
-      if(stNotifTime) stNotifTime.textContent = time;
-      if(stNotifModal) stNotifModal.hidden = false;
-    }
-    function stCloseNotifModal(){ if(stNotifModal) stNotifModal.hidden = true; }
-    stNotifClose?.addEventListener('click', stCloseNotifModal);
-    stNotifModal?.addEventListener('click', (e)=>{ if((e.target as HTMLElement)?.dataset?.['close']) stCloseNotifModal(); });
+  prefs = signal({
+    wa: false,
+    mail: true,
+    app: true,
+    sms: false
+  });
 
-    // Delegate clicks in notif list
-    if(notifList){
-      notifList.addEventListener('click', (e)=>{
-        const t = e.target as HTMLElement;
-        const li = t.closest('.notif-card') as HTMLElement | null;
-        if(!li) return;
-        if(t.classList.contains('js-read')){
-          li.style.opacity = '0.55';
-          t.setAttribute('disabled','');
-          t.textContent = 'Leído';
-          alert('Notificación marcada como leída');
-          return;
-        }
-        // Open details
-        if(t.classList.contains('pill--primary') || t.classList.contains('notif-card__body') || t.closest('.notif-card__body')){
-          stOpenNotifModal(li);
-        }
+  notificacionesFiltradas = computed(() => {
+    const q = this.buscar().toLowerCase();
+    return this.notificaciones().filter(n =>
+      n.titulo.toLowerCase().includes(q) ||
+      n.mensaje.toLowerCase().includes(q) ||
+      n.tipo.toLowerCase().includes(q)
+    );
+  });
+
+  stats = computed(() => {
+    const all = this.notificaciones();
+    return {
+      sinLeer: all.filter(n => !n.leida).length,
+      importantes: all.filter(n => n.prioridad === 'Alta').length,
+      recibidas: all.length,
+      tasa: '95%'
+    };
+  });
+
+  paginacion = computed(() => {
+    const total = this.notificacionesFiltradas().length;
+    const maxPagina = Math.ceil(total / this.porPagina) || 1;
+    let actual = this.paginaActual();
+    if (actual > maxPagina) actual = maxPagina;
+
+    const inicio = (actual - 1) * this.porPagina;
+    const items = this.notificacionesFiltradas().slice(inicio, inicio + this.porPagina);
+    return { items, actual, maxPagina, total };
+  });
+
+  notificacionSeleccionada = signal<Notificacion | null>(null);
+  showModal = signal(false);
+
+  constructor(private router: Router) {}
+
+  ngOnInit() {
+    try {
+      const saved = JSON.parse(localStorage.getItem('sgte_notif_prefs') || '{}');
+      this.prefs.set({
+        ...this.prefs(),
+        ...saved
       });
-    }
+    } catch {}
+  }
 
-    stNotifMark?.addEventListener('click', ()=>{
-      const btn = stNotifCtx.li?.querySelector('.js-read') as HTMLButtonElement | null;
-      if(btn){ btn.click(); }
-      stCloseNotifModal();
-    });
-
-    stNotifGoto?.addEventListener('click', ()=>{
-      window.location.href = '/estudiante/seguimiento';
-      stCloseNotifModal();
-    });
-
-    // Preferencias de canales (localStorage demo)
-    const storageKey = 'sgte_notif_prefs';
-    const inputs = ['cfg-wa','cfg-mail','cfg-app','cfg-sms']
-      .map(id => document.getElementById(id) as HTMLInputElement | null)
-      .filter(Boolean) as HTMLInputElement[];
-    const btnSave = document.getElementById('cfg-save');
-    const btnReset = document.getElementById('cfg-reset');
-
-    // Cargar
-    try{
-      const saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
-      inputs.forEach(inp => { if(saved[inp.id] !== undefined) inp.checked = !!saved[inp.id]; });
-    }catch{}
-
-    // Guardar
-    if(btnSave){
-      btnSave.addEventListener('click', ()=>{
-        const prefs: {[key: string]: boolean} = {};
-        inputs.forEach(inp => prefs[inp.id] = inp.checked);
-        localStorage.setItem(storageKey, JSON.stringify(prefs));
-        alert('Preferencias guardadas');
-      });
-    }
-
-    // Restablecer
-    if(btnReset){
-      btnReset.addEventListener('click', ()=>{
-        inputs.forEach(inp => inp.checked = (inp.id==='cfg-mail' || inp.id==='cfg-app'));
-        localStorage.removeItem(storageKey);
-      });
+  cambiarPagina(dir: number) {
+    const nueva = this.paginaActual() + dir;
+    const m = Math.ceil(this.notificacionesFiltradas().length / this.porPagina);
+    if (nueva >= 1 && nueva <= m) {
+      this.paginaActual.set(nueva);
     }
   }
+
+  abrirNotificacion(n: Notificacion) {
+    this.notificacionSeleccionada.set(n);
+    this.showModal.set(true);
+  }
+
+  cerrarModal() {
+    this.showModal.set(false);
+    this.notificacionSeleccionada.set(null);
+  }
+
+  marcarLeida(id: string, e?: Event) {
+    if(e) e.stopPropagation();
+    this.notificaciones.update(arr => {
+      const i = arr.findIndex(x => x.id === id);
+      if (i > -1) arr[i] = { ...arr[i], leida: true };
+      return [...arr];
+    });
+    // Si marcamos desde el modal
+    if(this.notificacionSeleccionada()?.id === id) {
+      this.cerrarModal();
+    }
+  }
+
+  irAlTramite() {
+    this.cerrarModal();
+    this.router.navigate(['/estudiante/seguimiento']);
+  }
+
+  guardarPrefs() {
+    localStorage.setItem('sgte_notif_prefs', JSON.stringify(this.prefs()));
+    alert('Preferencias guardadas exitosamente.');
+  }
+
+  restablecerPrefs() {
+    this.prefs.set({ wa: false, mail: true, app: true, sms: false });
+    localStorage.removeItem('sgte_notif_prefs');
+  }
 }
+

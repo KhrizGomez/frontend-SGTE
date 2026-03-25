@@ -5,13 +5,11 @@
         <img src="assets/logo.png" alt="UTEQ" height="42" width="180" style="object-fit: contain;"/>
       </div>
       <nav class="nav d-inline-block">
-        <p class="nav__section">Principal</p>
+        <p class="nav__section">Acciones</p>
         <a class="nav__item" [routerLink]="['/decanato/dashboard']" routerLinkActive="active">Dashboard</a>
         <a class="nav__item" [routerLink]="['/decanato/plantillas']" routerLinkActive="active">Plantillas</a>
         <a class="nav__item" [routerLink]="['/decanato/solicitudes']" routerLinkActive="active">Solicitudes</a>
-        <p class="nav__section">Herramientas</p>
         <a class="nav__item" [routerLink]="['/decanato/notificaciones']" routerLinkActive="active">Notificaciones</a>
-        <a class="nav__item" [routerLink]="['/decanato/reportes']" routerLinkActive="active">Reportes</a>
       </nav>
       <div class="user">
         <div class="avatar text-white" style="background:#04873C">{{ getIniciales() }}</div>
@@ -42,3 +40,4 @@
 </div>
 
 <app-ai-chat [config]="chatConfig"></app-ai-chat>
+

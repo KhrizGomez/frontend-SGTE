@@ -1,177 +1,235 @@
 ﻿<div class="dashboard-container">
-  
+
   <!-- KPI ROW -->
   <section class="kpi-row">
-    <div class="kpi-card kpi-warning">
-      <div class="kpi-content">
-        <span class="kpi-label">Inactivas</span>
-        <span class="kpi-value">{{ inactivasTotal }}</span>
-      </div>
-      <div class="kpi-icon"><i class="bi bi-clock"></i></div>
-    </div>
-
     <div class="kpi-card kpi-success">
       <div class="kpi-content">
-        <span class="kpi-label">Activas</span>
-        <span class="kpi-value">{{ activasTotal }}</span>
+        <span class="kpi-label">Plantillas Activas</span>
+        <span class="kpi-value">{{ stats().activas }}</span>
       </div>
       <div class="kpi-icon"><i class="bi bi-check-circle"></i></div>
     </div>
 
     <div class="kpi-card kpi-danger">
       <div class="kpi-content">
-        <span class="kpi-label">Descartadas</span>
-        <span class="kpi-value">0</span>
+        <span class="kpi-label">Plantillas Inactivas</span>
+        <span class="kpi-value">{{ stats().inactivas }}</span>
       </div>
       <div class="kpi-icon"><i class="bi bi-x-circle"></i></div>
+    </div>
+
+    <div class="kpi-card kpi-warning">
+      <div class="kpi-content">
+        <span class="kpi-label">Uso Externo</span>
+        <span class="kpi-value">{{ stats().externos }}</span>
+      </div>
+      <div class="kpi-icon"><i class="bi bi-globe"></i></div>
     </div>
 
     <div class="kpi-card kpi-primary">
       <div class="kpi-content">
         <span class="kpi-label">Total Plantillas</span>
-        <span class="kpi-value">{{ plantillas.length }}</span>
+        <span class="kpi-value">{{ stats().total }}</span>
       </div>
       <div class="kpi-icon"><i class="bi bi-file-earmark-text"></i></div>
     </div>
   </section>
 
-  <!-- FILTER ROW -->
-  <section class="view-toolbar">
-    <div class="filter-label">
-      <i class="bi bi-funnel"></i> Filtrar por estado:
+  <!-- TOP SECTION: Plantillas Grid -->
+  <section class="top-section">
+    <!-- FILTER ROW (Toolbar) -->
+    <section class="view-toolbar">
+      <div class="filter-label">
+        <i class="bi bi-funnel"></i> Filtrar plantillas:
+      </div>
+
+      <div class="filter-pills">
+        <button class="filter-pill active">
+          <i class="bi bi-grid-fill"></i> Todas <span class="badge-count">{{ stats().total }}</span>
+        </button>
+        <button class="filter-pill">
+          <i class="bi bi-check-circle"></i> Activas
+        </button>
+        <button class="filter-pill">
+          <i class="bi bi-x-circle"></i> Inactivas
+        </button>
+      </div>
+
+      <input class="search-input ms-auto" [ngModel]="buscar()" (ngModelChange)="buscar.set($event)" placeholder="Buscar (nombre, categoría, flujo)..." style="flex: 1; max-width: 350px;" />
+
+      <div class="view-toggles mx-2">
+        <button class="view-btn"><i class="bi bi-layout-text-window"></i></button>
+        <button class="view-btn"><i class="bi bi-grid"></i></button>
+        <button class="view-btn active"><i class="bi bi-grid-3x3-gap-fill"></i></button>
+      </div>
+
+      <!-- PAGINATOR -->
+      <div class="d-flex align-items-center gap-2 ms-2 ps-3" style="border-left: 1px solid #e9ecef;">
+        <span style="font-size: 0.85rem; color: #6c757d; font-weight: 600;">
+          Pág. {{paginacion().actual}} de {{paginacion().maxPagina}}
+        </span>
+        <div class="btn-group">
+            <button class="btn btn-outline-secondary btn-sm" (click)="cambiarPagina(-1)" [disabled]="paginacion().actual === 1">&laquo;</button>
+            <button class="btn btn-outline-secondary btn-sm" (click)="cambiarPagina(1)" [disabled]="paginacion().actual >= paginacion().maxPagina">&raquo;</button>
+        </div>
+      </div>
+    </section>
+
+    @if (error()) {
+    <div class="alert alert-danger mb-3 d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-exclamation-triangle-fill"></i> {{ error() }}</span>
+        <button class="btn btn-sm btn-outline-danger" (click)="cargarPlantillas()">Reintentar</button>
     </div>
-    
-    <div class="filter-pills">
-      <button class="filter-pill" [class.active]="filtrActivo === ''" (click)="filtrActivo = ''">
-        <i class="bi bi-grid-fill"></i> Todas <span class="badge-count">{{ plantillas.length }}</span>
-      </button>
-      <button class="filter-pill" [class.active]="filtrActivo === 'activo'" (click)="filtrActivo = 'activo'">
-        <i class="bi bi-check-circle"></i> Activa
-      </button>
-      <button class="filter-pill" [class.active]="filtrActivo === 'inactivo'" (click)="filtrActivo = 'inactivo'">
-        <i class="bi bi-x-circle"></i> Inactiva
-      </button>
-    </div>
+    }
 
-    <input class="search-input ms-auto" [(ngModel)]="buscar" placeholder="Buscar categoría, nombre..." />
-
-    <select class="search-input mx-2" [(ngModel)]="filtrCategoria">
-      <option value="">Todas las categorías</option>
-      @for (cat of categorias; track cat) {
-        <option [value]="cat">{{ cat }}</option>
-      }
-    </select>
-
-    <div class="view-toggles">
-      <button class="view-btn"><i class="bi bi-layout-text-window"></i></button>
-      <button class="view-btn"><i class="bi bi-grid"></i></button>
-      <button class="view-btn active"><i class="bi bi-grid-3x3-gap-fill"></i></button>
-    </div>
-  </section>
-
-  @if (error) {
-    <div class="status warn" role="alert" style="margin-bottom: 20px;">
-      <i class="bi bi-exclamation-triangle-fill"></i> {{ error }}
-      <button class="btn-ghost btn-small" type="button" (click)="cargarPlantillas()">Reintentar</button>
-    </div>
-  }
-
-  @if (cargando) {
-    <app-loading message="Cargando plantillas..." />
-  }
-
-  <!-- CARDS GRID -->
-  @if (!cargando && !error) {
-    
-    @if (plantillasFiltradas.length === 0) {
-      <div class="empty-state" style="text-align:center; padding: 40px; background: #fff; border-radius: 12px; border: 1px solid #e9ecef;">
-        <i class="bi bi-folder2-open" style="font-size: 3rem; color: #ced4da;"></i>
-        <p style="margin-top: 10px; color: #6c757d;">No hay plantillas disponibles.</p>
+    @if (paginacion().items.length === 0 && !cargando()) {
+      <div class="empty-state">
+        <i class="bi bi-folder2-open" style="font-size: 2.5rem; color: #ced4da;"></i>
+        <p style="margin-top: 10px; color: #6c757d;">No se encontraron plantillas.</p>
       </div>
     }
 
     <div class="cards-grid">
-      @for (p of plantillasFiltradas; track p.idPlantilla) {
-        <div class="info-card">
+      @for (p of paginacion().items; track p.idPlantilla) {
+        <div class="info-card pointer" [class.selected]="plantillaSeleccionada()?.idPlantilla === p.idPlantilla" (click)="seleccionarPlantilla(p)">
           <!-- Top Row -->
           <div class="card-header-row">
-            <span class="card-badge"><i class="bi bi-person-fill"></i> {{ p.categoria }}</span>
-            <span class="card-date"><i class="bi bi-calendar3"></i> {{ p.diasResolucionEstimados }} d est.</span>
+            <span class="card-badge"><i class="bi bi-bookmark-fill"></i> {{ p.categoria }}</span>
+            <span class="card-date" style="color: #6c757d; font-weight: 600;"><i class="bi bi-calendar"></i> ID: #{{ p.idPlantilla }}</span>
           </div>
 
           <!-- Main Info -->
           <div class="card-main">
-            <h4 class="card-title"><i class="bi bi-file-earmark-text-fill"></i> {{ p.nombrePlantilla }}</h4>
-            <span class="card-subtitle"><i class="bi bi-book"></i> {{ p.carrera }}</span>
-            <span class="card-comment"><i class="bi bi-chat-left-text"></i> {{ p.descripcionPlantilla || p.nombreFlujo }}</span>
+            <h4 class="card-title" style="text-transform: uppercase;">{{ p.nombrePlantilla }}</h4>
+            <span class="card-subtitle"><i class="bi bi-list-ol"></i> Flujo: {{ p.nombreFlujo }}</span>
+            <span class="card-comment"><i class="bi bi-clock-history"></i> Resolución: {{ p.diasResolucionEstimados }} días</span>
           </div>
 
-          <!-- Status & Participants -->
+          <!-- Status -->
           <div class="card-status-row">
-            @if (p.estaActivo) {
-              <span class="status-badge success">Activa</span>
-            } @else {
-              <span class="status-badge secondary">Inactiva</span>
-            }
-            <span class="participants"><i class="bi bi-people-fill"></i> {{ p.pasosTramite.length }} pasos</span>
-          </div>
-
-          <!-- Footer -->
-          <div class="card-footer">
-            <span class="ref-id"># Ref. #{{ p.idPlantilla }}</span>
-            <div class="card-actions">
-              <button class="action-btn" title="Ver detalle" (click)="abrirDetalle(p)"><i class="bi bi-eye"></i></button>
-              <button class="action-btn warning" title="Editar"><i class="bi bi-folder2-open"></i></button>
-              <button class="action-btn danger" title="Bloquear"><i class="bi bi-slash-circle"></i></button>
-            </div>
+            <span class="status-badge" [ngClass]="p.estaActivo ? 'success' : 'danger'">
+              {{ p.estaActivo ? 'Activa' : 'Inactiva' }}
+            </span>
+            <span class="participants"><i class="bi bi-collection"></i> {{ p.pasosTramite.length || 0 }} pasos</span>
           </div>
         </div>
       }
     </div>
-  }
+  </section>
 
+  <!-- BOTTOM SECTION: Timeline & Details -->
+  <section class="bottom-section">
+    <div class="dash-panel detail-panel" [class.no-sel]="!plantillaSeleccionada()">
+      @if (!plantillaSeleccionada()) {
+        <div class="empty-detail">
+          <i class="bi bi-hand-index-thumb"></i>
+          <h4>Selecciona una plantilla</h4>
+          <p>Haz clic en cualquiera de las plantillas listadas arriba para ver su configuración y flujos de revisión.</p>
+        </div>
+      } @else {
+        <div class="detail-header">
+          <div class="detail-h-left">
+            <h3 class="panel-title" style="text-transform: uppercase;">{{ plantillaSeleccionada()?.nombrePlantilla }}</h3>
+            <span class="detail-id">Carrera: {{ plantillaSeleccionada()?.carrera }}</span>
+          </div>
+          <div class="detail-h-right">
+            <span class="status-badge" [ngClass]="plantillaSeleccionada()?.estaActivo ? 'success' : 'danger'">
+                {{ plantillaSeleccionada()?.estaActivo ? 'Plantilla Activa' : 'Plantilla Inactiva' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="detail-body">
+          <div class="info-column">
+            <h4 class="seg-h4"><i class="bi bi-journal-text"></i> Detalles de Configuración</h4>
+            <div class="data-grid">
+              <div class="data-item">
+                <small>Categoría</small>
+                <strong>{{ plantillaSeleccionada()?.categoria }}</strong>
+              </div>
+              <div class="data-item">
+                <small>Flujo Asociado</small>
+                <strong>{{ plantillaSeleccionada()?.nombreFlujo }}</strong>
+              </div>
+              <div class="data-item">
+                <small>Tiempo Resolución / SLA</small>
+                <strong>{{ plantillaSeleccionada()?.diasResolucionEstimados }} Días</strong>
+              </div>
+              <div class="data-item">
+                <small>¿Permite Externos?</small>
+                <strong>{{ plantillaSeleccionada()?.disponibleExternos ? 'Sí' : 'No' }}</strong>
+              </div>
+            </div>
+
+            <h4 class="seg-h4 mt-4"><i class="bi bi-info-circle"></i> Descripción</h4>
+            <div class="data-item w-100" style="background-color: #f8f9fa;">
+              <span class="text-muted" style="font-size: 0.9rem;">
+                {{ plantillaSeleccionada()?.descripcionPlantilla || 'Sin descripción adicional para esta plantilla.' }}
+              </span>
+            </div>
+            
+            <h4 class="seg-h4 mt-4"><i class="bi bi-list-check"></i> Requisitos</h4>
+            @if (plantillaSeleccionada()?.requisitosTramite?.length === 0) {
+              <p class="text-muted" style="font-size: 0.85rem;">No hay requisitos configurados.</p>
+            }
+            <div class="files-list">
+              @for (req of plantillaSeleccionada()?.requisitosTramite; track req.idRequisito) {
+                <div class="file-item" style="cursor: default; pointer-events: none;">
+                  <i class="bi bi-file-earmark-check-fill" style="color: #0f6a1d; font-size: 1.5rem;"></i>
+                  <div class="file-info w-100">
+                    <div class="file-name">{{ req.nombreRequisito }}</div>
+                    <div class="file-size d-flex justify-content-between">
+                        <span>{{ req.tipoDocumento }} - Max: {{ req.tamanoMaxMb }}MB</span>
+                        <span [class.text-danger]="req.esObligatorio" [class.fw-bold]="req.esObligatorio">
+                            {{ req.esObligatorio ? 'Obligatorio' : 'Opcional' }}
+                        </span>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="timeline-column overflow-auto" style="max-height: 500px; padding-right: 15px;">
+            <h4 class="seg-h4"><i class="bi bi-diagram-3"></i> Pasos y Aprobaciones</h4>
+            <ol class="timeline timeline--v" style="padding-left: 10px;">
+              @for (paso of plantillaSeleccionada()!.pasosTramite; track paso.idPaso; let isLast = $last) {
+                <li class="tl-item" [ngClass]="{'pending': true}">
+                  <div class="tl-dot">
+                    <i class="bi bi-circle-fill" style="color: #0f6a1d;"></i>
+                  </div>
+                  <div class="tl-body w-100">
+                    <div class="tl-title d-flex justify-content-between align-items-center" style="color: #212529;">
+                        <span>Paso {{ paso.ordenPaso }}: {{ paso.nombreEtapa }}</span>
+                        <span class="badge bg-secondary">SLA: {{ paso.horasSla }}h</span>
+                    </div>
+                    <div class="tl-meta mt-1">
+                        <i class="bi bi-person-badge"></i> Rol requerido: <strong>{{ paso.rolRequerido || 'Abierto' }}</strong>
+                        @if(paso.usuarioEncargado) {
+                            <span class="ms-2">| Responsable: {{ paso.usuarioEncargado }}</span>
+                        }
+                    </div>
+                    
+                    <div class="tl-desc mt-2" style="color: #495057;">
+                        {{ paso.descripcionEtapa || 'Sin descripción de etapa.' }}
+                    </div>
+                  </div>
+                </li>
+              }
+              @empty {
+                <li class="text-muted"><i class="bi bi-info-circle me-1"></i> No hay pasos configurados.</li>
+              }
+            </ol>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+  
+  <!-- Loading Overlay -->
+  @if (cargando()) {
+    <app-loading message="Cargando plantillas..."></app-loading>
+  }
 </div>
 
-<!-- Modal detalle de plantilla -->
-@if (modalAbierto && plantillaSeleccionada) {
-  <div class="modal">
-    <div class="modal__backdrop" (click)="cerrarModal()"></div>
-    <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="det-modal-title">
-      <div class="modal__header">
-        <h3 id="det-modal-title">{{ plantillaSeleccionada.nombrePlantilla }}</h3>
-        <button class="btn-ghost" type="button" (click)="cerrarModal()">
-          <i class="bi bi-x-lg"></i>
-        </button>
-      </div>
-      <div class="modal__body">
-        <dl class="detail-list">
-          <dt>categoría</dt><dd>{{ plantillaSeleccionada.categoria }}</dd>
-          <dt>Carrera</dt><dd>{{ plantillaSeleccionada.carrera }}</dd>
-          <dt>Flujo</dt><dd>{{ plantillaSeleccionada.nombreFlujo }}</dd>
-          <dt>Descripción del flujo</dt><dd>{{ plantillaSeleccionada.descripcion }}</dd>
-          <dt>Resolución estimada</dt><dd>{{ plantillaSeleccionada.diasResolucionEstimados }} día(s)</dd>
-          <dt>Disponible para externos</dt><dd>{{ plantillaSeleccionada.disponibleExternos ? 'Sí' : 'No' }}</dd>
-          <dt>Estado</dt><dd>{{ plantillaSeleccionada.estaActivo ? 'Activo' : 'Inactivo' }}</dd>
-        </dl>
-
-        <h4 class="mt-2">Pasos del trámite</h4>
-        <ol class="timeline timeline--v">
-          @for (paso of plantillaSeleccionada.pasosTramite; track paso.idPaso) {
-            <li class="tl-item">
-              <div class="tl-dot"><i class="bi bi-circle-fill"></i></div>
-              <div class="tl-body">
-                <div class="tl-title">{{ paso.nombreEtapa }}</div>
-                <div class="tl-meta">
-                  Paso {{ paso.ordenPaso }} · SLA {{ paso.horasSla }}h
-                  @if (paso.rolRequerido) { · {{ paso.rolRequerido }} }
-                </div>
-                <div class="tl-desc">{{ paso.descripcionEtapa }}</div>
-              </div>
-            </li>
-          }
-        </ol>
-      </div>
-    </div>
-  </div>
-}
 

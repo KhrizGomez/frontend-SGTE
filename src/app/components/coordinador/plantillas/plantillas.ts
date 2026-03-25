@@ -1,4 +1,4 @@
-﻿import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+﻿import { ChangeDetectorRef, Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AutenticacionService } from '../../../services/general/autenticacion.service';
@@ -12,98 +12,96 @@ import { LoadingComponent } from '../../shared/loading/loading.component';
   standalone: true,
   imports: [CommonModule, FormsModule, LoadingComponent],
   templateUrl: './plantillas.html',
-  styleUrl: './plantillas.css',
+  styleUrl: './plantillas.css'
 })
 export class Plantillas implements OnInit {
+  plantillas = signal<PlantillaCarrera[]>([]);
+  cargando = signal(false);
+  error = signal('');
 
-  plantillas: PlantillaCarrera[] = [];
-  cargando = false;
-  error = '';
+  buscar = signal('');
+  paginaActual = signal(1);
+  porPagina = 5;
 
-  buscar = '';
-  filtrCategoria = '';
-  filtrActivo = '';
+  plantillaSeleccionada = signal<PlantillaCarrera | null>(null);
 
-  modalAbierto = false;
-  plantillaSeleccionada: PlantillaCarrera | null = null;
+  stats = computed(() => {
+    const all = this.plantillas();
+    return {
+      activas: all.filter(p => p.estaActivo).length,
+      inactivas: all.filter(p => !p.estaActivo).length,
+      externos: all.filter(p => p.disponibleExternos).length,
+      total: all.length
+    };
+  });
+
+  plantillasFiltradas = computed(() => {
+    const q = this.buscar().trim().toLowerCase();
+    return this.plantillas().filter(p => {
+      return !q || 
+             (p.nombrePlantilla || '').toLowerCase().includes(q) ||
+             (p.categoria || '').toLowerCase().includes(q) ||
+             (p.nombreFlujo || '').toLowerCase().includes(q);
+    });
+  });
+
+  paginacion = computed(() => {
+    const total = this.plantillasFiltradas().length;
+    const maxPagina = Math.ceil(total / this.porPagina) || 1;
+    let actual = this.paginaActual();
+    if(actual > maxPagina) actual = maxPagina;
+    
+    const inicio = (actual - 1) * this.porPagina;
+    const items = this.plantillasFiltradas().slice(inicio, inicio + this.porPagina);
+    return { items, actual, maxPagina, total };
+  });
 
   constructor(
     private tramitesService: TramitesService,
     private authService: AutenticacionService,
     private loadingService: LoadingService,
-    private cdr: ChangeDetectorRef,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.cargarPlantillas();
   }
 
+
+
+  cambiarPagina(dir: number) {
+    const nueva = this.paginaActual() + dir;
+    const m = Math.ceil(this.plantillasFiltradas().length / this.porPagina);
+    if(nueva >= 1 && nueva <= m) {
+      this.paginaActual.set(nueva);
+    }
+  }
+
+  seleccionarPlantilla(p: PlantillaCarrera): void {
+    this.plantillaSeleccionada.set(p);
+  }
+
   cargarPlantillas(): void {
     const usuario = this.authService.obtenerUsuarioActual();
     if (!usuario?.idCarrera) {
-      this.error = 'No se pudo obtener la carrera del usuario.';
+      this.error.set('No se pudo obtener la carrera del usuario.');
       return;
     }
 
-    this.cargando = true;
-    this.error = '';
-    this.cdr.detectChanges();
+    this.cargando.set(true);
+    this.error.set('');
 
     const peticion$ = this.tramitesService.getPlantillasPorCarrera(usuario.idCarrera);
 
     this.loadingService.withMinDuration(peticion$).subscribe({
       next: (data) => {
-        this.plantillas = data;
-        this.cargando = false;
-        this.cdr.detectChanges();
+        this.plantillas.set(data);
+        this.cargando.set(false);
       },
       error: () => {
-        this.error = 'Error al cargar las plantillas. Intente nuevamente.';
-        this.cargando = false;
-        this.cdr.detectChanges();
-      },
+        this.error.set('Error al cargar las plantillas. Intente nuevamente.');
+        this.cargando.set(false);
+      }
     });
-  }
-
-  get plantillasFiltradas(): PlantillaCarrera[] {
-    const q = this.buscar.trim().toLowerCase();
-    return this.plantillas.filter(p => {
-      const textoOk = !q || p.nombrePlantilla.toLowerCase().includes(q) ||
-                      p.categoria.toLowerCase().includes(q) ||
-                      p.nombreFlujo.toLowerCase().includes(q);
-      const catOk = !this.filtrCategoria || p.categoria === this.filtrCategoria;
-      const activoOk = this.filtrActivo === ''
-        ? true
-        : this.filtrActivo === 'activo' ? p.estaActivo : !p.estaActivo;
-      return textoOk && catOk && activoOk;
-    });
-  }
-
-  get categorias(): string[] {
-    return [...new Set(this.plantillas.map(p => p.categoria))];
-  }
-
-  get activasTotal(): number {
-    return this.plantillas.filter(p => p.estaActivo).length;
-  }
-
-  get inactivasTotal(): number {
-    return this.plantillas.filter(p => !p.estaActivo).length;
-  }
-
-  limpiarFiltros(): void {
-    this.buscar = '';
-    this.filtrCategoria = '';
-    this.filtrActivo = '';
-  }
-
-  abrirDetalle(plantilla: PlantillaCarrera): void {
-    this.plantillaSeleccionada = plantilla;
-    this.modalAbierto = true;
-  }
-
-  cerrarModal(): void {
-    this.modalAbierto = false;
-    this.plantillaSeleccionada = null;
   }
 }

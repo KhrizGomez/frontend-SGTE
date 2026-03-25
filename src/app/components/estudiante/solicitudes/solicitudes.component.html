@@ -67,6 +67,17 @@
       <button class="view-btn"><i class="bi bi-grid"></i></button>
       <button class="view-btn active"><i class="bi bi-grid-3x3-gap-fill"></i></button>
     </div>
+
+    <!-- PAGINATOR -->
+    <div class="d-flex align-items-center gap-2 ms-3">
+      <span style="font-size: 0.85rem; color: #6c757d; font-weight: 600;">
+        Pág. {{paginaActual}} de {{maxPagina}}
+      </span>
+      <div class="btn-group">
+          <button class="btn btn-outline-secondary btn-sm" (click)="cambiarPagina(-1)" [disabled]="paginaActual === 1">&laquo;</button>
+          <button class="btn btn-outline-secondary btn-sm" (click)="cambiarPagina(1)" [disabled]="paginaActual >= maxPagina">&raquo;</button>
+      </div>
+    </div>
   </section>
 
   @if (error) {
@@ -91,7 +102,7 @@
     }
 
     <div class="cards-grid">
-      @for (p of plantillasFiltradas; track p.idPlantilla) {
+      @for (p of plantillasPaginadas; track p.idPlantilla) {
         <div class="info-card">
           <!-- Top Row -->
           <div class="card-header-row">

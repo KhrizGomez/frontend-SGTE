@@ -22,6 +22,9 @@ export class EstudianteSolicitudes implements OnInit {
 
   buscar = '';
   filtrCategoria = '';
+  
+  paginaActual = 1;
+  porPagina = 5;
 
   modalAbierto = false;
   plantillaSeleccionada: PlantillaCarrera | null = null;
@@ -83,6 +86,25 @@ export class EstudianteSolicitudes implements OnInit {
 
   get totalDisponibles(): number {
     return this.plantillas.length;
+  }
+
+  get maxPagina(): number {
+    return Math.ceil(this.plantillasFiltradas.length / this.porPagina) || 1;
+  }
+
+  get plantillasPaginadas(): PlantillaCarrera[] {
+    let actual = this.paginaActual;
+    if (actual > this.maxPagina) { actual = this.maxPagina; this.paginaActual = actual; }
+    
+    const inicio = (actual - 1) * this.porPagina;
+    return this.plantillasFiltradas.slice(inicio, inicio + this.porPagina);
+  }
+
+  cambiarPagina(dir: number) {
+    const nueva = this.paginaActual + dir;
+    if (nueva >= 1 && nueva <= this.maxPagina) {
+      this.paginaActual = nueva;
+    }
   }
 
   limpiarFiltros(): void {

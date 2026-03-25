@@ -36,7 +36,9 @@ interface Tramite {
 })
 export class EstudianteSeguimiento {
   buscar = signal('');
-  
+  paginaActual = signal(1);
+  porPagina = 5;
+
   tramites = signal<Tramite[]>([
     { 
       id: 'C-2101', 
@@ -93,15 +95,44 @@ export class EstudianteSeguimiento {
 
   tramitesFiltrados = computed(() => {
     const q = this.buscar().toLowerCase();
-    return this.tramites().filter(t => 
-      t.id.toLowerCase().includes(q) || 
-      t.titulo.toLowerCase().includes(q) || 
+    return this.tramites().filter(t =>
+      t.id.toLowerCase().includes(q) ||
+      t.titulo.toLowerCase().includes(q) ||
       t.estado.toLowerCase().includes(q) ||
       t.tipo.toLowerCase().includes(q)
     );
   });
 
+  stats = computed(() => {
+    const all = this.tramites();
+    return {
+      revision: all.length, // O tu propia lógica basándote en los datos
+      finalizadas: all.filter(t => t.estado === 'Finalizado').length,
+      observadas: all.filter(t => t.estado === 'Observado').length,
+      total: all.length
+    };
+  });
+
+  paginacion = computed(() => {
+    const total = this.tramitesFiltrados().length;
+    const maxPagina = Math.ceil(total / this.porPagina) || 1;
+    let actual = this.paginaActual();
+    if (actual > maxPagina) actual = maxPagina;
+    
+    const inicio = (actual - 1) * this.porPagina;
+    const items = this.tramitesFiltrados().slice(inicio, inicio + this.porPagina);
+    return { items, actual, maxPagina, total };
+  });
+
   tramiteSeleccionado = signal<Tramite | null>(null);
+
+  cambiarPagina(dir: number) {
+    const nueva = this.paginaActual() + dir;
+    const m = Math.ceil(this.tramitesFiltrados().length / this.porPagina);
+    if (nueva >= 1 && nueva <= m) {
+      this.paginaActual.set(nueva);
+    }
+  }
 
   seleccionarTramite(t: Tramite) {
     this.tramiteSeleccionado.set(t);
