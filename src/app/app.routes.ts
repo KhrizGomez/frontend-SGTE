@@ -7,6 +7,9 @@ export const routes: Routes = [
     { path: 'coordinacion',
         loadChildren: () =>
             import('./components/coordinador/coordinador.routes').then(m => m.coordinadorRoutes) },
+    { path: 'estudiante',
+        loadChildren: () =>
+            import('./components/estudiante/estudiante.routes').then(m => m.estudianteRoutes) },
 
     { path: '**', redirectTo: 'inicio-sesion' }
 

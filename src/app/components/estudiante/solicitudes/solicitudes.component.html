@@ -1,0 +1,99 @@
+<div class="soli-toolbar">
+  <div class="spacer"></div>
+  <label class="field field--inline">
+    <span class="label">Tipo</span>
+    <select id="st-fil-tipo" class="select">
+      <option value="">Todos</option>
+      <option>Certificados académicos</option>
+      <option>Cambio de carrera</option>
+      <option>Homologación</option>
+      <option>Baja de matrícula</option>
+      <option>Otro</option>
+    </select>
+  </label>
+  <label class="field field--inline">
+    <span class="label">Prioridad</span>
+    <select id="st-fil-prio" class="select">
+      <option value="">Todas</option>
+      <option>Baja</option>
+      <option>Media</option>
+      <option>Alta</option>
+      <option>Urgente</option>
+    </select>
+  </label>
+  <label class="field field--inline">
+    <span class="label">Estado</span>
+    <select id="st-fil-estado" class="select">
+      <option value="">Todos</option>
+      <option>Disponible</option>
+      <option>Requiere revisión</option>
+    </select>
+  </label>
+  <label class="field field--inline">
+    <span class="label">Buscar</span>
+    <input id="st-buscar" class="select" placeholder="Título, tipo…" />
+  </label>
+  <button id="st-fil-clear" class="btn-ghost" type="button" title="Limpiar filtros">Limpiar</button>
+</div>
+
+<div id="st-sgrid" class="soli-grid"></div>
+
+<!-- Modal Solicitud (Estudiante) -->
+<div id="st-modal" class="modal" hidden>
+  <div class="modal__backdrop" data-close="1"></div>
+  <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="st-modal-title">
+    <div class="modal__header">
+      <h3 id="st-modal-title">Trámite</h3>
+      <button id="st-close" class="btn-ghost" type="button">✕</button>
+    </div>
+    <div class="modal__body">
+      <form id="st-form" class="form-grid form-modal" autocomplete="off">
+        <input type="hidden" id="st-id" />
+        <label class="field field--col-2">
+          <span class="label">Trámite</span>
+          <input id="st-tramite" class="select" readonly />
+        </label>
+        <div id="st-cert-wrap" class="field field--col-2" hidden>
+          <div id="st-cert-tipo-wrap" class="col">
+            <label class="field">
+              <span class="label">Tipo de certificado</span>
+              <select id="st-cert-tipo" class="select">
+                <option selected>Seleccione una opción</option>
+                <option>Certificado de notas</option>
+                <option>Récord académico</option>
+                <option>Constancia de estudios</option>
+              </select>
+            </label>
+          </div>
+        </div>
+        <!-- Campos adicionales (dependen del trámite) -->
+        <div id="st-extra" class="extra-grid field--col-2"></div>
+        <div class="field field--col-2">
+          <span class="label">Tiempo estimado (ETA)</span>
+          <input id="st-eta" class="select" readonly placeholder="—" />
+        </div>
+        <div class="field field--col-2">
+          <span class="label">Requisitos del trámite</span>
+          <ul id="st-reqs" class="files" aria-label="Requisitos previos"></ul>
+        </div>
+        <label id="st-obs-wrap" class="field field--col-2">
+          <span class="label">Observaciones</span>
+          <textarea id="st-obs" class="textarea" placeholder="Descripción"></textarea>
+        </label>
+        <div id="st-attach-wrap" class="field field--col-2">
+          <span class="label">Adjuntar documentos</span>
+          <div id="st-dropzone" class="dropzone" tabindex="0" role="button" aria-label="Arrastra o selecciona archivos">
+            <div class="dz-ico">📄</div>
+            <div class="dz-text">Arrastra o selecciona los archivos aquí</div>
+            <input id="st-file-input" type="file" multiple hidden />
+          </div>
+          <div id="st-dz-list" class="dz-list"></div>
+        </div>
+        <div class="form-actions field--col-2">
+          <button id="st-cancel" type="button" class="btn-ghost">Cancelar</button>
+          <button id="st-enviar" type="submit" class="btn-primary">Enviar solicitud</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
