@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { ValidacionUsuarioService } from '../../services/validacion-usuario.service';
 import { RegistroUsuarioService } from '../../services/registro-usuario.service';
 import { AutenticacionService } from '../../services/autenticacion.service';
-import { RegistroUsuarioPayload } from '../../models/registro-usuario.model';
+import { RegistroUsuarioPayload } from '../../models/general/registro-usuario.model';
 
 declare var bootstrap: any;
 

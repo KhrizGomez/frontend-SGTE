@@ -24,11 +24,11 @@
   <button class="btn-ghost" type="button" (click)="limpiarFiltros()">Limpiar</button>
 </div>
 
-@if (cargando) {
-  <div class="status info" role="status">Cargando plantillas…</div>
-}
 @if (error) {
-  <div class="status warn" role="alert">{{ error }}</div>
+  <div class="status warn" role="alert">
+    <i class="bi bi-exclamation-triangle-fill"></i> {{ error }}
+    <button class="btn-ghost btn-small" type="button" (click)="cargarPlantillas()">Reintentar</button>
+  </div>
 }
 
 <article class="panel" aria-labelledby="co-cards-title">
@@ -40,6 +40,10 @@
       }
     </h3>
   </div>
+
+  @if (cargando) {
+    <app-loading message="Cargando plantillas…" />
+  }
 
   @if (!cargando && !error && plantillasFiltradas.length === 0) {
     <div class="empty-state">
