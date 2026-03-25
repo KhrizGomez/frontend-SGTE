@@ -52,6 +52,7 @@ export class TramitesService {
             diasEstimados: item.diasEstimados ?? 0,
             estaActivo: item.estaActivo ?? false,
             disponibleExternos: item.disponibleExternos ?? false,
+            pasos: item.pasos ?? null,
         };
     }
 }

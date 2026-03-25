@@ -1,4 +1,4 @@
-﻿<div class="dashboard-container">
+<div class="dashboard-container">
 
   <!-- TOP SECTION: Plantillas Grid -->
   <section class="top-section">
@@ -29,33 +29,30 @@
     </div>
     }
 
-    @if (paginacion().items.length === 0 && !cargando()) {
-      <div class="empty-state">
-        <i class="bi bi-folder2-open" style="font-size: 2.5rem; color: #ced4da;"></i>
-        <p style="margin-top: 10px; color: #6c757d;">No se encontraron plantillas.</p>
-      </div>
-    }
-
-    <div class="cards-grid">
-      @for (p of paginacion().items; track p.idPlantilla) {
-        <div class="info-card pointer" [class.selected]="plantillaSeleccionada()?.idPlantilla === p.idPlantilla" (click)="seleccionarPlantilla(p)">
-          <!-- Top Row -->
-          <div class="card-header-row">
-            <span class="card-badge"><i class="bi bi-bookmark-fill"></i> {{ p.categoria }}</span>
-            <span class="card-date" style="color: #6c757d; font-weight: 600;"><i class="bi bi-calendar"></i> ID: #{{ p.idPlantilla }}</span>
-          </div>
-
-          <!-- Main Info -->
-          <div class="card-main">
-            <h4 class="card-title" style="text-transform: uppercase;">{{ p.nombrePlantilla }}</h4>
-            <span class="card-subtitle"><i class="bi bi-list-ol"></i> Flujo: {{ p.nombreFlujo }}</span>
-            <span class="card-comment"><i class="bi bi-clock-history"></i> Resolución: {{ p.diasResolucionEstimados }} días</span>
-          </div>
-
-          <!-- Status -->
-          <div class="card-status-row">
-            <span class="status-badge" [ngClass]="p.estaActivo ? 'success' : 'danger'">
-              {{ p.estaActivo ? 'Activa' : 'Inactiva' }}
+  @if (!cargando) {
+    <div class="soli-grid">
+      @for (p of plantillasFiltradas; track p.idPlantilla) {
+        <div class="soli-card">
+          <span class="soli-ico" aria-hidden="true">
+            <i class="bi bi-file-text-fill"></i>
+          </span>
+          <span class="soli-txt">
+            <span class="soli-title">{{ p.nombrePlantilla }}</span>
+            <span class="soli-desc">
+              {{ p.categoria }} Â· {{ p.nombreFlujo }} Â· {{ p.pasosTramite.length }} pasos Â· {{ p.diasResolucionEstimados }}d
+            </span>
+            @if (p.descripcionPlantilla) {
+              <span class="soli-desc">{{ p.descripcionPlantilla }}</span>
+            }
+            <span class="soli-badges">
+              @if (p.estaActivo) {
+                <span class="pill pill--success">Activo</span>
+              } @else {
+                <span class="pill pill--light">Inactivo</span>
+              }
+              @if (p.disponibleExternos) {
+                <span class="pill pill--info">Externos</span>
+              }
             </span>
             <span class="participants"><i class="bi bi-collection"></i> {{ p.pasosTramite.length || 0 }} pasos</span>
           </div>

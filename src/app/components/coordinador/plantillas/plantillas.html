@@ -1,4 +1,4 @@
-﻿<div class="dashboard-container">
+<div class="dashboard-container">
 
   <!-- KPI ROW -->
   <section class="kpi-row">
@@ -107,10 +107,22 @@
 
           <!-- Status -->
           <div class="card-status-row">
-            <span class="status-badge" [ngClass]="p.estaActivo ? 'success' : 'danger'">
-              {{ p.estaActivo ? 'Activa' : 'Inactiva' }}
-            </span>
-            <span class="participants"><i class="bi bi-collection"></i> {{ p.pasosTramite.length || 0 }} pasos</span>
+            @if (p.estaActivo) {
+              <span class="status-badge success">Activa</span>
+            } @else {
+              <span class="status-badge secondary">Inactiva</span>
+            }
+            <span class="participants"><i class="bi bi-people-fill"></i> {{ p.pasosTramite.length }} pasos</span>
+          </div>
+
+          <!-- Footer -->
+          <div class="card-footer">
+            <span class="ref-id"># Ref. #{{ p.idPlantilla }}</span>
+            <div class="card-actions">
+              <button class="action-btn" title="Ver detalle" (click)="abrirDetalle(p)"><i class="bi bi-eye"></i></button>
+              <button class="action-btn warning" title="Editar"><i class="bi bi-folder2-open"></i></button>
+              <button class="action-btn danger" title="Bloquear"><i class="bi bi-slash-circle"></i></button>
+            </div>
           </div>
         </div>
       }
