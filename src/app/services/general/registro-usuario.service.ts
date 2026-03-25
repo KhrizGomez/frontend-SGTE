@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient} from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { RegistroUsuarioPayload, RegistroUsuarioRespuesta } from '../models/general/registro-usuario.model';
-import { environment } from '../../environments/environment';
-import { getCredencialesTemplate } from '../core/templates/email-credenciales.template';
+import { RegistroUsuarioPayload, RegistroUsuarioRespuesta } from '../../models/general/registro-usuario.model';
+import { environment } from '../../../environments/environment';
+import { getCredencialesTemplate } from '../../core/templates/email-credenciales.template';
 
 @Injectable({
   providedIn: 'root',

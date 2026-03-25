@@ -1,12 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-import {
-    PlantillaCarrera,
-    RegistrarTipoTramitePayload,
-    TipoTramiteDetalle,
-} from '../models/coordinador/tramite-detalle.model';
-import { environment } from '../../environments/environment';
+import { PlantillaCarrera, TipoTramiteDetalle, RegistrarTipoTramitePayload } from '../../models/coordinador/tramite-detalle.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
     providedIn: 'root',

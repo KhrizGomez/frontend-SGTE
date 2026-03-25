@@ -1,8 +1,8 @@
 import {Component, OnInit, ViewEncapsulation, AfterViewInit} from '@angular/core';
 import {RouterOutlet, RouterLink, RouterLinkActive} from '@angular/router';
 import {CommonModule, NgOptimizedImage} from '@angular/common';
-import {AutenticacionService} from '../../../services/autenticacion.service';
-import {AutenticacionRespuesta} from '../../../models/general/autenticacion.model';
+import { AutenticacionService } from '../../../services/general/autenticacion.service';
+import { AutenticacionRespuesta} from '../../../models/general/autenticacion.model';
 
 @Component({
     selector: 'app-coordinador-layout',

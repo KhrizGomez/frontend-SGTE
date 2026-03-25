@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
-import { AutenticacionRequest, AutenticacionRespuesta } from '../models/general/autenticacion.model';
-import { environment } from '../../environments/environment';
+import { AutenticacionRequest, AutenticacionRespuesta } from '../../models/general/autenticacion.model';
+import { environment } from '../../../environments/environment';
 
 const SESSION_KEY = 'sgte_user';
 

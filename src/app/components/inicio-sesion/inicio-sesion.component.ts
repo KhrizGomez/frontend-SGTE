@@ -2,9 +2,9 @@ import { AfterViewInit, Component, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { ValidacionUsuarioService } from '../../services/validacion-usuario.service';
-import { RegistroUsuarioService } from '../../services/registro-usuario.service';
-import { AutenticacionService } from '../../services/autenticacion.service';
+import { ValidacionUsuarioService } from '../../services/general/validacion-usuario.service';
+import { RegistroUsuarioService } from '../../services/general/registro-usuario.service';
+import { AutenticacionService } from '../../services/general/autenticacion.service';
 import { RegistroUsuarioPayload } from '../../models/general/registro-usuario.model';
 
 declare var bootstrap: any;

@@ -1,9 +1,9 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AutenticacionService } from '../../../services/autenticacion.service';
-import { TramitesService } from '../../../services/tramites.service';
-import { LoadingService } from '../../../services/loading.service';
+import { AutenticacionService } from '../../../services/general/autenticacion.service';
+import { TramitesService } from '../../../services/coordinador/tramites.service';
+import { LoadingService } from '../../../services/general/loading.service';
 import { PlantillaCarrera } from '../../../models/coordinador/tramite-detalle.model';
 import { LoadingComponent } from '../../shared/loading/loading.component';
 
