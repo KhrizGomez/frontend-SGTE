@@ -1,11 +1,12 @@
 ﻿import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { switchMap } from 'rxjs';
 import { AutenticacionService } from '../../../services/general/autenticacion.service';
 import { TramitesService } from '../../../services/coordinador/tramites.service';
 import { LoadingService } from '../../../services/general/loading.service';
 import { ToastService } from '../../../services/general/toast.service';
-import { CategoriaTramite, FlujoTramite, PasoTramite, PlantillaCarrera, GuardarPlantillaPayload, PasoNuevoPlantilla, NuevaPlantillaForm } from '../../../models/coordinador/plantilla.model';
+import { CategoriaTramite, FlujoTramite, PasoTramite, PlantillaCarrera, GuardarPlantillaPayload, PasoNuevoPlantilla, NuevaPlantillaForm, EtapaTramite, UsuarioAsignableTramite, GuardarFlujoCompletoPayload } from '../../../models/coordinador/plantilla.model';
 import { LoadingComponent } from '../../shared/loading/loading.component';
 
 @Component({
@@ -16,13 +17,18 @@ import { LoadingComponent } from '../../shared/loading/loading.component';
   styleUrl: './plantillas.css'
 })
 export class Plantillas implements OnInit {
+  modoFlujo = signal<'disponibles' | 'personalizado' | null>(null);
   plantillas = signal<PlantillaCarrera[]>([]);
   categoriasActivas = signal<CategoriaTramite[]>([]);
+  usuariosAsignables = signal<UsuarioAsignableTramite[]>([]);
+  etapasDisponibles = signal<EtapaTramite[]>([]);
   flujosDisponibles = signal<FlujoTramite[]>([]);
   flujoVistaPrevia = signal<FlujoTramite | null>(null);
   cargando = signal(false);
   cargandoFlujos = signal(false);
   cargandoCategorias = signal(false);
+  cargandoUsuarios = signal(false);
+  cargandoEtapas = signal(false);
   mostrarConstructorFlujo = signal(false);
   error = signal('');
   showNuevaPlantillaModal = signal(false);
@@ -51,7 +57,9 @@ export class Plantillas implements OnInit {
         codigoEtapa: '',
         nombreEtapa: '',
         descripcionEtapa: '',
+        idRolRequerido: null,
         rolRequerido: '',
+        idUsuarioEncargado: null,
         usuarioEncargado: '',
         horasSla: 0
       }
@@ -150,6 +158,8 @@ export class Plantillas implements OnInit {
     this.cargarPlantillas();
     this.cargarFlujosDisponibles();
     this.cargarCategoriasActivas();
+    this.cargarUsuariosAsignables();
+    this.cargarEtapasDisponibles();
   }
 
 
@@ -201,6 +211,7 @@ export class Plantillas implements OnInit {
     });
     this.error.set('');
     this.showDetalleModal.set(false);
+    this.modoFlujo.set(seleccionada.idFlujo ? 'disponibles' : null);
     this.showNuevaPlantillaModal.set(true);
   }
 
@@ -219,6 +230,7 @@ export class Plantillas implements OnInit {
     });
     this.flujoVistaPrevia.set(null);
     this.mostrarConstructorFlujo.set(false);
+    this.modoFlujo.set(null);
     this.error.set('');
     this.showNuevaPlantillaModal.set(true);
   }
@@ -245,6 +257,7 @@ export class Plantillas implements OnInit {
   }
 
   verFlujoDisponible(flujo: FlujoTramite): void {
+    this.modoFlujo.set('disponibles');
     this.flujoVistaPrevia.set(flujo);
     this.mostrarConstructorFlujo.set(false);
     this.nuevaPlantilla.update(actual => ({
@@ -266,6 +279,7 @@ export class Plantillas implements OnInit {
   }
 
   abrirConstructorFlujo(): void {
+    this.modoFlujo.set('personalizado');
     this.mostrarConstructorFlujo.set(true);
     this.nuevaPlantilla.update(actual => ({
       ...actual,
@@ -276,6 +290,15 @@ export class Plantillas implements OnInit {
   }
 
   restablecerFlujoPersonalizado(): void {
+    this.abrirConstructorFlujo();
+  }
+
+  mostrarFlujosDisponibles(): void {
+    this.modoFlujo.set('disponibles');
+    this.mostrarConstructorFlujo.set(false);
+  }
+
+  mostrarFlujoPersonalizado(): void {
     this.abrirConstructorFlujo();
   }
 
@@ -308,15 +331,174 @@ export class Plantillas implements OnInit {
     }));
   }
 
+  seleccionarUsuarioAsignado(indice: number, idUsuario: number): void {
+    const usuario = this.usuariosAsignables().find(item => item.idUsuario === idUsuario);
+    if (!usuario) {
+      return;
+    }
+
+    const nombreCompleto = `${usuario.nombres} ${usuario.apellidos}`.trim();
+
+    this.nuevaPlantilla.update(actual => ({
+      ...actual,
+      pasos: actual.pasos.map((paso, index) => index === indice
+        ? {
+            ...paso,
+            usuarioEncargado: nombreCompleto,
+            idUsuarioEncargado: usuario.idUsuario,
+            idRolRequerido: usuario.idRol,
+            rolRequerido: usuario.rol || paso.rolRequerido
+          }
+        : paso)
+    }));
+  }
+
+  seleccionarEtapaDisponible(indice: number, idEtapa: number | null): void {
+    const etapa = this.etapasDisponibles().find(item => item.idEtapa === Number(idEtapa));
+
+    this.nuevaPlantilla.update(actual => ({
+      ...actual,
+      pasos: actual.pasos.map((paso, index) => {
+        if (index !== indice) {
+          return paso;
+        }
+
+        if (!etapa) {
+          return {
+            ...paso,
+            idEtapa: null,
+            codigoEtapa: '',
+            nombreEtapa: '',
+            descripcionEtapa: ''
+          };
+        }
+
+        return {
+          ...paso,
+          idEtapa: etapa.idEtapa,
+          codigoEtapa: etapa.codigoEtapa,
+          nombreEtapa: etapa.nombreEtapa,
+          descripcionEtapa: etapa.descripcionEtapa
+        };
+      })
+    }));
+  }
+
   crearPlantilla(): void {
     const formulario = this.nuevaPlantilla();
     const usuario = this.authService.obtenerUsuarioActual();
     const nombrePlantilla = formulario.nombrePlantilla.trim();
     const descripcionPlantilla = formulario.descripcionPlantilla.trim();
     const idCarrera = usuario?.idCarrera;
+    const esFlujoPersonalizado = this.modoFlujo() === 'personalizado';
 
-    if (!nombrePlantilla || !formulario.idCategoria || !this.flujoVistaPrevia()?.idFlujo || !idCarrera) {
-      this.error.set('Completa el nombre de la plantilla, la categoría, selecciona un flujo y verifica la carrera del usuario.');
+    if (!nombrePlantilla || !formulario.idCategoria || !idCarrera) {
+      this.error.set('');
+      this.toastService.show(
+        'Datos incompletos',
+        esFlujoPersonalizado
+          ? 'Completa el nombre, la categoría, la carrera del usuario y define el flujo personalizado.'
+          : 'Completa el nombre de la plantilla, la categoría, selecciona un flujo y verifica la carrera del usuario.',
+        'warning'
+      );
+      return;
+    }
+
+    if (esFlujoPersonalizado) {
+      const pasosInvalidos = formulario.pasos.some((paso) => {
+        const usaEtapaNueva = paso.idEtapa === null;
+        const etapaNuevaIncompleta = usaEtapaNueva && (!paso.nombreEtapa.trim() || !paso.codigoEtapa.trim() || !paso.descripcionEtapa.trim());
+        const asignacionIncompleta = !paso.idRolRequerido || !paso.idUsuarioEncargado || Number(paso.horasSla) <= 0;
+
+        return etapaNuevaIncompleta || asignacionIncompleta;
+      });
+
+      if (pasosInvalidos) {
+        this.error.set('');
+        this.toastService.show(
+          'Pasos incompletos',
+          'Completa cada paso con su etapa, rol, usuario y horas SLA antes de guardar el flujo personalizado.',
+          'warning'
+        );
+        return;
+      }
+    }
+
+    const guardarPlantillaConFlujo = (idFlujo: number) => {
+      const payload: GuardarPlantillaPayload = {
+        nombrePlantilla,
+        descripcionPlantilla,
+        idCategoria: formulario.idCategoria,
+        idCarrera,
+        idFlujo,
+        diasEstimados: Number(formulario.diasResolucionEstimados) || 0,
+        estaActivo: formulario.estaActivo,
+        disponibleExternos: formulario.disponibleExternos
+      };
+
+      return this.tramitesService.guardarPlantilla(payload);
+    };
+
+    if (esFlujoPersonalizado) {
+      const flujoPayload: GuardarFlujoCompletoPayload = {
+        nombreFlujo: nombrePlantilla,
+        descripcionFlujo: descripcionPlantilla,
+        estaActivo: formulario.estaActivo,
+        version: 1,
+        creadoPorId: usuario?.idUsuario ?? 0,
+        pasos: formulario.pasos.map((paso, index) => ({
+          ordenPaso: index + 1,
+          rolRequeridoId: paso.idRolRequerido,
+          idUsuarioEncargado: paso.idUsuarioEncargado,
+          horasSla: Number(paso.horasSla) || 0,
+          ...(paso.idEtapa
+            ? { idEtapa: paso.idEtapa }
+            : {
+                etapa: {
+                  nombreEtapa: paso.nombreEtapa.trim(),
+                  descripcionEtapa: paso.descripcionEtapa.trim(),
+                  codigoEtapa: paso.codigoEtapa.trim()
+                }
+              })
+        }))
+      };
+
+      const guardarCompleto$ = this.tramitesService.guardarFlujoCompleto(flujoPayload).pipe(
+        switchMap((respuesta) => {
+          const idFlujoCreado = respuesta?.idFlujo ?? 0;
+
+          if (!idFlujoCreado) {
+            throw new Error('No se recibió el identificador del flujo creado.');
+          }
+
+          return guardarPlantillaConFlujo(idFlujoCreado);
+        })
+      );
+
+      this.loadingService.withMinDuration(guardarCompleto$).subscribe({
+        next: () => {
+          this.toastService.show('Plantilla guardada', 'El flujo y la plantilla se guardaron correctamente.', 'success');
+          this.cerrarNuevaPlantilla();
+          this.cargarPlantillas();
+          this.cargarFlujosDisponibles();
+          this.cargarEtapasDisponibles();
+          this.error.set('');
+        },
+        error: () => {
+          this.error.set('No se pudo guardar el flujo personalizado. Intenta nuevamente.');
+        }
+      });
+
+      return;
+    }
+
+    if (!this.flujoVistaPrevia()?.idFlujo) {
+      this.error.set('');
+      this.toastService.show(
+        'Datos incompletos',
+        'Selecciona un flujo disponible antes de guardar la plantilla.',
+        'warning'
+      );
       return;
     }
 
@@ -336,6 +518,8 @@ export class Plantillas implements OnInit {
         this.toastService.show('Plantilla guardada', 'La plantilla se guardó correctamente.', 'success');
         this.cerrarNuevaPlantilla();
         this.cargarPlantillas();
+        this.cargarFlujosDisponibles();
+        this.cargarEtapasDisponibles();
         this.error.set('');
       },
       error: () => {
@@ -352,7 +536,9 @@ export class Plantillas implements OnInit {
       codigoEtapa: '',
       nombreEtapa: '',
       descripcionEtapa: '',
+      idRolRequerido: null,
       rolRequerido: '',
+      idUsuarioEncargado: null,
       usuarioEncargado: '',
       horasSla: 0
     };
@@ -370,7 +556,9 @@ export class Plantillas implements OnInit {
       codigoEtapa: paso.codigoEtapa || `ETAPA-${index + 1}`,
       nombreEtapa: paso.nombreEtapa || `Etapa ${index + 1}`,
       descripcionEtapa: paso.descripcionEtapa || '',
+      idRolRequerido: paso.idRolRequerido ?? null,
       rolRequerido: paso.rolRequerido || '',
+      idUsuarioEncargado: paso.idUsuarioEncargado ?? null,
       usuarioEncargado: paso.usuarioEncargado || '',
       horasSla: paso.horasSla || 0
     };
@@ -387,9 +575,9 @@ export class Plantillas implements OnInit {
       codigoEtapa: paso.codigoEtapa.trim() || `ETAPA-${ordenPaso}`,
       nombreEtapa: paso.nombreEtapa.trim() || `Etapa ${ordenPaso}`,
       descripcionEtapa: paso.descripcionEtapa.trim(),
-      idRolRequerido: null,
+      idRolRequerido: paso.idRolRequerido,
       rolRequerido: paso.rolRequerido.trim() || null,
-      idUsuarioEncargado: null,
+      idUsuarioEncargado: paso.idUsuarioEncargado,
       usuarioEncargado: paso.usuarioEncargado.trim() || null,
       horasSla: Number(paso.horasSla) || 0
     };
@@ -404,9 +592,9 @@ export class Plantillas implements OnInit {
       codigoEtapa: paso.codigoEtapa.trim(),
       nombreEtapa: paso.nombreEtapa.trim(),
       descripcionEtapa: paso.descripcionEtapa.trim(),
-      idRolRequerido: null,
+      idRolRequerido: paso.idRolRequerido,
       rolRequerido: paso.rolRequerido.trim() || null,
-      idUsuarioEncargado: null,
+      idUsuarioEncargado: paso.idUsuarioEncargado,
       usuarioEncargado: paso.usuarioEncargado.trim() || null,
       horasSla: Number(paso.horasSla) || 0
     };
@@ -464,5 +652,55 @@ export class Plantillas implements OnInit {
         this.cargandoCategorias.set(false);
       }
     });
+  }
+
+  cargarEtapasDisponibles(): void {
+    this.cargandoEtapas.set(true);
+
+    this.tramitesService.getEtapas().subscribe({
+      next: (etapas) => {
+        this.etapasDisponibles.set(etapas);
+        this.cargandoEtapas.set(false);
+      },
+      error: () => {
+        this.cargandoEtapas.set(false);
+        this.toastService.show('Etapas no disponibles', 'No se pudieron cargar las etapas. Puedes crear una nueva manualmente.', 'warning');
+      }
+    });
+  }
+
+  cargarUsuariosAsignables(): void {
+    this.cargandoUsuarios.set(true);
+
+    this.tramitesService.getUsuariosAsignables().subscribe({
+      next: (usuarios) => {
+        this.usuariosAsignables.set(usuarios);
+        this.cargandoUsuarios.set(false);
+      },
+      error: () => {
+        this.cargandoUsuarios.set(false);
+        this.toastService.show('Usuarios no disponibles', 'No se pudieron cargar los usuarios para asignar etapas.', 'warning');
+      }
+    });
+  }
+
+  esDecano(usuario: UsuarioAsignableTramite): boolean {
+    return usuario.idRol === 1 || (usuario.rol || '').trim().toLowerCase() === 'decano';
+  }
+
+  esCoordinador(usuario: UsuarioAsignableTramite): boolean {
+    return usuario.idRol === 3 || (usuario.rol || '').trim().toLowerCase() === 'coordinador';
+  }
+
+  obtenerAlcanceUsuario(usuario: UsuarioAsignableTramite): string {
+    if (this.esDecano(usuario)) {
+      return usuario.facultad || usuario.carrera || 'Sin facultad';
+    }
+
+    if (this.esCoordinador(usuario)) {
+      return usuario.carrera || usuario.facultad || 'Sin carrera';
+    }
+
+    return usuario.facultad || usuario.carrera || 'Sin asignación';
   }
 }

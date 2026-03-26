@@ -544,6 +544,16 @@
   backdrop-filter: blur(4px);
 }
 
+.modal__workspace {
+  position: relative;
+  z-index: 1;
+  width: min(1760px, 98vw);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 16px;
+}
+
 .detail-modal__dialog {
   position: relative;
   width: min(1180px, 96vw);
@@ -559,10 +569,72 @@
 
 /* Variante ancha del modal de nueva plantilla */
 .modal__dialog--wide {
-  width: min(1180px, 96vw);
+  width: min(1260px, 97vw);
+  height: 90vh;
+  max-height: 90vh;
   border-radius: 24px;
   border: 1px solid #e9ecef;
   box-shadow: 0 18px 36px rgba(0, 0, 0, 0.12);
+}
+
+.modal__dialog--flow-side {
+  width: min(520px, 36vw);
+  height: 90vh;
+  max-height: 90vh;
+  overflow: hidden;
+  border-radius: 24px;
+  border: 1px solid #e9ecef;
+  background: #ffffff;
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+}
+
+.modal__dialog--wide,
+.modal__dialog--flow-side {
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.modal__dialog--wide {
+  font-size: 0.96rem;
+  line-height: 1.55;
+}
+
+.modal__dialog--flow-side .modal__header {
+  padding: 16px 18px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.modal__dialog--wide .modal__header h3,
+.modal__dialog--flow-side .modal__header h3 {
+  font-size: 1.02rem;
+}
+
+.modal__dialog--wide .modal__header h3 {
+  font-size: 1.25rem;
+  line-height: 1.2;
+  font-weight: 900;
+}
+
+.modal__dialog--flow-side .modal__body {
+  padding: 16px;
+  overflow: auto;
+  display: flex;
+}
+
+.modal__dialog--flow-side .flow-preview-panel {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.modal__dialog--flow-side .flow-timeline--compact {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
 }
 
 /* Encabezado y cuerpo con ritmo visual similar al modal de detalle */
@@ -573,6 +645,44 @@
 
 .modal__dialog--wide .modal__body {
   padding: 24px;
+}
+
+.modal__dialog--wide .panel-heading h4,
+.modal__dialog--flow-side .panel-heading h4,
+.modal__dialog--wide .flow-create-banner h4 {
+  font-size: 1rem;
+}
+
+.modal__dialog--wide .panel-heading__eyebrow,
+.modal__dialog--wide .panel-heading--subtle .panel-heading__eyebrow {
+  font-size: 0.72rem;
+}
+
+.modal__dialog--wide .panel-heading h4,
+.modal__dialog--wide .flow-create-banner h4 {
+  font-size: 1.18rem;
+  line-height: 1.2;
+  font-weight: 800;
+}
+
+.modal__dialog--wide .panel-heading p,
+.modal__dialog--flow-side .panel-heading p,
+.modal__dialog--wide .flow-create-banner p,
+.modal__dialog--flow-side .flow-step__desc,
+.modal__dialog--wide .flow-step__desc,
+.modal__dialog--flow-side .flow-chip,
+.modal__dialog--wide .flow-chip,
+.modal__dialog--flow-side .field-hint,
+.modal__dialog--wide .field-hint {
+  font-size: 0.84rem;
+  font-weight: 400;
+}
+
+.modal__dialog--wide .panel-heading p,
+.modal__dialog--wide .flow-create-banner p {
+  font-size: 0.95rem;
+  line-height: 1.55;
+  font-weight: 400;
 }
 
 .plantilla-form {
@@ -597,6 +707,8 @@
 }
 
 .plantilla-form .form-actions--top {
+  display: flex;
+  justify-content: flex-end;
   padding: 0 2px 2px;
   margin-bottom: 2px;
   border-bottom: 1px solid #eef4ef;
@@ -609,6 +721,10 @@
 
 .plantilla-form__panel--main .label {
   margin-bottom: 3px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #4b5563;
 }
 
 .plantilla-form__panel--main .select,
@@ -659,6 +775,7 @@
   margin: 0;
   color: #6c757d;
   line-height: 1.5;
+  font-weight: 400;
 }
 
 .panel-actions {
@@ -689,17 +806,30 @@
   box-shadow: 0 8px 24px rgba(15, 106, 29, 0.05);
 }
 
+.flow-mode-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.flow-mode-actions .header-action-btn.is-active {
+  background: #eaf6ec;
+  border-color: #0f6a1d;
+  box-shadow: 0 6px 16px rgba(15, 106, 29, 0.15);
+}
+
 .flow-create-banner h4 {
   margin: 0 0 6px;
   color: #111827;
-  font-size: 1.02rem;
-  font-weight: 900;
+  font-size: 1.18rem;
+  font-weight: 800;
 }
 
 .flow-create-banner p {
   margin: 0;
   color: #6c757d;
-  line-height: 1.5;
+  line-height: 1.55;
+  font-weight: 400;
 }
 
 .form-grid--main {
@@ -718,16 +848,25 @@
 
 .compact-settings-row {
   display: grid;
-  grid-template-columns: minmax(200px, 1fr) repeat(2, minmax(220px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 14px;
   align-items: end;
+}
+
+.compact-settings-row > .field {
+  width: 100%;
+}
+
+.compact-settings-row .select,
+.compact-settings-row .toggle-pill {
+  width: 100%;
 }
 
 .toggle-pill {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  width: fit-content;
+  width: 100%;
   padding: 10px 14px;
   border-radius: 14px;
   border: 1px solid #e5efe7;
@@ -759,7 +898,9 @@
   gap: 12px;
 }
 
-.category-card {
+.category-card,
+.etapa-card,
+.usuario-card {
   text-align: left;
   padding: 14px 16px;
   border: 1px solid #e5efe7;
@@ -770,12 +911,16 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
-.category-card:hover {
+.category-card:hover,
+.etapa-card:hover,
+.usuario-card:hover {
   transform: translateY(-1px);
   box-shadow: 0 12px 28px rgba(15, 106, 29, 0.09);
 }
 
-.category-card.is-selected {
+.category-card.is-selected,
+.etapa-card.is-selected,
+.usuario-card.is-selected {
   border-color: #0f6a1d;
   box-shadow: 0 12px 28px rgba(15, 106, 29, 0.14);
 }
@@ -790,6 +935,9 @@
 
 .category-card__header strong {
   color: #111827;
+  font-size: 1.02rem;
+  line-height: 1.2;
+  font-weight: 800;
 }
 
 .category-card__header span {
@@ -802,8 +950,17 @@
 .category-card p {
   margin: 0;
   color: #4b5563;
-  line-height: 1.45;
+  line-height: 1.55;
   min-height: 42px;
+  font-size: 0.92rem;
+  font-weight: 400;
+}
+
+.etapa-catalog,
+.usuario-catalog {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
 }
 
 @media (max-width: 900px) {
@@ -854,6 +1011,9 @@
 
 .flow-catalog-card__header strong {
   color: #111827;
+  font-size: 1.02rem;
+  line-height: 1.2;
+  font-weight: 800;
 }
 
 .flow-catalog-card__header span {
@@ -866,8 +1026,10 @@
 .flow-catalog-card p {
   margin: 0;
   color: #4b5563;
-  line-height: 1.45;
+  line-height: 1.55;
   min-height: 42px;
+  font-size: 0.92rem;
+  font-weight: 400;
 }
 
 .flow-catalog-card__footer {
@@ -962,8 +1124,85 @@
 
 .stage-card__grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 12px;
+}
+
+.stage-card__grid .field--name-inline {
+  grid-column: span 2;
+}
+
+.stage-card__grid .field--code-inline {
+  grid-column: span 2;
+}
+
+.stage-card__grid .field--sla-inline {
+  grid-column: span 2;
+}
+
+.etapa-card {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  align-content: start;
+}
+
+.etapa-card strong {
+  color: #111827;
+  font-size: 1rem;
+  font-weight: 900;
+  line-height: 1.25;
+}
+
+.etapa-card span {
+  color: #6c757d;
+  font-size: 0.8rem;
+  line-height: 1.2;
+}
+
+.etapa-card--new {
+  border-style: dashed;
+}
+
+.etapa-catalog__empty {
+  min-height: 92px;
+}
+
+.usuario-card {
+  display: grid;
+  gap: 6px;
+}
+
+.usuario-card strong {
+  color: #111827;
+  font-size: 1rem;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.usuario-card span {
+  color: #6c757d;
+  font-size: 0.8rem;
+  line-height: 1.2;
+}
+
+.usuario-card__role {
+  font-weight: 700;
+  color: #374151;
+}
+
+.usuario-card__scope {
+  color: #6b7280;
+}
+
+.usuario-card:hover {
+  border-color: #0f6a1d;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(15, 106, 29, 0.1);
+}
+
+.usuario-card.is-selected {
+  background: #f7fcf8;
 }
 
 /* Campos del constructor: más padding en combos e inputs */
@@ -991,6 +1230,10 @@
 
 .flow-empty--catalog p {
   margin: 8px 0 0;
+}
+
+.flow-empty--mode {
+  min-height: 120px;
 }
 
 .detail-modal__hero {
@@ -1215,17 +1458,17 @@
 
 .flow-step__title {
   font-size: 1rem;
-  font-weight: 900;
+  font-weight: 800;
   color: #111827;
 }
 
 .flow-step__code {
   margin-top: 4px;
-  font-size: 0.75rem;
+  font-size: 0.9rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: #6c757d;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .flow-step__sla {
@@ -1233,15 +1476,16 @@
   border-radius: 999px;
   background: #0f6a1d;
   color: #fff;
-  font-size: 0.78rem;
-  font-weight: 800;
+  font-size: 0.9rem;
+  font-weight: 700;
   white-space: nowrap;
 }
 
 .flow-step__desc {
   margin: 12px 0 0;
   color: #4b5563;
-  line-height: 1.5;
+  line-height: 1.45;
+  font-weight: 400;
 }
 
 .flow-step__meta {
@@ -1259,8 +1503,8 @@
   border-radius: 999px;
   background: #edf7ef;
   color: #0f6a1d;
-  font-size: 0.82rem;
-  font-weight: 700;
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
 .flow-chip.is-muted {
@@ -1375,6 +1619,16 @@
 }
 
 @media (max-width: 1200px) {
+  .modal__workspace {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .modal__dialog--flow-side {
+    width: min(1260px, 97vw);
+    max-height: 52vh;
+  }
+
   .detail-summary-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1428,6 +1682,10 @@
   .flow-create-banner {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .flow-mode-actions {
+    width: 100%;
   }
 
   .flow-step {

@@ -73,6 +73,40 @@ export interface GuardarPlantillaPayload {
     disponibleExternos: boolean;
 }
 
+export interface EtapaFlujoCompletoRequest {
+    idEtapa?: number | null;
+    nombreEtapa?: string;
+    descripcionEtapa?: string;
+    codigoEtapa?: string;
+}
+
+export interface PasoFlujoCompletoRequest {
+    idEtapa?: number | null;
+    etapa?: EtapaFlujoCompletoRequest;
+    ordenPaso: number;
+    rolRequeridoId: number | null;
+    idUsuarioEncargado: number | null;
+    horasSla: number;
+}
+
+export interface GuardarFlujoCompletoPayload {
+    nombreFlujo: string;
+    descripcionFlujo: string;
+    estaActivo: boolean;
+    version: number;
+    creadoPorId: number;
+    pasos: PasoFlujoCompletoRequest[];
+}
+
+export interface GuardarFlujoCompletoResponse {
+    idFlujo: number;
+    nombreFlujo: string;
+    descripcionFlujo: string;
+    estaActivo: boolean;
+    version: number;
+    creadoPorId: number | null;
+}
+
 export interface PasoNuevoPlantilla {
     idPaso: number;
     ordenPaso: number;
@@ -80,7 +114,9 @@ export interface PasoNuevoPlantilla {
     codigoEtapa: string;
     nombreEtapa: string;
     descripcionEtapa: string;
+    idRolRequerido: number | null;
     rolRequerido: string;
+    idUsuarioEncargado: number | null;
     usuarioEncargado: string;
     horasSla: number;
 }
@@ -128,6 +164,25 @@ export interface CategoriaTramite {
     nombreCategoria: string;
     descripcionCategoria: string;
     estaActivo: boolean;
+}
+
+export interface EtapaTramite {
+    idEtapa: number;
+    nombreEtapa: string;
+    descripcionEtapa: string;
+    codigoEtapa: string;
+}
+
+export interface UsuarioAsignableTramite {
+    idUsuario: number;
+    nombres: string;
+    apellidos: string;
+    idRol: number | null;
+    rol: string;
+    idFacultad: number | null;
+    facultad: string;
+    idCarrera: number | null;
+    carrera: string;
 }
 
 export interface FlujoTramite {

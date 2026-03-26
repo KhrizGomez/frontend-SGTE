@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-import { PlantillaCarrera, TipoTramiteDetalle, RegistrarTipoTramitePayload, FlujoTramite, PasoTramite, CategoriaTramite, GuardarPlantillaPayload } from '../../models/coordinador/plantilla.model';
+import { PlantillaCarrera, TipoTramiteDetalle, RegistrarTipoTramitePayload, FlujoTramite, PasoTramite, CategoriaTramite, GuardarPlantillaPayload, EtapaTramite, UsuarioAsignableTramite, GuardarFlujoCompletoPayload, GuardarFlujoCompletoResponse } from '../../models/coordinador/plantilla.model';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -38,8 +38,24 @@ export class TramitesService {
             .pipe(map((items) => (items ?? []).map((item) => this.normalizarCategoria(item as unknown as Record<string, unknown>))));
     }
 
+    getEtapas(): Observable<EtapaTramite[]> {
+        return this.http
+            .get<EtapaTramite[]>(`${environment.apiUrl}/api/tramites/etapas`)
+            .pipe(map((items) => (items ?? []).map((item) => this.normalizarEtapa(item as unknown as Record<string, unknown>))));
+    }
+
+    getUsuariosAsignables(): Observable<UsuarioAsignableTramite[]> {
+        return this.http
+            .get<UsuarioAsignableTramite[]>(`${environment.apiUrl}/api/sistema/usuarios/filtro`)
+            .pipe(map((items) => (items ?? []).map((item) => this.normalizarUsuarioAsignable(item as unknown as Record<string, unknown>))));
+    }
+
     guardarPlantilla(payload: GuardarPlantillaPayload): Observable<unknown> {
         return this.http.post<unknown>(`${this.plantillasBaseUrl}/guardar`, payload);
+    }
+
+    guardarFlujoCompleto(payload: GuardarFlujoCompletoPayload): Observable<GuardarFlujoCompletoResponse> {
+        return this.http.post<GuardarFlujoCompletoResponse>(`${environment.apiUrl}/api/tramites/flujos`, payload);
     }
 
     registrarTipoTramite(payload: RegistrarTipoTramitePayload): Observable<TipoTramiteDetalle> {
@@ -122,6 +138,29 @@ export class TramitesService {
             nombreCategoria: String(item['nombreCategoria'] ?? ''),
             descripcionCategoria: String(item['descripcionCategoria'] ?? ''),
             estaActivo: Boolean(item['estaActivo'] ?? false),
+        };
+    }
+
+    private normalizarEtapa(item: Record<string, unknown>): EtapaTramite {
+        return {
+            idEtapa: Number(item['idEtapa'] ?? 0),
+            nombreEtapa: String(item['nombreEtapa'] ?? ''),
+            descripcionEtapa: String(item['descripcionEtapa'] ?? ''),
+            codigoEtapa: String(item['codigoEtapa'] ?? ''),
+        };
+    }
+
+    private normalizarUsuarioAsignable(item: Record<string, unknown>): UsuarioAsignableTramite {
+        return {
+            idUsuario: Number(item['idUsuario'] ?? 0),
+            nombres: String(item['nombres'] ?? ''),
+            apellidos: String(item['apellidos'] ?? ''),
+            idRol: item['idRol'] === null || item['idRol'] === undefined ? null : Number(item['idRol']),
+            rol: String(item['rol'] ?? ''),
+            idFacultad: item['idFacultad'] === null || item['idFacultad'] === undefined ? null : Number(item['idFacultad']),
+            facultad: String(item['facultad'] ?? ''),
+            idCarrera: item['idCarrera'] === null || item['idCarrera'] === undefined ? null : Number(item['idCarrera']),
+            carrera: String(item['carrera'] ?? ''),
         };
     }
 
