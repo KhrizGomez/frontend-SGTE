@@ -10,6 +10,8 @@ export interface AutenticacionRespuesta {
     correoInstitucional: string;
     telefono: string;
     estado: boolean;
+    idFacultad?: number;
+    nombreFacultad?: string;
     idCarrera: number;
     carrera: string;
     idRol: number;

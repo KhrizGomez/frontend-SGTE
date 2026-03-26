@@ -33,7 +33,10 @@ export class Plantillas implements OnInit {
   error = signal('');
   showNuevaPlantillaModal = signal(false);
   showDetalleModal = signal(false);
+  showConfirmEliminarModal = signal(false);
   currentEditId = signal<number | null>(null);
+
+  esEdicion = computed(() => this.currentEditId() !== null);
 
   buscar = signal('');
   paginaActual = signal(1);
@@ -187,6 +190,41 @@ export class Plantillas implements OnInit {
     this.showDetalleModal.set(false);
   }
 
+  eliminarPlantillaSeleccionada(): void {
+    const plantilla = this.plantillaSeleccionada();
+    if (!plantilla) {
+      return;
+    }
+
+    this.showConfirmEliminarModal.set(true);
+  }
+
+  cerrarConfirmarEliminarPlantilla(): void {
+    this.showConfirmEliminarModal.set(false);
+  }
+
+  confirmarEliminarPlantilla(): void {
+    const plantilla = this.plantillaSeleccionada();
+    if (!plantilla) {
+      this.cerrarConfirmarEliminarPlantilla();
+      return;
+    }
+
+    this.loadingService.withMinDuration(this.tramitesService.eliminarPlantilla(plantilla.idPlantilla)).subscribe({
+      next: () => {
+        this.toastService.show('Plantilla eliminada', 'La plantilla se eliminó correctamente.', 'success');
+        this.cerrarConfirmarEliminarPlantilla();
+        this.showDetalleModal.set(false);
+        this.plantillaSeleccionada.set(null);
+        this.cargarPlantillas();
+      },
+      error: () => {
+        this.cerrarConfirmarEliminarPlantilla();
+        this.error.set('No se pudo eliminar la plantilla. Intenta nuevamente.');
+      }
+    });
+  }
+
   abrirEdicionPlantilla(): void {
     const seleccionada = this.plantillaSeleccionada();
     if (!seleccionada) {
@@ -211,7 +249,9 @@ export class Plantillas implements OnInit {
     });
     this.error.set('');
     this.showDetalleModal.set(false);
-    this.modoFlujo.set(seleccionada.idFlujo ? 'disponibles' : null);
+    this.modoFlujo.set('disponibles');
+    this.mostrarConstructorFlujo.set(false);
+    this.seleccionarFlujoId(seleccionada.idFlujo || null);
     this.showNuevaPlantillaModal.set(true);
   }
 
@@ -299,6 +339,10 @@ export class Plantillas implements OnInit {
   }
 
   mostrarFlujoPersonalizado(): void {
+    if (this.esEdicion()) {
+      return;
+    }
+
     this.abrirConstructorFlujo();
   }
 
@@ -391,6 +435,7 @@ export class Plantillas implements OnInit {
     const descripcionPlantilla = formulario.descripcionPlantilla.trim();
     const idCarrera = usuario?.idCarrera;
     const esFlujoPersonalizado = this.modoFlujo() === 'personalizado';
+    const idPlantillaEditando = this.currentEditId();
 
     if (!nombrePlantilla || !formulario.idCategoria || !idCarrera) {
       this.error.set('');
@@ -439,6 +484,32 @@ export class Plantillas implements OnInit {
       return this.tramitesService.guardarPlantilla(payload);
     };
 
+    const guardarPlantillaEditada = (idFlujo: number) => {
+      if (!idPlantillaEditando) {
+        return this.tramitesService.guardarPlantilla({
+          nombrePlantilla,
+          descripcionPlantilla,
+          idCategoria: formulario.idCategoria,
+          idCarrera,
+          idFlujo,
+          diasEstimados: Number(formulario.diasResolucionEstimados) || 0,
+          estaActivo: formulario.estaActivo,
+          disponibleExternos: formulario.disponibleExternos
+        });
+      }
+
+      return this.tramitesService.editarPlantilla(idPlantillaEditando, {
+        nombrePlantilla,
+        descripcionPlantilla,
+        idCategoria: formulario.idCategoria,
+        idCarrera,
+        idFlujo,
+        diasEstimados: Number(formulario.diasResolucionEstimados) || 0,
+        estaActivo: formulario.estaActivo,
+        disponibleExternos: formulario.disponibleExternos
+      });
+    };
+
     if (esFlujoPersonalizado) {
       const flujoPayload: GuardarFlujoCompletoPayload = {
         nombreFlujo: nombrePlantilla,
@@ -471,7 +542,7 @@ export class Plantillas implements OnInit {
             throw new Error('No se recibió el identificador del flujo creado.');
           }
 
-          return guardarPlantillaConFlujo(idFlujoCreado);
+          return idPlantillaEditando ? guardarPlantillaEditada(idFlujoCreado) : guardarPlantillaConFlujo(idFlujoCreado);
         })
       );
 
@@ -496,7 +567,21 @@ export class Plantillas implements OnInit {
       this.error.set('');
       this.toastService.show(
         'Datos incompletos',
-        'Selecciona un flujo disponible antes de guardar la plantilla.',
+        idPlantillaEditando
+          ? 'Selecciona un flujo ya creado antes de guardar los cambios.'
+          : 'Selecciona un flujo disponible antes de guardar la plantilla.',
+        'warning'
+      );
+      return;
+    }
+
+    const idFlujoSeleccionado = formulario.flujoSeleccionadoId ?? this.flujoVistaPrevia()?.idFlujo ?? null;
+
+    if (!idFlujoSeleccionado) {
+      this.error.set('');
+      this.toastService.show(
+        'Datos incompletos',
+        'Selecciona un flujo ya creado para poder guardar.',
         'warning'
       );
       return;
@@ -507,15 +592,23 @@ export class Plantillas implements OnInit {
       descripcionPlantilla,
       idCategoria: formulario.idCategoria,
       idCarrera,
-      idFlujo: formulario.flujoSeleccionadoId,
+      idFlujo: idFlujoSeleccionado,
       diasEstimados: Number(formulario.diasResolucionEstimados) || 0,
       estaActivo: formulario.estaActivo,
       disponibleExternos: formulario.disponibleExternos
     };
 
-    this.loadingService.withMinDuration(this.tramitesService.guardarPlantilla(payload)).subscribe({
+    const peticion$ = idPlantillaEditando
+      ? this.tramitesService.editarPlantilla(idPlantillaEditando, payload)
+      : this.tramitesService.guardarPlantilla(payload);
+
+    this.loadingService.withMinDuration(peticion$).subscribe({
       next: () => {
-        this.toastService.show('Plantilla guardada', 'La plantilla se guardó correctamente.', 'success');
+        this.toastService.show(
+          idPlantillaEditando ? 'Cambios guardados' : 'Plantilla guardada',
+          idPlantillaEditando ? 'La plantilla se actualizó correctamente.' : 'La plantilla se guardó correctamente.',
+          'success'
+        );
         this.cerrarNuevaPlantilla();
         this.cargarPlantillas();
         this.cargarFlujosDisponibles();

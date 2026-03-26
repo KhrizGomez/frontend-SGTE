@@ -54,6 +54,14 @@ export class TramitesService {
         return this.http.post<unknown>(`${this.plantillasBaseUrl}/guardar`, payload);
     }
 
+    editarPlantilla(idPlantilla: number, payload: GuardarPlantillaPayload): Observable<unknown> {
+        return this.http.put<unknown>(`${this.plantillasBaseUrl}/editar/${idPlantilla}`, payload);
+    }
+
+    eliminarPlantilla(idPlantilla: number): Observable<unknown> {
+        return this.http.delete<unknown>(`${this.plantillasBaseUrl}/eliminar/${idPlantilla}`);
+    }
+
     guardarFlujoCompleto(payload: GuardarFlujoCompletoPayload): Observable<GuardarFlujoCompletoResponse> {
         return this.http.post<GuardarFlujoCompletoResponse>(`${environment.apiUrl}/api/tramites/flujos`, payload);
     }

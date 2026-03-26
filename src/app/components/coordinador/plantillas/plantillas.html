@@ -267,8 +267,8 @@
               <div class="flow-create-banner">
                 <div>
                   <span class="panel-heading__eyebrow">Configuración de flujo</span>
-                  <h4>Elige cómo asociar el flujo</h4>
-                  <p>Selecciona una opción para mostrar los flujos disponibles o crear un flujo personalizado.</p>
+                  <h4>{{ currentEditId() ? 'Selecciona un flujo ya creado' : 'Elige cómo asociar el flujo' }}</h4>
+                  <p>{{ currentEditId() ? 'En edición solo puedes reutilizar flujos existentes.' : 'Selecciona una opción para mostrar los flujos disponibles o crear un flujo personalizado.' }}</p>
                 </div>
                 <div class="flow-mode-actions">
                   <button type="button" class="header-action-btn header-action-btn--soft"
@@ -276,11 +276,13 @@
                     <i class="bi bi-diagram-3"></i>
                     <span>Flujos disponibles</span>
                   </button>
+                  @if (!currentEditId()) {
                   <button type="button" class="header-action-btn header-action-btn--soft"
                     [class.is-active]="modoFlujo() === 'personalizado'" (click)="mostrarFlujoPersonalizado()">
                     <i class="bi bi-plus-circle"></i>
                     <span>Flujo personalizado</span>
                   </button>
+                  }
                 </div>
               </div>
 
@@ -320,7 +322,7 @@
               }
             </section>
 
-            @if (modoFlujo() === 'personalizado' && mostrarConstructorFlujo()) {
+            @if (!currentEditId() && modoFlujo() === 'personalizado' && mostrarConstructorFlujo()) {
             <!-- Sección: Constructor manual de flujo -->
             <section class="plantilla-form__panel plantilla-form__panel--steps">
               <div class="panel-heading panel-heading--row">
@@ -569,6 +571,11 @@
             <i class="bi bi-pencil-square"></i>
             <span>Editar plantilla</span>
           </button>
+          <button type="button" class="header-action-btn header-action-btn--danger"
+            (click)="eliminarPlantillaSeleccionada()">
+            <i class="bi bi-trash3"></i>
+            <span>Eliminar</span>
+          </button>
         </div>
 
         <!-- Sección: Flujo y datos complementarios -->
@@ -657,6 +664,49 @@
             </div>
           </div>
         </section>
+      </div>
+    </div>
+  </div>
+  }
+
+  @if (showConfirmEliminarModal() && plantillaSeleccionada()) {
+  <!-- Modal: Confirmar eliminación -->
+  <div class="modal modal--confirm-delete" role="dialog" aria-modal="true" aria-labelledby="confirm-delete-title">
+    <div class="modal__backdrop" (click)="cerrarConfirmarEliminarPlantilla()"></div>
+    <div class="modal__workspace modal__workspace--confirm-delete">
+      <div class="modal__dialog modal__dialog--confirm-delete">
+        <div class="modal__header modal__header--danger">
+          <div>
+            <h3 id="confirm-delete-title">Confirmar eliminación</h3>
+            <p>Esta acción no se puede deshacer.</p>
+          </div>
+          <button type="button" class="header-action-btn header-action-btn--icon header-action-btn--soft"
+            (click)="cerrarConfirmarEliminarPlantilla()" aria-label="Cerrar confirmación">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+
+        <div class="modal__body modal__body--confirm-delete">
+          <p class="confirm-delete__text">
+            Vas a eliminar la plantilla <strong>{{ plantillaSeleccionada()?.nombrePlantilla }}</strong>.
+          </p>
+          <p class="confirm-delete__text confirm-delete__text--muted">
+            Se borrará la plantilla y ya no estará disponible para la carrera asociada.
+          </p>
+        </div>
+
+        <div class="modal__footer modal__footer--confirm-delete">
+          <button type="button" class="header-action-btn header-action-btn--soft"
+            (click)="cerrarConfirmarEliminarPlantilla()">
+            <i class="bi bi-x-circle"></i>
+            <span>Cancelar</span>
+          </button>
+          <button type="button" class="header-action-btn header-action-btn--danger"
+            (click)="confirmarEliminarPlantilla()">
+            <i class="bi bi-trash3"></i>
+            <span>Eliminar plantilla</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
