@@ -62,6 +62,41 @@ export interface RegistrarTipoTramitePayload {
     disponibleExternos: boolean;
 }
 
+export interface GuardarPlantillaPayload {
+    nombrePlantilla: string;
+    descripcionPlantilla: string;
+    idCategoria: number | null;
+    idCarrera: number;
+    idFlujo: number | null;
+    diasEstimados: number;
+    estaActivo: boolean;
+    disponibleExternos: boolean;
+}
+
+export interface PasoNuevoPlantilla {
+    idPaso: number;
+    ordenPaso: number;
+    idEtapa: number | null;
+    codigoEtapa: string;
+    nombreEtapa: string;
+    descripcionEtapa: string;
+    rolRequerido: string;
+    usuarioEncargado: string;
+    horasSla: number;
+}
+
+export interface NuevaPlantillaForm {
+    nombrePlantilla: string;
+    idCategoria: number | null;
+    categoria: string;
+    flujoSeleccionadoId: number | null;
+    descripcionPlantilla: string;
+    diasResolucionEstimados: number | null;
+    disponibleExternos: boolean;
+    estaActivo: boolean;
+    pasos: PasoNuevoPlantilla[];
+}
+
 export interface PlantillaCarrera {
     idPlantilla: number;
     nombrePlantilla: string;
@@ -99,8 +134,9 @@ export interface FlujoTramite {
     idFlujo: number;
     nombreFlujo: string;
     descripcionFlujo: string;
+    categoria?: string;
     estaActivo: boolean;
     version: number;
     creadoPor: number | null;
+    pasos: PasoTramite[];
 }
-

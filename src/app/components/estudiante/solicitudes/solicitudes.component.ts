@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { AutenticacionService } from '../../../services/general/autenticacion.service';
 import { TramitesService } from '../../../services/coordinador/tramites.service';
 import { LoadingService } from '../../../services/general/loading.service';
-import { PlantillaCarrera } from '../../../models/coordinador/tramite-detalle.model';
+import { PlantillaCarrera } from '../../../models/coordinador/plantilla.model';
 import { LoadingComponent } from '../../shared/loading/loading.component';
 
 @Component({
