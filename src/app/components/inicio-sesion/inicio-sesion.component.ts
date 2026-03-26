@@ -1,4 +1,4 @@
-import { AfterViewInit, Component } from '@angular/core';
+import { AfterViewInit, Component, NgZone } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -37,7 +37,8 @@ export class InicioSesionComponent implements AfterViewInit {
         private router: Router,
         private validacionUsuarioService: ValidacionUsuarioService,
         private registroUsuarioService: RegistroUsuarioService,
-        private toastService: ToastService
+        private toastService: ToastService,
+        private ngZone: NgZone
     ) { }
 
     // Auth login
@@ -271,11 +272,13 @@ export class InicioSesionComponent implements AfterViewInit {
         const modalElement = document.getElementById('modalCreateAccount');
         if (modalElement) {
             modalElement.addEventListener('hidden.bs.modal', () => {
-                this.estudianteExterno = false;
-                this.cedula = '';
-                this.nombres = '';
-                this.apellidos = '';
-                this.cargandoRegistro = false;
+                this.ngZone.run(() => {
+                    this.estudianteExterno = false;
+                    this.cedula = '';
+                    this.nombres = '';
+                    this.apellidos = '';
+                    this.cargandoRegistro = false;
+                });
             });
         }
     }

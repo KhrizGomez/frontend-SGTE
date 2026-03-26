@@ -4,7 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { AutenticacionService } from '../../../services/general/autenticacion.service';
 import { TramitesService } from '../../../services/coordinador/tramites.service';
 import { LoadingService } from '../../../services/general/loading.service';
-import { PlantillaCarrera } from '../../../models/coordinador/plantilla.model';
+import { ToastService } from '../../../services/general/toast.service';
+import { CrearSolicitudRequestDTO, PlantillaCarrera, RequisitoTramite } from '../../../models/coordinador/plantilla.model';
 import { LoadingComponent } from '../../shared/loading/loading.component';
 
 @Component({
@@ -24,16 +25,21 @@ export class EstudianteSolicitudes implements OnInit {
   filtrCategoria = '';
   
   paginaActual = 1;
-  porPagina = 5;
+  porPagina = 8;
 
   modalAbierto = false;
   plantillaSeleccionada: PlantillaCarrera | null = null;
   observaciones = '';
+  prioridadSolicitud = 'Normal';
+  enviandoSolicitud = false;
+  documentosRequisito: Record<number, File | null> = {};
+  documentosRequisitoNombres: Record<number, string> = {};
 
   constructor(
     private tramitesService: TramitesService,
     private authService: AutenticacionService,
     private loadingService: LoadingService,
+    private toastService: ToastService,
     private cdr: ChangeDetectorRef,
   ) {}
 
@@ -93,14 +99,15 @@ export class EstudianteSolicitudes implements OnInit {
   }
 
   get plantillasPaginadas(): PlantillaCarrera[] {
-    let actual = this.paginaActual;
-    if (actual > this.maxPagina) { actual = this.maxPagina; this.paginaActual = actual; }
-    
+    const actual = Math.min(this.paginaActual, this.maxPagina);
     const inicio = (actual - 1) * this.porPagina;
     return this.plantillasFiltradas.slice(inicio, inicio + this.porPagina);
   }
 
   cambiarPagina(dir: number) {
+    if (this.paginaActual > this.maxPagina) {
+      this.paginaActual = this.maxPagina;
+    }
     const nueva = this.paginaActual + dir;
     if (nueva >= 1 && nueva <= this.maxPagina) {
       this.paginaActual = nueva;
@@ -115,6 +122,8 @@ export class EstudianteSolicitudes implements OnInit {
   abrirDetalle(plantilla: PlantillaCarrera): void {
     this.plantillaSeleccionada = plantilla;
     this.observaciones = '';
+    this.prioridadSolicitud = 'Normal';
+    this.enviandoSolicitud = false;
     this.modalAbierto = true;
   }
 
@@ -122,11 +131,131 @@ export class EstudianteSolicitudes implements OnInit {
     this.modalAbierto = false;
     this.plantillaSeleccionada = null;
     this.observaciones = '';
+    this.prioridadSolicitud = 'Normal';
+    this.enviandoSolicitud = false;
+    this.documentosRequisito = {};
+    this.documentosRequisitoNombres = {};
+  }
+
+  obtenerAceptacionRequisito(extensionesPermitidas: string): string {
+    return (extensionesPermitidas || '')
+      .split(',')
+      .map((extension) => extension.trim())
+      .filter(Boolean)
+      .map((extension) => (extension.startsWith('.') ? extension : `.${extension}`))
+      .join(',');
+  }
+
+  manejarDocumentoRequisito(requisito: RequisitoTramite, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const archivo = input.files?.[0] ?? null;
+
+    if (!archivo) {
+      return;
+    }
+
+    this.documentosRequisito[requisito.idRequisito] = archivo;
+    this.documentosRequisitoNombres[requisito.idRequisito] = archivo.name;
+    this.cdr.detectChanges();
+  }
+
+  obtenerRequisitosSeleccionados(): RequisitoTramite[] {
+    const plantilla = this.plantillaSeleccionada;
+    if (!plantilla) {
+      return [];
+    }
+
+    return plantilla.requisitosTramite.filter((requisito) => !!this.documentosRequisito[requisito.idRequisito]);
+  }
+
+  obtenerRequisitosFaltantes(): RequisitoTramite[] {
+    const plantilla = this.plantillaSeleccionada;
+    if (!plantilla) {
+      return [];
+    }
+
+    return plantilla.requisitosTramite.filter((requisito) => requisito.esObligatorio && !this.documentosRequisito[requisito.idRequisito]);
+  }
+
+  construirFormDataSolicitud(): FormData | null {
+    const plantilla = this.plantillaSeleccionada;
+    if (!plantilla) {
+      return null;
+    }
+
+    const requisitosSeleccionados = this.obtenerRequisitosSeleccionados();
+    const archivos = requisitosSeleccionados
+      .map((requisito) => this.documentosRequisito[requisito.idRequisito])
+      .filter((archivo): archivo is File => !!archivo);
+
+    const solicitud: CrearSolicitudRequestDTO = {
+      idPlantilla: plantilla.idPlantilla,
+      detallesSolicitud: this.observaciones.trim(),
+      prioridad: this.prioridadSolicitud || 'Normal',
+      pasoActual: 1,
+      idsRequisitos: requisitosSeleccionados.map((requisito) => requisito.idRequisito)
+    };
+
+    const formData = new FormData();
+    formData.append('solicitud', new Blob([JSON.stringify(solicitud)], { type: 'application/json' }));
+
+    for (const archivo of archivos) {
+      formData.append('archivos', archivo, archivo.name);
+    }
+
+    return formData;
   }
 
   enviarSolicitud(): void {
-    // Simula el envÃ­o
-    console.log('Enviando solicitud', this.plantillaSeleccionada, this.observaciones);
-    this.cerrarModal();
+    const plantilla = this.plantillaSeleccionada;
+    if (!plantilla || this.enviandoSolicitud) {
+      return;
+    }
+
+    const requisitosFaltantes = this.obtenerRequisitosFaltantes();
+    if (requisitosFaltantes.length > 0) {
+      const nombres = requisitosFaltantes.map((requisito) => requisito.nombreRequisito).join(', ');
+      this.error = `Faltan documentos obligatorios: ${nombres}.`;
+      this.toastService.show('Documentos pendientes', this.error, 'warning');
+      return;
+    }
+
+    const formData = this.construirFormDataSolicitud();
+    if (!formData) {
+      this.toastService.show('Error', 'No se pudo construir el envío de la solicitud.', 'error');
+      return;
+    }
+
+    const archivosSeleccionados = this.obtenerRequisitosSeleccionados().length;
+    if (archivosSeleccionados === 0) {
+      this.error = 'Debes adjuntar al menos un documento para enviar la solicitud.';
+      this.toastService.show('Documentos pendientes', this.error, 'warning');
+      return;
+    }
+
+    this.enviandoSolicitud = true;
+    this.cdr.detectChanges();
+
+    this.loadingService.withMinDuration(this.tramitesService.crearSolicitud(formData)).subscribe({
+      next: (respuesta) => {
+        this.enviandoSolicitud = false;
+        this.cdr.detectChanges();
+        this.toastService.show(
+          'Solicitud creada',
+          `${respuesta.mensaje} (${respuesta.cantidadArchivos} archivo${respuesta.cantidadArchivos === 1 ? '' : 's'} adjunto${respuesta.cantidadArchivos === 1 ? '' : 's'}).`,
+          'success'
+        );
+        console.log('Solicitud creada', respuesta);
+        this.cerrarModal();
+      },
+      error: (err) => {
+        this.enviandoSolicitud = false;
+        this.cdr.detectChanges();
+        const detalle = err?.error?.message || err?.message || 'Error desconocido';
+        this.error = `No se pudo enviar la solicitud: ${detalle}`;
+        this.toastService.show('Error', this.error, 'error');
+        console.error('Error al enviar solicitud:', err);
+      }
+    });
   }
 }

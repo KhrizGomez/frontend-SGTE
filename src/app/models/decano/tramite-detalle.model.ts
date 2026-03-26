@@ -71,6 +71,17 @@ export interface GuardarPlantillaPayload {
     diasEstimados: number;
     estaActivo: boolean;
     disponibleExternos: boolean;
+    requisitos: RequisitoNuevoPlantilla[];
+}
+
+export interface RequisitoNuevoPlantilla {
+    nombreRequisito: string;
+    descripcionRequisito: string;
+    esObligatorio: boolean;
+    tipoDocumento: string;
+    tamanoMaxMb: number;
+    extensionesPermitidas: string;
+    numeroOrden: number;
 }
 
 export interface EtapaFlujoCompletoRequest {
@@ -131,6 +142,7 @@ export interface NuevaPlantillaForm {
     disponibleExternos: boolean;
     estaActivo: boolean;
     pasos: PasoNuevoPlantilla[];
+    requisitos: RequisitoNuevoPlantilla[];
 }
 
 export interface PlantillaCarrera {

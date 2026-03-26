@@ -426,6 +426,81 @@
 
 .mt-4 { margin-top: 1.5rem; }
 
+/* Status badge colors */
+.status-badge.info { background: #2563eb; }
+
+.etapa-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #495057;
+  background: #f1f3f5;
+  border: 1px solid #e9ecef;
+}
+
+/* Observaciones / Resolucion */
+.observaciones-box,
+.resolucion-box {
+  font-size: 0.9rem;
+  color: #495057;
+  background: #f8f9fa;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #f1f3f5;
+  line-height: 1.5;
+}
+
+.resolucion-box {
+  border-left: 3px solid #059669;
+}
+
+/* Timeline extras */
+.tl-responsable {
+  font-size: 0.8rem;
+  color: #6c757d;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tl-completado {
+  font-size: 0.78rem;
+  color: #059669;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.badge-sla {
+  background: #fef2f2;
+  color: #dc2626;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.tl-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  color: #adb5bd;
+  text-align: center;
+}
+
+.tl-empty i {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+.tl-empty p {
+  font-size: 0.85rem;
+}
+
 @media (max-width: 900px) {
   .detail-body {
     grid-template-columns: 1fr;

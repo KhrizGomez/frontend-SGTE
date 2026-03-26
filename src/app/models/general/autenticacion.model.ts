@@ -8,6 +8,7 @@ export interface AutenticacionRespuesta {
     nombres: string;
     apellidos: string;
     correoInstitucional: string;
+    correoPersonal?: string;
     telefono: string;
     estado: boolean;
     idFacultad?: number;
@@ -16,5 +17,7 @@ export interface AutenticacionRespuesta {
     carrera: string;
     idRol: number;
     rol: string;
+    facultad?: string;
     mensaje: string;
+    token: string;
 }

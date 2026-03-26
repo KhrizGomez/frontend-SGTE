@@ -262,6 +262,103 @@
               </div>
             </section>
 
+            <!-- Sección: Requisitos de la plantilla -->
+            <section class="plantilla-form__panel plantilla-form__panel--steps">
+              <div class="panel-heading panel-heading--row">
+                <div>
+                  <span class="panel-heading__eyebrow">Requisitos</span>
+                  <h4>Documentos solicitados para el trámite</h4>
+                  <p>Agrega, ordena y ajusta los requisitos que se enviarán junto con la plantilla.</p>
+                </div>
+                <div class="panel-actions">
+                  <button type="button" class="header-action-btn header-action-btn--soft" (click)="agregarRequisito()">
+                    <i class="bi bi-plus-lg"></i>
+                    <span>Agregar requisito</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="requirements-editor">
+                <aside class="requirements-editor__list" aria-label="Lista de requisitos">
+                  @for (requisito of nuevaPlantilla().requisitos; track requisito.numeroOrden; let index = $index) {
+                  <article class="requirement-list-item" role="button" tabindex="0"
+                    [class.is-selected]="requisitoActivoIndex() === index" (click)="seleccionarRequisito(index)"
+                    (keydown.enter)="seleccionarRequisito(index)">
+                    <div class="requirement-list-item__meta">
+                      <span>Req. {{ index + 1 }}</span>
+                      <strong>{{ requisito.nombreRequisito || 'Sin nombre' }}</strong>
+                    </div>
+                    <button type="button" class="requirement-list-item__delete" (click)="$event.stopPropagation(); eliminarRequisito(index)"
+                      aria-label="Eliminar requisito">
+                      <i class="bi bi-trash3"></i>
+                    </button>
+                  </article>
+                  }
+                </aside>
+
+                <div class="requirements-editor__detail">
+                  @if (requisitoActivo()) {
+                  <article class="stage-card">
+                    <div class="stage-card__header">
+                      <div>
+                        <span class="stage-card__label">Requisito {{ requisitoActivoIndex() + 1 }}</span>
+                        <h5>{{ requisitoActivo()!.nombreRequisito || 'Sin nombre' }}</h5>
+                      </div>
+                    </div>
+
+                    <div class="stage-card__grid">
+                      <label class="field field--span-2">
+                        <span class="label">Nombre del requisito</span>
+                        <input class="select" [ngModel]="requisitoActivo()!.nombreRequisito"
+                          (ngModelChange)="actualizarRequisito(requisitoActivoIndex(), 'nombreRequisito', $event)"
+                          [name]="'nombreRequisito-' + requisitoActivoIndex()" placeholder="Ej. Solicitud firmada" />
+                      </label>
+
+                      <label class="field field--span-2">
+                        <span class="label">Descripción</span>
+                        <textarea class="textarea" rows="2" [ngModel]="requisitoActivo()!.descripcionRequisito"
+                          (ngModelChange)="actualizarRequisito(requisitoActivoIndex(), 'descripcionRequisito', $event)"
+                          [name]="'descripcionRequisito-' + requisitoActivoIndex()"
+                          placeholder="Detalle del documento requerido..."></textarea>
+                      </label>
+
+                      <label class="field">
+                        <span class="label">Tipo de documento</span>
+                        <input class="select" [ngModel]="requisitoActivo()!.tipoDocumento"
+                          (ngModelChange)="actualizarRequisito(requisitoActivoIndex(), 'tipoDocumento', $event)"
+                          [name]="'tipoDocumento-' + requisitoActivoIndex()" placeholder="Ej. PDF" />
+                      </label>
+
+                      <label class="field">
+                        <span class="label">Tamaño máximo (MB)</span>
+                        <input class="select" type="number" min="1" [ngModel]="requisitoActivo()!.tamanoMaxMb"
+                          (ngModelChange)="actualizarRequisito(requisitoActivoIndex(), 'tamanoMaxMb', $event)"
+                          [name]="'tamanoMaxMb-' + requisitoActivoIndex()" />
+                      </label>
+
+                      <label class="field field--span-2">
+                        <span class="label">Extensiones permitidas</span>
+                        <input class="select" [ngModel]="requisitoActivo()!.extensionesPermitidas"
+                          (ngModelChange)="actualizarRequisito(requisitoActivoIndex(), 'extensionesPermitidas', $event)"
+                          [name]="'extensionesPermitidas-' + requisitoActivoIndex()" placeholder="Ej. pdf,jpg,png" />
+                      </label>
+
+                      <div class="field field--toggle-row field--toggle-row-inline">
+                        <span class="label">Obligatoriedad</span>
+                        <label class="toggle-pill">
+                          <input type="checkbox" [ngModel]="requisitoActivo()!.esObligatorio"
+                            (ngModelChange)="actualizarRequisito(requisitoActivoIndex(), 'esObligatorio', $event)"
+                            [name]="'esObligatorio-' + requisitoActivoIndex()" />
+                          <span>{{ requisitoActivo()!.esObligatorio ? 'Obligatorio' : 'Opcional' }}</span>
+                        </label>
+                      </div>
+                    </div>
+                  </article>
+                  }
+                </div>
+              </div>
+            </section>
+
             <!-- Sección: Catálogo y vista previa de flujos -->
             <section class="plantilla-form__panel plantilla-form__panel--flows">
               <div class="flow-create-banner">
@@ -712,8 +809,4 @@
   </div>
   }
 
-  <!-- Loading Overlay -->
-  @if (cargando()) {
-  <app-loading message="Cargando plantillas..."></app-loading>
-  }
 </div>

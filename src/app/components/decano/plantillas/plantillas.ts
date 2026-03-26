@@ -6,7 +6,7 @@ import { AutenticacionService } from '../../../services/general/autenticacion.se
 import { TramitesService } from '../../../services/decano/tramites.service';
 import { LoadingService } from '../../../services/general/loading.service';
 import { ToastService } from '../../../services/general/toast.service';
-import { CategoriaTramite, FlujoTramite, PasoTramite, PlantillaCarrera, GuardarPlantillaPayload, PasoNuevoPlantilla, NuevaPlantillaForm, EtapaTramite, UsuarioAsignableTramite, GuardarFlujoCompletoPayload } from '../../../models/decano/tramite-detalle.model';
+import { CategoriaTramite, FlujoTramite, PasoTramite, PlantillaCarrera, GuardarPlantillaPayload, PasoNuevoPlantilla, NuevaPlantillaForm, EtapaTramite, UsuarioAsignableTramite, GuardarFlujoCompletoPayload, RequisitoNuevoPlantilla } from '../../../models/decano/tramite-detalle.model';
 import { LoadingComponent } from '../../shared/loading/loading.component';
 
 @Component({
@@ -35,8 +35,14 @@ export class Plantillas implements OnInit {
   showDetalleModal = signal(false);
   showConfirmEliminarModal = signal(false);
   currentEditId = signal<number | null>(null);
+  requisitoActivoIndex = signal(0);
 
   esEdicion = computed(() => this.currentEditId() !== null);
+  requisitoActivo = computed(() => {
+    const requisitos = this.nuevaPlantilla().requisitos;
+    const indice = this.requisitoActivoIndex();
+    return requisitos[indice] ?? requisitos[0] ?? null;
+  });
 
   buscar = signal('');
   paginaActual = signal(1);
@@ -52,6 +58,17 @@ export class Plantillas implements OnInit {
     diasResolucionEstimados: null,
     disponibleExternos: false,
     estaActivo: true,
+    requisitos: [
+      {
+        nombreRequisito: '',
+        descripcionRequisito: '',
+        esObligatorio: true,
+        tipoDocumento: 'PDF',
+        tamanoMaxMb: 5,
+        extensionesPermitidas: 'pdf',
+        numeroOrden: 1
+      }
+    ],
     pasos: [
       {
         idPaso: 1,
@@ -245,6 +262,20 @@ export class Plantillas implements OnInit {
       diasResolucionEstimados: seleccionada.diasResolucionEstimados,
       disponibleExternos: seleccionada.disponibleExternos,
       estaActivo: seleccionada.estaActivo,
+      requisitos: seleccionada.requisitosTramite.length
+        ? seleccionada.requisitosTramite
+            .slice()
+            .sort((a, b) => a.numeroOrden - b.numeroOrden)
+            .map((requisito, index) => ({
+              nombreRequisito: requisito.nombreRequisito,
+              descripcionRequisito: requisito.descripcionRequisito,
+              esObligatorio: requisito.esObligatorio,
+              tipoDocumento: requisito.tipoDocumento,
+              tamanoMaxMb: requisito.tamanoMaxMb,
+              extensionesPermitidas: requisito.extensionesPermitidas,
+              numeroOrden: index + 1
+            }))
+        : [this.crearRequisitoVacio(1)],
       pasos
     });
     this.error.set('');
@@ -252,6 +283,7 @@ export class Plantillas implements OnInit {
     this.modoFlujo.set('disponibles');
     this.mostrarConstructorFlujo.set(false);
     this.seleccionarFlujoId(seleccionada.idFlujo || null);
+    this.requisitoActivoIndex.set(0);
     this.showNuevaPlantillaModal.set(true);
   }
 
@@ -266,12 +298,14 @@ export class Plantillas implements OnInit {
       diasResolucionEstimados: null,
       disponibleExternos: false,
       estaActivo: true,
+      requisitos: [this.crearRequisitoVacio(1)],
       pasos: [this.crearPasoVacio(1)]
     });
     this.flujoVistaPrevia.set(null);
     this.mostrarConstructorFlujo.set(false);
     this.modoFlujo.set(null);
     this.error.set('');
+    this.requisitoActivoIndex.set(0);
     this.showNuevaPlantillaModal.set(true);
   }
 
@@ -375,6 +409,55 @@ export class Plantillas implements OnInit {
     }));
   }
 
+  agregarRequisito(): void {
+    this.nuevaPlantilla.update(actual => {
+      const requisitos = [...actual.requisitos, this.crearRequisitoVacio(actual.requisitos.length + 1)];
+
+      this.requisitoActivoIndex.set(requisitos.length - 1);
+      return {
+        ...actual,
+        requisitos
+      };
+    });
+  }
+
+  eliminarRequisito(indice: number): void {
+    const actual = this.nuevaPlantilla();
+    const requisitos = actual.requisitos.filter((_, index) => index !== indice);
+    const normalizados = requisitos.length ? requisitos : [this.crearRequisitoVacio(1)];
+    const indiceActual = this.requisitoActivoIndex();
+    const siguienteIndice = indiceActual > indice
+      ? indiceActual - 1
+      : Math.min(indiceActual, normalizados.length - 1);
+
+    this.nuevaPlantilla.set({
+      ...actual,
+      requisitos: normalizados.map((requisito, index) => ({
+        ...requisito,
+        numeroOrden: index + 1
+      }))
+    });
+    this.requisitoActivoIndex.set(Math.max(0, siguienteIndice));
+  }
+
+  actualizarRequisito(indice: number, campo: keyof RequisitoNuevoPlantilla, valor: string | number | boolean): void {
+    this.nuevaPlantilla.update(actual => ({
+      ...actual,
+      requisitos: actual.requisitos.map((requisito, index) => index === indice
+        ? { ...requisito, [campo]: valor } as RequisitoNuevoPlantilla
+        : requisito)
+    }));
+  }
+
+  seleccionarRequisito(indice: number): void {
+    const total = this.nuevaPlantilla().requisitos.length;
+    if (indice < 0 || indice >= total) {
+      return;
+    }
+
+    this.requisitoActivoIndex.set(indice);
+  }
+
   seleccionarUsuarioAsignado(indice: number, idUsuario: number): void {
     const usuario = this.usuariosAsignables().find(item => item.idUsuario === idUsuario);
     if (!usuario) {
@@ -435,6 +518,7 @@ export class Plantillas implements OnInit {
     const descripcionPlantilla = formulario.descripcionPlantilla.trim();
     const esFlujoPersonalizado = this.modoFlujo() === 'personalizado';
     const idPlantillaEditando = this.currentEditId();
+    const requisitosNormalizados = this.normalizarRequisitos(formulario.requisitos);
     const idCarreraPlantilla = idPlantillaEditando
       ? (this.plantillaSeleccionada()?.idCarrera
         ?? this.plantillas().find((item) => item.idPlantilla === idPlantillaEditando)?.idCarrera
@@ -488,13 +572,25 @@ export class Plantillas implements OnInit {
         idFlujo,
         diasEstimados: Number(formulario.diasResolucionEstimados) || 0,
         estaActivo: formulario.estaActivo,
-        disponibleExternos: formulario.disponibleExternos
+        disponibleExternos: formulario.disponibleExternos,
+        requisitos: requisitosNormalizados
       };
 
       return this.tramitesService.guardarPlantilla(payload);
     };
 
     const guardarPlantillaEditada = (idFlujo: number) => {
+      const payloadEdicion: Omit<GuardarPlantillaPayload, 'requisitos'> = {
+        nombrePlantilla,
+        descripcionPlantilla,
+        idCategoria: formulario.idCategoria,
+        idCarrera,
+        idFlujo,
+        diasEstimados: Number(formulario.diasResolucionEstimados) || 0,
+        estaActivo: formulario.estaActivo,
+        disponibleExternos: formulario.disponibleExternos
+      };
+
       if (!idPlantillaEditando) {
         return this.tramitesService.guardarPlantilla({
           nombrePlantilla,
@@ -504,20 +600,14 @@ export class Plantillas implements OnInit {
           idFlujo,
           diasEstimados: Number(formulario.diasResolucionEstimados) || 0,
           estaActivo: formulario.estaActivo,
-          disponibleExternos: formulario.disponibleExternos
+          disponibleExternos: formulario.disponibleExternos,
+          requisitos: requisitosNormalizados
         });
       }
 
-      return this.tramitesService.editarPlantilla(idPlantillaEditando, {
-        nombrePlantilla,
-        descripcionPlantilla,
-        idCategoria: formulario.idCategoria,
-        idCarrera,
-        idFlujo,
-        diasEstimados: Number(formulario.diasResolucionEstimados) || 0,
-        estaActivo: formulario.estaActivo,
-        disponibleExternos: formulario.disponibleExternos
-      });
+      return this.tramitesService.editarPlantilla(idPlantillaEditando, payloadEdicion).pipe(
+        switchMap(() => this.tramitesService.editarRequisitosPlantilla(idPlantillaEditando, requisitosNormalizados))
+      );
     };
 
     if (esFlujoPersonalizado) {
@@ -605,11 +695,25 @@ export class Plantillas implements OnInit {
       idFlujo: idFlujoSeleccionado,
       diasEstimados: Number(formulario.diasResolucionEstimados) || 0,
       estaActivo: formulario.estaActivo,
+      disponibleExternos: formulario.disponibleExternos,
+      requisitos: requisitosNormalizados
+    };
+
+    const payloadEdicion: Omit<GuardarPlantillaPayload, 'requisitos'> = {
+      nombrePlantilla,
+      descripcionPlantilla,
+      idCategoria: formulario.idCategoria,
+      idCarrera,
+      idFlujo: idFlujoSeleccionado,
+      diasEstimados: Number(formulario.diasResolucionEstimados) || 0,
+      estaActivo: formulario.estaActivo,
       disponibleExternos: formulario.disponibleExternos
     };
 
     const peticion$ = idPlantillaEditando
-      ? this.tramitesService.editarPlantilla(idPlantillaEditando, payload)
+      ? this.tramitesService.editarPlantilla(idPlantillaEditando, payloadEdicion).pipe(
+          switchMap(() => this.tramitesService.editarRequisitosPlantilla(idPlantillaEditando, requisitosNormalizados))
+        )
       : this.tramitesService.guardarPlantilla(payload);
 
     this.loadingService.withMinDuration(peticion$).subscribe({
@@ -645,6 +749,32 @@ export class Plantillas implements OnInit {
       usuarioEncargado: '',
       horasSla: 0
     };
+  }
+
+  private crearRequisitoVacio(numeroOrden: number): RequisitoNuevoPlantilla {
+    return {
+      nombreRequisito: '',
+      descripcionRequisito: '',
+      esObligatorio: true,
+      tipoDocumento: 'PDF',
+      tamanoMaxMb: 5,
+      extensionesPermitidas: 'pdf',
+      numeroOrden
+    };
+  }
+
+  private normalizarRequisitos(requisitos: RequisitoNuevoPlantilla[]): RequisitoNuevoPlantilla[] {
+    return requisitos
+      .map((requisito, index) => ({
+        ...requisito,
+        nombreRequisito: requisito.nombreRequisito.trim(),
+        descripcionRequisito: requisito.descripcionRequisito.trim(),
+        tipoDocumento: requisito.tipoDocumento.trim() || 'PDF',
+        extensionesPermitidas: requisito.extensionesPermitidas.trim() || 'pdf',
+        tamanoMaxMb: Number(requisito.tamanoMaxMb) || 1,
+        numeroOrden: index + 1
+      }))
+      .filter((requisito) => requisito.nombreRequisito.length > 0);
   }
 
   private crearPasosVacios(cantidad: number): PasoNuevoPlantilla[] {

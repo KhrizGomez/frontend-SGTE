@@ -2,20 +2,20 @@ import { Component, computed, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { of } from 'rxjs';
 import { LoadingService } from '../../../services/general/loading.service';
 import { LoadingComponent } from '../../shared/loading/loading.component';
 import { ToastService } from '../../../services/general/toast.service';
+import { ConfiguracionUsuarioService } from '../../../services/general/configuracion-usuario.service';
+import { NotificacionService, NotificacionDTO } from '../../../services/general/notificacion.service';
 
 interface Notificacion {
-  id: string;
+  id: number;
   icono: string;
   titulo: string;
   mensaje: string;
   tiempo: string;
   leida: boolean;
   tipo: string;
-  prioridad: string;
 }
 
 @Component({
@@ -36,8 +36,6 @@ export class EstudianteNotificaciones implements OnInit {
   prefs = signal({
     wa: false,
     mail: true,
-    app: true,
-    sms: false
   });
 
   notificacionesFiltradas = computed(() => {
@@ -53,9 +51,9 @@ export class EstudianteNotificaciones implements OnInit {
     const all = this.notificaciones();
     return {
       sinLeer: all.filter(n => !n.leida).length,
-      importantes: all.filter(n => n.prioridad === 'Alta').length,
+      importantes: all.length,
       recibidas: all.length,
-      tasa: '95%'
+      tasa: all.length > 0 ? Math.round((all.filter(n => n.leida).length / all.length) * 100) + '%' : '0%'
     };
   });
 
@@ -73,36 +71,80 @@ export class EstudianteNotificaciones implements OnInit {
   notificacionSeleccionada = signal<Notificacion | null>(null);
   showModal = signal(false);
 
-  constructor(private router: Router, private loadingService: LoadingService, private toastService: ToastService) {}
+  constructor(
+    private router: Router,
+    private loadingService: LoadingService,
+    private toastService: ToastService,
+    private configService: ConfiguracionUsuarioService,
+    private notificacionService: NotificacionService
+  ) {}
 
   ngOnInit() {
     this.cargarNotificaciones();
+    this.cargarPreferencias();
+  }
 
-    try {
-      const saved = JSON.parse(localStorage.getItem('sgte_notif_prefs') || '{}');
-      this.prefs.set({ ...this.prefs(), ...saved });
-    } catch {}
+  cargarPreferencias(): void {
+    this.configService.obtenerMisPreferencias().subscribe({
+      next: (config) => {
+        this.prefs.set({
+          wa: config.notificarWhatsapp ?? false,
+          mail: config.notificarEmail ?? true,
+        });
+      },
+      error: () => {}
+    });
   }
 
   cargarNotificaciones(): void {
-    const mockData: Notificacion[] = [
-      { id: 'N-101', icono: 'bi-exclamation-triangle-fill', titulo: 'Acción requerida, ¡Urgente!', mensaje: 'Completa los documentos faltantes, tu solicitud vence HOY.', tiempo: 'Hace 10 minutos', leida: false, tipo: 'Urgente', prioridad: 'Alta' },
-      { id: 'N-102', icono: 'bi-arrow-repeat', titulo: 'Solicitud de cambio de carrera, ¡Enviada!', mensaje: 'En evaluación, respuesta en 15 días aproximadamente.', tiempo: 'Hoy', leida: false, tipo: 'Seguimiento', prioridad: 'Media' },
-      { id: 'N-103', icono: 'bi-file-earmark-check', titulo: 'Solicitud de validación para tu sílabo, ¡Está en revisión!', mensaje: 'Este proceso toma entre 1 - 3 días hábiles.', tiempo: 'Esta semana', leida: true, tipo: 'Sistema', prioridad: 'Baja' },
-      { id: 'N-104', icono: 'bi-envelope-paper', titulo: 'Tienes un nuevo mensaje de coordinación', mensaje: 'Revisa los comentarios en tu solicitud.', tiempo: 'Hace 2 días', leida: true, tipo: 'Mensaje', prioridad: 'Alta' },
-      { id: 'N-105', icono: 'bi-check-circle-fill', titulo: 'Resolución aprobada', mensaje: 'Se ha aprobado tu justificación de inasistencia.', tiempo: 'Hace 1 semana', leida: true, tipo: 'Resolución', prioridad: 'Media' }
-    ];
-
     this.cargando.set(true);
-    this.loadingService.withMinDuration(of(mockData)).subscribe({
+    this.loadingService.withMinDuration(this.notificacionService.obtenerMisNotificaciones()).subscribe({
       next: (data) => {
-        this.notificaciones.set(data);
+        this.notificaciones.set(data.map(n => this.mapearNotificacion(n)));
         this.cargando.set(false);
       },
       error: () => {
         this.cargando.set(false);
       }
     });
+  }
+
+  private mapearNotificacion(dto: NotificacionDTO): Notificacion {
+    return {
+      id: dto.idNotificacion,
+      icono: this.obtenerIcono(dto.titulo),
+      titulo: dto.titulo,
+      mensaje: dto.mensaje,
+      tiempo: this.tiempoRelativo(dto.fechaCreacion),
+      leida: dto.estaLeida,
+      tipo: dto.canal ?? 'Sistema',
+    };
+  }
+
+  private obtenerIcono(titulo: string): string {
+    const t = titulo.toLowerCase();
+    if (t.includes('rechazada')) return 'bi-x-circle-fill';
+    if (t.includes('finalizada')) return 'bi-check-circle-fill';
+    if (t.includes('aprobada')) return 'bi-arrow-repeat';
+    if (t.includes('acción requerida')) return 'bi-exclamation-triangle-fill';
+    if (t.includes('registrada') || t.includes('creada')) return 'bi-inbox-fill';
+    return 'bi-bell-fill';
+  }
+
+  private tiempoRelativo(fecha: string): string {
+    if (!fecha) return '';
+    const ahora = new Date();
+    const f = new Date(fecha);
+    const diff = ahora.getTime() - f.getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return 'Justo ahora';
+    if (mins < 60) return `Hace ${mins} min`;
+    const horas = Math.floor(mins / 60);
+    if (horas < 24) return `Hace ${horas}h`;
+    const dias = Math.floor(horas / 24);
+    if (dias === 1) return 'Ayer';
+    if (dias < 7) return `Hace ${dias} días`;
+    return f.toLocaleDateString('es-EC', { day: '2-digit', month: 'short', year: 'numeric' });
   }
 
   cambiarPagina(dir: number) {
@@ -123,16 +165,20 @@ export class EstudianteNotificaciones implements OnInit {
     this.notificacionSeleccionada.set(null);
   }
 
-  marcarLeida(id: string, e?: Event) {
+  marcarLeida(id: number, e?: Event) {
     if (e) e.stopPropagation();
-    this.notificaciones.update(arr => {
-      const i = arr.findIndex(x => x.id === id);
-      if (i > -1) arr[i] = { ...arr[i], leida: true };
-      return [...arr];
+    this.notificacionService.marcarLeida(id).subscribe({
+      next: () => {
+        this.notificaciones.update(arr => {
+          const i = arr.findIndex(x => x.id === id);
+          if (i > -1) arr[i] = { ...arr[i], leida: true };
+          return [...arr];
+        });
+        if (this.notificacionSeleccionada()?.id === id) {
+          this.cerrarModal();
+        }
+      }
     });
-    if (this.notificacionSeleccionada()?.id === id) {
-      this.cerrarModal();
-    }
   }
 
   irAlTramite() {
@@ -141,12 +187,16 @@ export class EstudianteNotificaciones implements OnInit {
   }
 
   guardarPrefs() {
-    localStorage.setItem('sgte_notif_prefs', JSON.stringify(this.prefs()));
-    this.toastService.show('Éxito', 'Preferencias guardadas exitosamente.', 'success');
+    this.configService.guardarCanales({
+      whatsapp: this.prefs().wa,
+      correo: this.prefs().mail,
+    }).subscribe({
+      next: () => this.toastService.show('Éxito', 'Preferencias guardadas exitosamente.', 'success'),
+      error: () => this.toastService.show('Error', 'No se pudieron guardar las preferencias.', 'error'),
+    });
   }
 
   restablecerPrefs() {
-    this.prefs.set({ wa: false, mail: true, app: true, sms: false });
-    localStorage.removeItem('sgte_notif_prefs');
+    this.prefs.set({ wa: false, mail: true });
   }
 }

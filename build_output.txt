@@ -1,0 +1,46 @@
+[33m❯[39m Building...
+[32m✔[39m Building...
+[1mInitial chunk files[22m[2m | [22m[1mNames[22m             [2m | [22m [1mRaw size[22m[2m | [22m[1mEstimated transfer size[22m
+[32mstyles-H5LEUK6M.css[39m[2m | [22m[2mstyles[22m            [2m | [22m[36m331.43 kB[39m[2m | [22m               [36m33.89 kB[39m
+[32mchunk-DOZMH3D6.js[39m  [2m | [22m[2m-[22m                 [2m | [22m[36m311.10 kB[39m[2m | [22m               [36m80.75 kB[39m
+[32mscripts-TTWY4XDY.js[39m[2m | [22m[2mscripts[22m           [2m | [22m [36m80.45 kB[39m[2m | [22m               [36m21.60 kB[39m
+[32mmain-QBDI4FMC.js[39m   [2m | [22m[2mmain[22m              [2m | [22m [36m25.10 kB[39m[2m | [22m                [36m6.96 kB[39m
+
+[1m [22m                  [2m | [22m[1mInitial total[22m     [2m | [22m[1m748.07 kB[22m[2m | [22m              [1m143.20 kB[22m
+
+[1mLazy chunk files[22m   [2m | [22m[1mNames[22m             [2m | [22m [1mRaw size[22m[2m | [22m[1mEstimated transfer size[22m
+[32mchunk-RTYZU6B5.js[39m  [2m | [22m[2mdecano-routes[22m     [2m | [22m[36m218.18 kB[39m[2m | [22m               [36m30.63 kB[39m
+[32mchunk-O6IUMEJU.js[39m  [2m | [22m[2mcoordinador-routes[22m[2m | [22m[36m212.37 kB[39m[2m | [22m               [36m29.57 kB[39m
+[32mchunk-L6BSGRCY.js[39m  [2m | [22m[2mestudiante-routes[22m [2m | [22m[36m145.17 kB[39m[2m | [22m               [36m19.80 kB[39m
+[32mchunk-MB75J3G2.js[39m  [2m | [22m[2m-[22m                 [2m | [22m [36m26.19 kB[39m[2m | [22m                [36m6.68 kB[39m
+
+Application bundle generation complete. [3.778 seconds] - 2026-03-26T22:21:45.995Z
+
+[1m[33m[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mNG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/components/coordinador/solicitudes/solicitudes.html:125:88:
+[37m      125 │ ...i-paperclip"></i> {{ s.documentos?.[32mlength[37m || 0 }} adjuntos</span>
+          ╵                                       [32m~~~~~~[0m
+
+  Warning occurs in the template of component Solicitudes.
+
+    src/app/components/coordinador/solicitudes/solicitudes.ts:14:15:
+[37m      14 │   templateUrl: [32m'./solicitudes.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mNG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/components/decano/solicitudes/solicitudes.html:125:88:
+[37m      125 │ ...i-paperclip"></i> {{ s.documentos?.[32mlength[37m || 0 }} adjuntos</span>
+          ╵                                       [32m~~~~~~[0m
+
+  Warning occurs in the template of component Solicitudes.
+
+    src/app/components/decano/solicitudes/solicitudes.ts:14:15:
+[37m      14 │   templateUrl: [32m'./solicitudes.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~[0m
+
+[39m[22m
+Output location: C:\Users\kacor\Desktop\SGTE\frontend-SGTE\dist\frontend-SGTE
+

@@ -22,10 +22,10 @@
     </div>
     <div class="kpi-card kpi-danger">
       <div class="kpi-content">
-        <span class="kpi-label">Importantes</span>
-        <span class="kpi-value">{{ stats().importantes }}</span>
+        <span class="kpi-label">Total</span>
+        <span class="kpi-value">{{ stats().recibidas }}</span>
       </div>
-      <div class="kpi-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
+      <div class="kpi-icon"><i class="bi bi-inbox-fill"></i></div>
     </div>
     <div class="kpi-card kpi-success">
       <div class="kpi-content">
@@ -69,10 +69,10 @@
           @for (n of paginacion().items; track n.id) {
             <div class="session-item" (click)="abrirNotificacion(n)" style="cursor:pointer;">
               <div class="notif-icon-wrap"
-                   [class.notif-icon--danger]="n.prioridad === 'Alta'"
-                   [class.notif-icon--info]="n.tipo === 'Seguimiento'"
-                   [class.notif-icon--warning]="n.tipo === 'Sistema'"
-                   [class.notif-icon--success]="n.tipo === 'Resolución'">
+                   [class.notif-icon--danger]="n.icono.includes('x-circle') || n.icono.includes('exclamation')"
+                   [class.notif-icon--info]="n.icono.includes('arrow-repeat') || n.icono.includes('bell')"
+                   [class.notif-icon--warning]="n.icono.includes('inbox')"
+                   [class.notif-icon--success]="n.icono.includes('check-circle')">
                 <i class="bi {{ n.icono }}"></i>
               </div>
               <div class="session-info">
@@ -116,31 +116,13 @@
           <input type="checkbox" class="cfg-switch" [checked]="prefs().wa" (change)="prefs.set({...prefs(), wa: !prefs().wa})" />
         </label>
 
-        <label class="session-item pref-item">
+        <label class="session-item pref-item" style="border-bottom: none;">
           <div class="notif-icon-wrap notif-icon--info"><i class="bi bi-envelope-fill"></i></div>
           <div class="session-info">
             <h4 class="session-title" style="font-size: 0.88rem;">Correo electrónico</h4>
             <div style="font-size: 0.78rem; color: #6c757d;">Email a tu cuenta UTEQ</div>
           </div>
           <input type="checkbox" class="cfg-switch" [checked]="prefs().mail" (change)="prefs.set({...prefs(), mail: !prefs().mail})" />
-        </label>
-
-        <label class="session-item pref-item">
-          <div class="notif-icon-wrap notif-icon--warning"><i class="bi bi-bell-fill"></i></div>
-          <div class="session-info">
-            <h4 class="session-title" style="font-size: 0.88rem;">Notificación en la app</h4>
-            <div style="font-size: 0.78rem; color: #6c757d;">Alertas dentro del sistema</div>
-          </div>
-          <input type="checkbox" class="cfg-switch" [checked]="prefs().app" (change)="prefs.set({...prefs(), app: !prefs().app})" />
-        </label>
-
-        <label class="session-item pref-item" style="border-bottom: none;">
-          <div class="notif-icon-wrap notif-icon--danger"><i class="bi bi-phone-fill"></i></div>
-          <div class="session-info">
-            <h4 class="session-title" style="font-size: 0.88rem;">SMS</h4>
-            <div style="font-size: 0.78rem; color: #6c757d;">Mensajes de texto a tu línea</div>
-          </div>
-          <input type="checkbox" class="cfg-switch" [checked]="prefs().sms" (change)="prefs.set({...prefs(), sms: !prefs().sms})" />
         </label>
       </div>
 

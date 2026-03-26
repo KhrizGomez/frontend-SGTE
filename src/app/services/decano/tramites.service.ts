@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-import { PlantillaCarrera, TipoTramiteDetalle, RegistrarTipoTramitePayload, FlujoTramite, PasoTramite, CategoriaTramite, GuardarPlantillaPayload, EtapaTramite, UsuarioAsignableTramite, GuardarFlujoCompletoPayload, GuardarFlujoCompletoResponse } from '../../models/decano/tramite-detalle.model';
+import { PlantillaCarrera, TipoTramiteDetalle, RegistrarTipoTramitePayload, FlujoTramite, PasoTramite, CategoriaTramite, GuardarPlantillaPayload, EtapaTramite, UsuarioAsignableTramite, GuardarFlujoCompletoPayload, GuardarFlujoCompletoResponse, RequisitoNuevoPlantilla } from '../../models/decano/tramite-detalle.model';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -60,8 +60,14 @@ export class TramitesService {
         return this.http.post<unknown>(`${this.plantillasBaseUrl}/guardar`, payload);
     }
 
-    editarPlantilla(idPlantilla: number, payload: GuardarPlantillaPayload): Observable<unknown> {
+    editarPlantilla(idPlantilla: number, payload: Omit<GuardarPlantillaPayload, 'requisitos'>): Observable<unknown> {
         return this.http.put<unknown>(`${this.plantillasBaseUrl}/editar/${idPlantilla}`, payload);
+    }
+
+    editarRequisitosPlantilla(idPlantilla: number, requisitos: RequisitoNuevoPlantilla[]): Observable<PlantillaCarrera> {
+        return this.http.put<PlantillaCarrera>(`${this.plantillasBaseUrl}/${idPlantilla}/requisitos`, {
+            requisitos,
+        });
     }
 
     eliminarPlantilla(idPlantilla: number): Observable<unknown> {

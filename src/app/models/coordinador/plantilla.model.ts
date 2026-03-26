@@ -71,6 +71,31 @@ export interface GuardarPlantillaPayload {
     diasEstimados: number;
     estaActivo: boolean;
     disponibleExternos: boolean;
+    requisitos: RequisitoNuevoPlantilla[];
+}
+
+export interface CrearSolicitudRequestDTO {
+    idPlantilla: number;
+    detallesSolicitud: string;
+    prioridad: string;
+    pasoActual: number;
+    idsRequisitos: number[];
+}
+
+export interface SolicitudCreadaResponseDTO {
+    mensaje: string;
+    idPlantilla: number;
+    cantidadArchivos: number;
+}
+
+export interface RequisitoNuevoPlantilla {
+    nombreRequisito: string;
+    descripcionRequisito: string;
+    esObligatorio: boolean;
+    tipoDocumento: string;
+    tamanoMaxMb: number;
+    extensionesPermitidas: string;
+    numeroOrden: number;
 }
 
 export interface EtapaFlujoCompletoRequest {
@@ -131,6 +156,7 @@ export interface NuevaPlantillaForm {
     disponibleExternos: boolean;
     estaActivo: boolean;
     pasos: PasoNuevoPlantilla[];
+    requisitos: RequisitoNuevoPlantilla[];
 }
 
 export interface PlantillaCarrera {
@@ -194,4 +220,70 @@ export interface FlujoTramite {
     version: number;
     creadoPor: number | null;
     pasos: PasoTramite[];
+}
+
+export interface SolicitudDetalleResponse {
+    idSolicitud: number;
+    codigoSolicitud: string;
+    nombrePlantilla: string;
+    categoria: string;
+    carrera: string;
+    nombreUsuario: string | null;
+    prioridad: string;
+    estadoActual: string;
+    detallesSolicitud: string;
+    resolucion: string | null;
+    fechaCreacion: string;
+    fechaEstimadaFin: string | null;
+    fechaRealFin: string | null;
+    etapaActual: number;
+    totalEtapas: number;
+    idPasoActual: number | null;
+    pasosFlujo: PasoFlujoItem[];
+    historial: HistorialItem[];
+    documentos: DocumentoItem[];
+}
+
+export interface PasoFlujoItem {
+    idPaso: number;
+    ordenPaso: number;
+    nombreEtapa: string | null;
+    codigoEtapa: string | null;
+    descripcionEtapa: string | null;
+    rolRequerido: string | null;
+    idRolRequerido: number | null;
+    usuarioEncargado: string | null;
+    horasSla: number;
+}
+
+export interface AccionPasoRequest {
+    idSolicitud: number;
+    comentarios?: string;
+    idMotivo?: number;
+}
+
+export interface HistorialItem {
+    idHistorial: number;
+    nombreEtapa: string | null;
+    codigoEtapa: string | null;
+    estado: string;
+    tipoAccion: string | null;
+    procesadoPor: string | null;
+    comentarios: string | null;
+    fechaEntrada: string | null;
+    fechaCompletado: string | null;
+    slaExcedido: boolean;
+    ordenPaso: number | null;
+}
+
+export interface DocumentoItem {
+    idDocumento: number;
+    nombreOriginal: string;
+    nombreArchivo: string;
+    rutaArchivo: string;
+    tamanoBytes: number;
+    tipoMime: string | null;
+    esValido: boolean | null;
+    fechaSubida: string | null;
+    nombreRequisito: string | null;
 }

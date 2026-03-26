@@ -2,7 +2,8 @@
   {
     "context": [
       "/api/sistema",
-      "/api/tramites"
+      "/api/tramites",
+      "/api/solicitudes"
     ],
     "target": "http://localhost:8080",
     "secure": false,

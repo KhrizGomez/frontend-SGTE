@@ -107,7 +107,7 @@
 
     <div class="cards-grid">
       @for (p of plantillasPaginadas; track p.idPlantilla) {
-        <div class="info-card">
+        <div class="info-card" (click)="abrirDetalle(p)">
           <!-- Top Row -->
           <div class="card-header-row">
             <span class="card-badge"><i class="bi bi-person-fill"></i> {{ p.categoria }}</span>
@@ -131,7 +131,7 @@
           <div class="card-footer">
             <span class="ref-id"># Ref. #{{ p.idPlantilla }}</span>
             <div class="card-actions">
-              <button class="action-btn" title="Ver detalle" (click)="abrirDetalle(p)"><i class="bi bi-eye"></i></button>
+              <button type="button" class="action-btn" title="Ver detalle" (click)="$event.stopPropagation(); abrirDetalle(p)"><i class="bi bi-eye"></i></button>
               <button class="action-btn warning" title="Requisitos"><i class="bi bi-folder2-open"></i></button>
               <button class="action-btn danger" title="Descartar"><i class="bi bi-slash-circle"></i></button>
             </div>
@@ -143,87 +143,131 @@
 
 </div>
 
-<!-- Modal detalle de trámite (Estudiante) -->
+<!-- Modal: Detalle de plantilla -->
 @if (modalAbierto && plantillaSeleccionada) {
-  <div class="modal">
-    <div class="modal__backdrop" (click)="cerrarModal()"></div>
-    <div class="modal__dialog d-flex flex-column" role="dialog" aria-modal="true" aria-labelledby="det-modal-title" style="max-height: 90vh;">
-      <div class="modal__header">
-        <h3 id="det-modal-title">Iniciar trámite</h3>
-        <button class="btn-ghost" type="button" (click)="cerrarModal()">
-          <i class="bi bi-x-lg"></i>
-        </button>
+  <div class="detail-modal" role="dialog" aria-modal="true" aria-labelledby="solicitud-detalle-title">
+    <div class="detail-modal__backdrop" (click)="cerrarModal()"></div>
+    <div class="detail-modal__dialog">
+      <div class="detail-modal__hero">
+        <div>
+          <div class="detail-modal__eyebrow">Detalle de plantilla</div>
+          <h3 id="solicitud-detalle-title">{{ plantillaSeleccionada.nombrePlantilla }}</h3>
+          <p>{{ plantillaSeleccionada.descripcionPlantilla || plantillaSeleccionada.nombreFlujo }}</p>
+        </div>
+        <div class="detail-modal__hero-actions">
+          <span class="detail-modal__status is-active">Plantilla Activa</span>
+          <button type="button" class="header-action-btn header-action-btn--icon header-action-btn--soft" (click)="cerrarModal()" aria-label="Cerrar detalle">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
       </div>
-      <div class="modal__body p-3" style="overflow-y: auto;">
-        
-        <div class="alert alert-info d-flex align-items-center mb-4" role="alert" style="gap:10px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:12px; color:#1e40af;">
-          <i class="bi bi-info-circle-fill fs-4"></i>
-          <div>
-            <strong>{{ plantillaSeleccionada.nombrePlantilla }}</strong><br>
-            <small>{{ plantillaSeleccionada.descripcionPlantilla || plantillaSeleccionada.nombreFlujo }}</small>
-          </div>
+
+      <div class="detail-modal__content">
+        <section class="detail-summary-grid">
+          <article class="detail-summary-card">
+            <span>Categoria</span>
+            <strong>{{ plantillaSeleccionada.categoria }}</strong>
+          </article>
+          <article class="detail-summary-card">
+            <span>Carrera</span>
+            <strong>{{ plantillaSeleccionada.carrera }}</strong>
+          </article>
+          <article class="detail-summary-card">
+            <span>Flujo</span>
+            <strong>{{ plantillaSeleccionada.nombreFlujo }}</strong>
+          </article>
+          <article class="detail-summary-card">
+            <span>Tiempo estimado</span>
+            <strong>{{ plantillaSeleccionada.diasResolucionEstimados }} días</strong>
+          </article>
+        </section>
+
+        <div class="detail-modal__footer detail-modal__footer--top">
+          <button type="button" class="header-action-btn" (click)="enviarSolicitud()" [disabled]="enviandoSolicitud">
+            <i class="bi bi-send-check"></i>
+            <span>{{ enviandoSolicitud ? 'Enviando...' : 'Enviar solicitud' }}</span>
+          </button>
         </div>
 
-        <form class="container-fluid m-0 p-0" (ngSubmit)="enviarSolicitud()">
-          
-          <div class="row mb-3">
-            <div class="col-md-6">
-              <label class="form-label text-muted fw-bold">trámite</label>
-              <input type="text" class="form-control" [value]="plantillaSeleccionada.nombrePlantilla" readonly style="background:#f8f9fa;">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label text-muted fw-bold">Tiempo estimado (ETA)</label>
-              <input type="text" class="form-control" [value]="plantillaSeleccionada.diasResolucionEstimados + ' día(s)'" readonly style="background:#f8f9fa;">
-            </div>
-          </div>
-
-          <div class="row mb-3">
-            <div class="col-12">
-              <label class="form-label text-muted fw-bold">Requisitos requeridos</label>
-              <ul class="list-group">
-                @if (plantillaSeleccionada.requisitosTramite.length > 0) {
-                  @for (req of plantillaSeleccionada.requisitosTramite; track req.idRequisito) {
-                    <li class="list-group-item d-flex align-items-center gap-2" style="font-size:14px;">
-                      <i class="bi bi-paperclip text-secondary"></i> 
-                      <span>
-                        <strong>{{ req.nombreRequisito }}</strong> 
-                        @if (req.esObligatorio) { <span class="text-danger">*</span> }
-                        <br>
-                        <small class="text-muted">{{ req.descripcionRequisito }}</small>
-                      </span>
-                    </li>
+        <section class="detail-sections-grid">
+          <div class="detail-block">
+            <h4><i class="bi bi-diagram-3"></i> Flujo de trabajo</h4>
+            <ol class="flow-timeline">
+              @for (paso of plantillaSeleccionada.pasosTramite; track paso.idPaso; let isLast = $last) {
+              <li class="flow-step">
+                <div class="flow-step__rail">
+                  <span class="flow-step__index">{{ paso.ordenPaso }}</span>
+                  @if (!isLast) {
+                  <span class="flow-step__line"></span>
                   }
-                } @else {
-                  <li class="list-group-item text-muted" style="font-size:14px;">
-                    No se requieren documentos previos para este trámite.
-                  </li>
-                }
-              </ul>
-            </div>
+                </div>
+                <div class="flow-step__card">
+                  <div class="flow-step__top">
+                    <div>
+                      <div class="flow-step__title">{{ paso.nombreEtapa }}</div>
+                      <div class="flow-step__code">{{ paso.codigoEtapa }}</div>
+                    </div>
+                    <span class="flow-step__sla">{{ paso.horasSla }}h SLA</span>
+                  </div>
+                  <p class="flow-step__desc">{{ paso.descripcionEtapa || 'sin descripcion' }}</p>
+                  <div class="flow-step__meta">
+                    <span class="flow-chip" [class.is-muted]="!paso.rolRequerido">
+                      <i class="bi bi-person-badge"></i>
+                      {{ paso.rolRequerido || 'Sin rol asignado' }}
+                    </span>
+                    <span class="flow-chip" [class.is-muted]="!paso.usuarioEncargado">
+                      <i class="bi bi-person-check"></i>
+                      {{ paso.usuarioEncargado || 'Responsable pendiente' }}
+                    </span>
+                  </div>
+                </div>
+              </li>
+              }
+              @empty {
+              <li class="flow-empty">Esta plantilla aún no tiene pasos de flujo configurados.</li>
+              }
+            </ol>
           </div>
 
-          <div class="row mb-3">
-            <div class="col-12">
-              <label class="form-label text-muted fw-bold">Observaciones (Opcional)</label>
-              <textarea class="form-control" rows="3" [(ngModel)]="observaciones" name="obs" placeholder="AÃ±ade algÃºn comentario o justificaciÃ³n..."></textarea>
+          <div class="detail-block">
+            <h4><i class="bi bi-list-check"></i> Requisitos</h4>
+            <div class="requirements-list">
+              @if (plantillaSeleccionada.requisitosTramite.length > 0) {
+              @for (req of plantillaSeleccionada.requisitosTramite; track req.idRequisito) {
+              <article class="requirement-item">
+                <div class="requirement-item__icon">
+                  <i class="bi bi-file-earmark-check-fill"></i>
+                </div>
+                <div class="requirement-item__body">
+                  <strong>{{ req.nombreRequisito }}</strong>
+                  <span>{{ req.tipoDocumento }} · Máx. {{ req.tamanoMaxMb }} MB</span>
+                  <small>{{ req.descripcionRequisito }}</small>
+                </div>
+                <label class="requirement-item__upload"
+                  [class.is-uploaded]="!!documentosRequisito[req.idRequisito]"
+                  [attr.title]="documentosRequisitoNombres[req.idRequisito] || 'Subir documento'"
+                  aria-label="Subir documento">
+                  <input type="file"
+                    class="requirement-item__file-input"
+                    [accept]="obtenerAceptacionRequisito(req.extensionesPermitidas)"
+                    (change)="manejarDocumentoRequisito(req, $event)" />
+                  @if (documentosRequisito[req.idRequisito]) {
+                  <i class="bi bi-check2"></i>
+                  } @else {
+                  <i class="bi bi-upload"></i>
+                  }
+                </label>
+                <span class="requirement-item__flag" [class.is-obligatory]="req.esObligatorio">
+                  {{ req.esObligatorio ? 'Obligatorio' : 'Opcional' }}
+                </span>
+              </article>
+              }
+              } @else {
+              <p class="flow-empty">No hay requisitos configurados para esta plantilla.</p>
+              }
             </div>
           </div>
-
-          <div class="row mb-4">
-            <div class="col-12">
-              <label class="form-label text-muted fw-bold">Adjuntar documentos</label>
-              <div class="p-4 text-center border rounded" style="border-style:dashed !important; background:#f8fafc; cursor:pointer;">
-                <i class="bi bi-cloud-arrow-up-fill fs-2" style="color:#0d6efd;"></i>
-                <p class="mb-0 text-muted">Haz clic o arrastra los archivos aquÃ</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="d-flex justify-content-end gap-2 mt-4 pt-3" style="border-top:1px solid #dee2e6;">
-            <button type="button" class="btn btn-light border" (click)="cerrarModal()">Cancelar</button>
-            <button type="submit" class="btn btn-primary" style="background:#0f6a1d; border-color:#0f6a1d;">Enviar solicitud</button>
-          </div>
-        </form>
+        </section>
 
       </div>
     </div>

@@ -8,16 +8,24 @@
   <section class="kpi-row">
     <div class="kpi-card kpi-warning">
       <div class="kpi-content">
-        <span class="kpi-label">En Revisión</span>
-        <span class="kpi-value">{{ stats().revision }}</span>
+        <span class="kpi-label">Pendientes</span>
+        <span class="kpi-value">{{ stats.pendientes }}</span>
       </div>
       <div class="kpi-icon"><i class="bi bi-clock"></i></div>
+    </div>
+
+    <div class="kpi-card kpi-primary">
+      <div class="kpi-content">
+        <span class="kpi-label">En Proceso</span>
+        <span class="kpi-value">{{ stats.enProceso }}</span>
+      </div>
+      <div class="kpi-icon"><i class="bi bi-arrow-repeat"></i></div>
     </div>
 
     <div class="kpi-card kpi-success">
       <div class="kpi-content">
         <span class="kpi-label">Finalizadas</span>
-        <span class="kpi-value">{{ stats().finalizadas }}</span>
+        <span class="kpi-value">{{ stats.finalizadas }}</span>
       </div>
       <div class="kpi-icon"><i class="bi bi-check-circle"></i></div>
     </div>
@@ -25,149 +33,192 @@
     <div class="kpi-card kpi-danger">
       <div class="kpi-content">
         <span class="kpi-label">Observadas</span>
-        <span class="kpi-value">{{ stats().observadas }}</span>
+        <span class="kpi-value">{{ stats.observadas }}</span>
       </div>
       <div class="kpi-icon"><i class="bi bi-x-circle"></i></div>
     </div>
-
-    <div class="kpi-card kpi-primary">
-      <div class="kpi-content">
-        <span class="kpi-label">Trámites Vigentes</span>
-        <span class="kpi-value">{{ stats().total }}</span>
-      </div>
-      <div class="kpi-icon"><i class="bi bi-file-earmark-text"></i></div>
-    </div>
   </section>
 
-  <!-- TOP SECTION: Trámites Grid -->
+  <!-- TOP SECTION: Solicitudes Grid -->
   <section class="top-section">
-    <!-- FILTER ROW (Toolbar) -->
+    <!-- FILTER ROW -->
     <section class="view-toolbar">
       <div class="filter-label">
-        <i class="bi bi-funnel"></i> Filtrar trámites:
+        <i class="bi bi-funnel"></i> Filtrar:
       </div>
 
       <div class="filter-pills">
-        <button class="filter-pill active">
-          <i class="bi bi-grid-fill"></i> Todos <span class="badge-count">{{ tramites().length }}</span>
+        <button class="filter-pill" [class.active]="!filtroEstado" (click)="filtrarPorEstado('')">
+          <i class="bi bi-grid-fill"></i> Todas <span class="badge-count">{{ stats.total }}</span>
         </button>
-        <button class="filter-pill">
-          <i class="bi bi-exclamation-triangle"></i> Urgentes
+        <button class="filter-pill" [class.active]="filtroEstado === 'pendiente'" (click)="filtrarPorEstado('pendiente')">
+          <i class="bi bi-clock"></i> Pendientes
+        </button>
+        <button class="filter-pill" [class.active]="filtroEstado === 'en_proceso'" (click)="filtrarPorEstado('en_proceso')">
+          <i class="bi bi-arrow-repeat"></i> En Proceso
+        </button>
+        <button class="filter-pill" [class.active]="filtroEstado === 'finalizado'" (click)="filtrarPorEstado('finalizado')">
+          <i class="bi bi-check-circle"></i> Finalizadas
         </button>
       </div>
 
-      <input class="search-input ms-auto" [ngModel]="buscar()" (ngModelChange)="buscar.set($event)" placeholder="Buscar (#ID, título, estado)..." style="flex: 1; max-width: 350px;" />
-
-      <div class="view-toggles mx-2">
-        <button class="view-btn"><i class="bi bi-layout-text-window"></i></button>
-        <button class="view-btn"><i class="bi bi-grid"></i></button>
-        <button class="view-btn active"><i class="bi bi-grid-3x3-gap-fill"></i></button>
-      </div>
+      <input class="search-input ms-auto" [(ngModel)]="buscar" placeholder="Buscar (#código, plantilla, categoría)..." style="flex: 1; max-width: 350px;" />
 
       <!-- PAGINATOR -->
       <div class="d-flex align-items-center gap-2 ms-2 ps-3" style="border-left: 1px solid #e9ecef;">
         <span style="font-size: 0.85rem; color: #6c757d; font-weight: 600;">
-          Pág. {{paginacion().actual}} de {{paginacion().maxPagina}}
+          Pág. {{ paginaActual }} de {{ maxPagina }}
         </span>
         <div class="btn-group">
-            <button class="btn btn-outline-secondary btn-sm" (click)="cambiarPagina(-1)" [disabled]="paginacion().actual === 1">&laquo;</button>
-            <button class="btn btn-outline-secondary btn-sm" (click)="cambiarPagina(1)" [disabled]="paginacion().actual >= paginacion().maxPagina">&raquo;</button>
+          <button class="btn btn-outline-secondary btn-sm" (click)="cambiarPagina(-1)" [disabled]="paginaActual === 1">&laquo;</button>
+          <button class="btn btn-outline-secondary btn-sm" (click)="cambiarPagina(1)" [disabled]="paginaActual >= maxPagina">&raquo;</button>
         </div>
       </div>
     </section>
 
-    @if (paginacion().items.length === 0 && !cargando()) {
-      <div class="empty-state">
-        <i class="bi bi-folder2-open" style="font-size: 2.5rem; color: #ced4da;"></i>
-        <p style="margin-top: 10px; color: #6c757d;">No se encontraron trámites que coincidan con la búsqueda.</p>
+    @if (error) {
+      <div class="status warn" role="alert" style="margin-bottom: 20px;">
+        <i class="bi bi-exclamation-triangle-fill"></i> {{ error }}
+        <button class="btn-ghost btn-small" type="button" (click)="cargarSolicitudes()">Reintentar</button>
       </div>
     }
 
-    @if (cargando()) {
-      <app-loading message="Cargando trámites..."></app-loading>
+    @if (cargando) {
+      <app-loading message="Cargando tus solicitudes..."></app-loading>
+    }
+
+    @if (!cargando && !error && solicitudesFiltradas.length === 0) {
+      <div class="empty-state">
+        <i class="bi bi-folder2-open" style="font-size: 2.5rem; color: #ced4da;"></i>
+        <p style="margin-top: 10px; color: #6c757d;">No tienes solicitudes registradas.</p>
+      </div>
     }
 
     <div class="cards-grid">
-      @for (t of paginacion().items; track t.id) {
-        <div class="info-card pointer" [class.selected]="tramiteSeleccionado()?.id === t.id" (click)="seleccionarTramite(t)">
+      @for (sol of solicitudesPaginadas; track sol.idSolicitud) {
+        <div class="info-card pointer" [class.selected]="solicitudSeleccionada?.idSolicitud === sol.idSolicitud" (click)="seleccionarSolicitud(sol)">
           <!-- Top Row -->
           <div class="card-header-row">
-            <span class="card-badge"><i class="bi bi-bookmark-fill"></i> {{ t.tipo }}</span>
-            <span class="card-date" style="color: #d97706; font-weight: 600;"><i class="bi bi-exclamation-triangle-fill"></i> Vence {{ t.fecha }}</span>
+            <span class="card-badge"><i class="bi bi-bookmark-fill"></i> {{ sol.categoria || 'Sin categoría' }}</span>
+            <span class="card-date"><i class="bi bi-calendar3"></i> {{ formatearFecha(sol.fechaCreacion) }}</span>
           </div>
 
           <!-- Main Info -->
           <div class="card-main">
-            <h4 class="card-title" style="text-transform: uppercase;">{{ t.titulo }}</h4>
-            <span class="card-subtitle"><i class="bi bi-hash"></i> Ref. #{{ t.id }}</span>
-            <span class="card-comment"><i class="bi bi-info-circle"></i> Prioridad: {{ t.prioridad }}</span>
+            <h4 class="card-title">{{ sol.nombrePlantilla }}</h4>
+            <span class="card-subtitle"><i class="bi bi-hash"></i> {{ sol.codigoSolicitud }}</span>
+            <span class="card-comment"><i class="bi bi-flag"></i> Prioridad: {{ sol.prioridad }}</span>
           </div>
 
           <!-- Status -->
           <div class="card-status-row">
-            <span class="status-badge" [ngClass]="t.prioridad === 'Urgente' ? 'danger' : 'success'">
-              {{ t.estado }}
+            <span class="status-badge" [ngClass]="obtenerClaseEstado(sol.estadoActual)">
+              {{ obtenerEtiquetaEstado(sol.estadoActual) }}
             </span>
-            <span class="participants"><i class="bi bi-paperclip"></i> {{ t.files.length }} adjuntos</span>
+            <span class="participants">
+              <i class="bi bi-signpost-split"></i>
+              @if (sol.totalEtapas > 0) {
+                Etapa {{ sol.etapaActual }}/{{ sol.totalEtapas }}
+              } @else {
+                Sin flujo
+              }
+            </span>
           </div>
         </div>
       }
     </div>
   </section>
 
-  <!-- BOTTOM SECTION: Timeline & Details -->
+  <!-- BOTTOM SECTION: Detail Panel -->
   <section class="bottom-section">
-    <div class="dash-panel detail-panel" [class.no-sel]="!tramiteSeleccionado()">
-      @if (!tramiteSeleccionado()) {
+    <div class="dash-panel detail-panel" [class.no-sel]="!solicitudSeleccionada">
+      @if (!solicitudSeleccionada && !cargandoDetalle) {
         <div class="empty-detail">
           <i class="bi bi-hand-index-thumb"></i>
-          <h4>Selecciona un trámite</h4>
-          <p>Haz clic en cualquiera de tus trámites listados arriba para ver su línea de tiempo y detalles.</p>
+          <h4>Selecciona una solicitud</h4>
+          <p>Haz clic en cualquiera de tus solicitudes para ver su trazabilidad, documentos y detalles completos.</p>
         </div>
-      } @else {
+      }
+
+      @if (cargandoDetalle) {
+        <div class="empty-detail">
+          <app-loading message="Cargando detalle..."></app-loading>
+        </div>
+      }
+
+      @if (solicitudSeleccionada && !cargandoDetalle) {
         <div class="detail-header">
           <div class="detail-h-left">
-            <h3 class="panel-title" style="text-transform: uppercase;">{{ tramiteSeleccionado()?.titulo }}</h3>
-            <span class="detail-id">Ref. #{{ tramiteSeleccionado()?.id }}</span>
+            <h3 class="panel-title">{{ solicitudSeleccionada.nombrePlantilla }}</h3>
+            <span class="detail-id"><i class="bi bi-hash"></i> {{ solicitudSeleccionada.codigoSolicitud }}</span>
           </div>
           <div class="detail-h-right">
-            <span class="status-badge warning">{{ tramiteSeleccionado()?.estado }}</span>
+            <span class="status-badge" [ngClass]="obtenerClaseEstado(solicitudSeleccionada.estadoActual)">
+              {{ obtenerEtiquetaEstado(solicitudSeleccionada.estadoActual) }}
+            </span>
+            @if (solicitudSeleccionada.totalEtapas > 0) {
+              <span class="etapa-badge">Etapa {{ solicitudSeleccionada.etapaActual }} / {{ solicitudSeleccionada.totalEtapas }}</span>
+            }
           </div>
         </div>
 
         <div class="detail-body">
+          <!-- Columna izquierda: Datos + Archivos -->
           <div class="info-column">
             <h4 class="seg-h4"><i class="bi bi-journal-text"></i> Datos Generales</h4>
             <div class="data-grid">
               <div class="data-item">
-                <small>Tipo de Trámite</small>
-                <strong>{{ tramiteSeleccionado()?.tipo }}</strong>
+                <small>Categoría</small>
+                <strong>{{ solicitudSeleccionada.categoria || '—' }}</strong>
               </div>
               <div class="data-item">
                 <small>Prioridad</small>
-                <strong>{{ tramiteSeleccionado()?.prioridad }}</strong>
+                <strong>{{ solicitudSeleccionada.prioridad }}</strong>
+              </div>
+              <div class="data-item">
+                <small>Carrera</small>
+                <strong>{{ solicitudSeleccionada.carrera || '—' }}</strong>
+              </div>
+              <div class="data-item">
+                <small>Estado Actual</small>
+                <strong>{{ obtenerEtiquetaEstado(solicitudSeleccionada.estadoActual) }}</strong>
               </div>
               <div class="data-item">
                 <small>Fecha de Creación</small>
-                <strong>{{ tramiteSeleccionado()?.creado }}</strong>
+                <strong>{{ formatearFechaHora(solicitudSeleccionada.fechaCreacion) }}</strong>
               </div>
               <div class="data-item">
-                <small>Última Actualización</small>
-                <strong>{{ tramiteSeleccionado()?.actual }}</strong>
+                <small>Fecha Estimada Fin</small>
+                <strong>{{ formatearFecha(solicitudSeleccionada.fechaEstimadaFin) }}</strong>
               </div>
             </div>
 
-            <h4 class="seg-h4 mt-4"><i class="bi bi-folder2-open"></i> Archivos Adjuntos</h4>
-            @if (tramiteSeleccionado()?.files?.length === 0) {
-              <p class="text-muted" style="font-size: 0.85rem;">No hay archivos adjuntos.</p>
+            @if (solicitudSeleccionada.detallesSolicitud) {
+              <h4 class="seg-h4 mt-4"><i class="bi bi-chat-left-text"></i> Observaciones</h4>
+              <div class="observaciones-box">{{ solicitudSeleccionada.detallesSolicitud }}</div>
+            }
+
+            @if (solicitudSeleccionada.resolucion) {
+              <h4 class="seg-h4 mt-4"><i class="bi bi-patch-check"></i> Resolución</h4>
+              <div class="resolucion-box">{{ solicitudSeleccionada.resolucion }}</div>
+            }
+
+            <h4 class="seg-h4 mt-4"><i class="bi bi-folder2-open"></i> Documentos Adjuntos ({{ solicitudSeleccionada.documentos.length }})</h4>
+            @if (solicitudSeleccionada.documentos.length === 0) {
+              <p class="text-muted" style="font-size: 0.85rem;">No hay documentos adjuntos.</p>
             }
             <div class="files-list">
-              @for (f of tramiteSeleccionado()?.files; track f.name) {
-                <div class="file-item" (click)="abrirArchivo(tramiteSeleccionado()!, f)">
-                  <i class="bi bi-file-earmark-pdf-fill" style="color: #dc2626; font-size: 1.5rem;"></i>
+              @for (doc of solicitudSeleccionada.documentos; track doc.idDocumento) {
+                <div class="file-item" (click)="descargarArchivo(doc)">
+                  <i class="bi" [ngClass]="obtenerIconoArchivo(doc.tipoMime)" [style.color]="obtenerColorIcono(doc.tipoMime)" style="font-size: 1.5rem;"></i>
                   <div class="file-info">
-                    <div class="file-name">{{ f.name }}</div>
-                    <div class="file-size">{{ f.size }}</div>
+                    <div class="file-name">{{ doc.nombreOriginal }}</div>
+                    <div class="file-size">
+                      {{ formatearTamano(doc.tamanoBytes) }}
+                      @if (doc.nombreRequisito) {
+                        · {{ doc.nombreRequisito }}
+                      }
+                    </div>
                   </div>
                   <i class="bi bi-download ms-auto" style="color: #6c757d;"></i>
                 </div>
@@ -175,28 +226,48 @@
             </div>
           </div>
 
+          <!-- Columna derecha: Trazabilidad -->
           <div class="timeline-column">
             <h4 class="seg-h4"><i class="bi bi-signpost-split"></i> Trazabilidad del trámite</h4>
+
+            @if (solicitudSeleccionada.historial.length === 0) {
+              <div class="tl-empty">
+                <i class="bi bi-clock-history"></i>
+                <p>Aún no hay registros de trazabilidad para esta solicitud.</p>
+              </div>
+            }
+
             <ol class="timeline timeline--v">
-              @for (paso of tramiteSeleccionado()?.tl; track paso.name) {
-                <li class="tl-item" [ngClass]="paso.state">
+              @for (paso of solicitudSeleccionada.historial; track paso.idHistorial; let i = $index) {
+                <li class="tl-item" [ngClass]="obtenerEstadoTimeline(paso, i, solicitudSeleccionada.historial)">
                   <div class="tl-dot">
-                    <i class="bi" 
-                      [class.bi-check-circle-fill]="paso.state === 'done'"
-                      [class.bi-play-circle-fill]="paso.state === 'current'"
-                      [class.bi-clock-fill]="paso.state === 'pending'">
+                    <i class="bi"
+                      [class.bi-check-circle-fill]="obtenerEstadoTimeline(paso, i, solicitudSeleccionada.historial) === 'done'"
+                      [class.bi-play-circle-fill]="obtenerEstadoTimeline(paso, i, solicitudSeleccionada.historial) === 'current'"
+                      [class.bi-clock-fill]="obtenerEstadoTimeline(paso, i, solicitudSeleccionada.historial) === 'pending'">
                     </i>
                   </div>
                   <div class="tl-body">
-                    <div class="tl-title">{{ paso.name }}</div>
+                    <div class="tl-title">{{ paso.nombreEtapa || 'Etapa ' + (i + 1) }}</div>
                     <div class="tl-meta">
-                      {{ paso.meta }}
-                      @if (paso.state === 'current') {
+                      {{ formatearFechaHora(paso.fechaEntrada) }}
+                      @if (obtenerEstadoTimeline(paso, i, solicitudSeleccionada.historial) === 'current') {
                         <span class="badge-current">En proceso</span>
                       }
+                      @if (paso.slaExcedido) {
+                        <span class="badge-sla">SLA excedido</span>
+                      }
                     </div>
-                    @if (paso.desc) {
-                      <div class="tl-desc">{{ paso.desc }}</div>
+                    @if (paso.procesadoPor) {
+                      <div class="tl-responsable"><i class="bi bi-person-fill"></i> {{ paso.procesadoPor }}</div>
+                    }
+                    @if (paso.comentarios) {
+                      <div class="tl-desc">{{ paso.comentarios }}</div>
+                    }
+                    @if (paso.fechaCompletado) {
+                      <div class="tl-completado">
+                        <i class="bi bi-check2"></i> Completado: {{ formatearFechaHora(paso.fechaCompletado) }}
+                      </div>
                     }
                   </div>
                 </li>
@@ -209,31 +280,3 @@
   </section>
 
 </div>
-
-<!-- Modal Vista previa -->
-@if (fileModalOpen() && fileSelected()) {
-  <div class="modal">
-    <div class="modal__backdrop" (click)="cerrarArchivo()"></div>
-    <div class="modal__dialog" role="dialog" aria-modal="true">
-      <div class="modal__header">
-        <h3>Vista previa documento</h3>
-        <button class="btn-ghost" type="button" (click)="cerrarArchivo()">
-          <i class="bi bi-x-lg"></i>
-        </button>
-      </div>
-      <div class="modal__body">
-        <div style="margin-bottom:8px;color:#6c757d;font-size:12px">
-          {{ fileSelected()?.file?.name }} · {{ fileSelected()?.file?.size }}
-        </div>
-        <div style="height:360px;display:grid;place-items:center;background:#f8f9fa;border:1px solid #dee2e6;border-radius:10px;color:#6c757d;">
-          No hay vista previa disponible para este archivo mockeado.
-        </div>
-        <div class="form-actions" style="margin-top:15px; display:flex; justify-content:flex-end;">
-          <button class="btn btn-outline-full" style="width: auto; padding: 8px 20px;" (click)="descargarArchivo()">
-            <i class="bi bi-download"></i> Descargar
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-}

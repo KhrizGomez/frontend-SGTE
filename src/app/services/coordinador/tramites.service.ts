@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-import { PlantillaCarrera, TipoTramiteDetalle, RegistrarTipoTramitePayload, FlujoTramite, PasoTramite, CategoriaTramite, GuardarPlantillaPayload, EtapaTramite, UsuarioAsignableTramite, GuardarFlujoCompletoPayload, GuardarFlujoCompletoResponse } from '../../models/coordinador/plantilla.model';
+import { PlantillaCarrera, TipoTramiteDetalle, RegistrarTipoTramitePayload, FlujoTramite, PasoTramite, CategoriaTramite, GuardarPlantillaPayload, EtapaTramite, UsuarioAsignableTramite, GuardarFlujoCompletoPayload, GuardarFlujoCompletoResponse, RequisitoNuevoPlantilla, SolicitudCreadaResponseDTO, SolicitudDetalleResponse, AccionPasoRequest } from '../../models/coordinador/plantilla.model';
 import { environment } from '../../../environments/environment';
+import { AutenticacionService } from '../general/autenticacion.service';
 
 @Injectable({
     providedIn: 'root',
@@ -12,7 +13,10 @@ export class TramitesService {
     private readonly plantillasBaseUrl = `${environment.apiUrl}/api/tramites/plantillas`;
     private readonly categoriasBaseUrl = `${environment.apiUrl}/api/tramites/categorias`;
 
-    constructor(private readonly http: HttpClient) {}
+    constructor(
+        private readonly http: HttpClient,
+        private readonly autenticacionService: AutenticacionService,
+    ) {}
 
     getTiposTramiteDetalles(): Observable<TipoTramiteDetalle[]> {
         return this.http
@@ -54,8 +58,41 @@ export class TramitesService {
         return this.http.post<unknown>(`${this.plantillasBaseUrl}/guardar`, payload);
     }
 
-    editarPlantilla(idPlantilla: number, payload: GuardarPlantillaPayload): Observable<unknown> {
+    editarPlantilla(idPlantilla: number, payload: Omit<GuardarPlantillaPayload, 'requisitos'>): Observable<unknown> {
         return this.http.put<unknown>(`${this.plantillasBaseUrl}/editar/${idPlantilla}`, payload);
+    }
+
+    editarRequisitosPlantilla(idPlantilla: number, requisitos: RequisitoNuevoPlantilla[]): Observable<PlantillaCarrera> {
+        return this.http.put<PlantillaCarrera>(`${this.plantillasBaseUrl}/${idPlantilla}/requisitos`, {
+            requisitos,
+        });
+    }
+
+    crearSolicitud(formData: FormData): Observable<SolicitudCreadaResponseDTO> {
+        const token = this.autenticacionService.obtenerTokenActual();
+        const headers = token ? new HttpHeaders({ Authorization: token.toLowerCase().startsWith('bearer ') ? token : `Bearer ${token}` }) : undefined;
+
+        return this.http.post<SolicitudCreadaResponseDTO>(`${environment.apiUrl}/api/solicitudes/crear`, formData, { headers });
+    }
+
+    getMisSolicitudes(): Observable<SolicitudDetalleResponse[]> {
+        return this.http.get<SolicitudDetalleResponse[]>(`${environment.apiUrl}/api/solicitudes/mis-solicitudes`);
+    }
+
+    getDetalleSolicitud(idSolicitud: number): Observable<SolicitudDetalleResponse> {
+        return this.http.get<SolicitudDetalleResponse>(`${environment.apiUrl}/api/solicitudes/${idSolicitud}/detalle`);
+    }
+
+    getSolicitudesPorRol(nombreRol: string): Observable<SolicitudDetalleResponse[]> {
+        return this.http.get<SolicitudDetalleResponse[]>(`${environment.apiUrl}/api/solicitudes/por-rol/${nombreRol}`);
+    }
+
+    aprobarPaso(dto: AccionPasoRequest): Observable<{ mensaje: string }> {
+        return this.http.post<{ mensaje: string }>(`${environment.apiUrl}/api/solicitudes/aprobar`, dto);
+    }
+
+    rechazarSolicitud(dto: AccionPasoRequest): Observable<{ mensaje: string }> {
+        return this.http.post<{ mensaje: string }>(`${environment.apiUrl}/api/solicitudes/rechazar`, dto);
     }
 
     eliminarPlantilla(idPlantilla: number): Observable<unknown> {
