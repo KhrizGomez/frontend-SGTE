@@ -8,6 +8,7 @@ import { AutenticacionService } from '../general/autenticacion.service';
 @Injectable({
     providedIn: 'root',
 })
+// Fachada HTTP de tramites: centraliza endpoints y normaliza contratos para la UI.
 export class TramitesService {
     private readonly apiBaseUrl = `${environment.apiUrl}/api/tramites/tipos`;
     private readonly plantillasBaseUrl = `${environment.apiUrl}/api/tramites/plantillas`;
@@ -18,6 +19,7 @@ export class TramitesService {
         private readonly autenticacionService: AutenticacionService,
     ) {}
 
+    // Catalogo de tipos de tramite con forma estable para componentes.
     getTiposTramiteDetalles(): Observable<TipoTramiteDetalle[]> {
         return this.http
             .get<TipoTramiteDetalle[]>(`${this.apiBaseUrl}/detalles`)
@@ -69,6 +71,7 @@ export class TramitesService {
     }
 
     crearSolicitud(formData: FormData): Observable<SolicitudCreadaResponseDTO> {
+        // Adjunta token por compatibilidad con endpoint multipart fuera del interceptor global.
         const token = this.autenticacionService.obtenerTokenActual();
         const headers = token ? new HttpHeaders({ Authorization: token.toLowerCase().startsWith('bearer ') ? token : `Bearer ${token}` }) : undefined;
 
@@ -136,6 +139,7 @@ export class TramitesService {
     }
 
     private normalizarPlantillaCarrera(item: Record<string, unknown>): PlantillaCarrera {
+        // Convierte respuesta flexible del backend a un objeto tipado para frontend.
         return {
             idPlantilla: Number(item['idPlantilla'] ?? 0),
             nombrePlantilla: String(item['nombrePlantilla'] ?? ''),

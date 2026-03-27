@@ -19,13 +19,13 @@ interface Notificacion {
 }
 
 @Component({
-  selector: 'app-coordinador-notificaciones',
+  selector: 'app-decano-notificaciones',
   standalone: true,
   imports: [CommonModule, FormsModule, LoadingComponent],
-  templateUrl: './notificaciones.html',
-  styleUrls: ['./notificaciones.css'],
+  templateUrl: './notificaciones.component.html',
+  styleUrls: ['./notificaciones.component.css'],
 })
-export class Notificaciones implements OnInit {
+export class DecanoNotificacionesComponent implements OnInit {
   buscar = signal('');
   paginaActual = signal(1);
   porPagina = 5;
@@ -182,7 +182,7 @@ export class Notificaciones implements OnInit {
 
   irAlTramite() {
     this.cerrarModal();
-    this.router.navigate(['/coordinacion/solicitudes']);
+    this.router.navigate(['/decano/solicitudes']);
   }
 
   guardarPrefs() {

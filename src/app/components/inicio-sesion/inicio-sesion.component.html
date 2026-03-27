@@ -71,32 +71,11 @@
 
                 <div class="modal__body modal__body--confirm-action">
                     <form>
-                        <div class="form-check form-switch mb-3" style="display: flex; gap: 10px; align-items: center;">
-                            <input class="form-check-input switch-giganterande" style="cursor: pointer; margin: 0; width: 40px; height: 20px;"
-                                type="checkbox" role="switch" id="switchGrande" name="checkUsuarioExterno"
-                                [(ngModel)]="estudianteExterno">
-                            <label class="form-check-label confirm-action__label m-0" for="switchGrande" style="cursor: pointer;">Usuario Externo</label>
-                        </div>
-
                         <div class="confirm-action__field mt-2">
                             <label class="confirm-action__label">Cédula</label>
                             <input type="text" name="cedula" placeholder="Ingrese su cédula"
                                 class="confirm-action__input" [(ngModel)]="cedula" required />
                         </div>
-
-                        @if (estudianteExterno) {
-                        <div class="confirm-action__field mt-3">
-                            <label class="confirm-action__label">Nombres</label>
-                            <input type="text" name="nombres" placeholder="Nombres completos"
-                                class="confirm-action__input" [(ngModel)]="nombres" required />
-                        </div>
-
-                        <div class="confirm-action__field mt-3">
-                            <label class="confirm-action__label">Apellidos</label>
-                            <input type="text" name="apellidos" placeholder="Apellidos completos"
-                                class="confirm-action__input" [(ngModel)]="apellidos" required />
-                        </div>
-                        }
                     </form>
                 </div>
 

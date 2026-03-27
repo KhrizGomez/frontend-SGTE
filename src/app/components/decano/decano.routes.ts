@@ -1,25 +1,22 @@
-﻿import {Routes} from '@angular/router';
+import {Routes} from '@angular/router';
 import {DecanoLayoutComponent} from './layout/decano-layout.component';
-import {Dashboard} from './dashboard/dashboard';
-import {Plantillas} from './plantillas/plantillas';
-import {Solicitudes} from './solicitudes/solicitudes';
-import {Notificaciones} from './notificaciones/notificaciones';
+import {DecanoDashboardComponent} from './dashboard/dashboard.component';
+import {DecanoPlantillasComponent} from './plantillas/plantillas.component';
+import {DecanoSolicitudesComponent} from './solicitudes/solicitudes.component';
+import {DecanoNotificacionesComponent} from './notificaciones/notificaciones.component';
 
 export const decanoRoutes: Routes = [
     {
         path: '',
         component: DecanoLayoutComponent,
         children: [
-            { path: 'dashboard', component: Dashboard },
-            { path: 'plantillas', component: Plantillas },
-            { path: 'solicitudes', component: Solicitudes },
-            { path: 'notificaciones', component: Notificaciones },
+            { path: 'dashboard', component: DecanoDashboardComponent },
+            { path: 'plantillas', component: DecanoPlantillasComponent },
+            { path: 'solicitudes', component: DecanoSolicitudesComponent },
+            { path: 'notificaciones', component: DecanoNotificacionesComponent },
 
             { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
         ]
     },
 
 ];
-
-
-

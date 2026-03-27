@@ -6,10 +6,10 @@ import { RouterModule } from '@angular/router';
   selector: 'app-decano-dashboard',
   standalone: true,
   imports: [CommonModule, RouterModule],
-  templateUrl: './dashboard.html',
-  styleUrls: ['./dashboard.css']
+  templateUrl: './dashboard.component.html',
+  styleUrls: ['./dashboard.component.css']
 })
-export class Dashboard implements AfterViewInit {
+export class DecanoDashboardComponent implements AfterViewInit {
   ngAfterViewInit() {
     
   }

@@ -27,10 +27,7 @@ export class InicioSesionComponent {
 
     // Registro
     showModalCreateAccount: boolean = false;
-    estudianteExterno: boolean = false;
     cedula: string = '';
-    nombres: string = '';
-    apellidos: string = '';
     cargandoRegistro: boolean = false;
 
     constructor(
@@ -103,98 +100,55 @@ export class InicioSesionComponent {
 
         this.cargandoRegistro = true;
 
-        if (!this.estudianteExterno) {
-            this.validacionUsuarioService.validarUsuario(cedulaNormalizada).subscribe({
-                next: (data) => {
-                    const payload = this.mapToRegistroPayload(data);
-                    this.registroUsuarioService.registrarUsuario(payload).subscribe({
-                        next: (response) => {
-                            this.cargandoRegistro = false;
-                            const usernameGenerado = response.nombreUsuario ?? payload.cedula;
-                            const correos = [payload.correoInstitucional, payload.correoPersonal].filter(c => c && c.trim() !== '');
-                            
-                            if (correos.length > 0) {
-                                correos.forEach(email => {
-                                    this.registroUsuarioService.enviarCorreoCredenciales(email!, usernameGenerado, payload.cedula).subscribe({
-                                        next: () => console.log('Correo de credenciales enviado a', email),
-                                        error: (err: any) => console.error('Error enviando correo', err)
-                                    });
+        this.validacionUsuarioService.validarUsuario(cedulaNormalizada).subscribe({
+            next: (data) => {
+                const payload = this.mapToRegistroPayload(data);
+                this.registroUsuarioService.registrarUsuario(payload).subscribe({
+                    next: (response) => {
+                        this.cargandoRegistro = false;
+                        const usernameGenerado = response.nombreUsuario ?? payload.cedula;
+                        const correos = [payload.correoInstitucional, payload.correoPersonal].filter(c => c && c.trim() !== '');
+
+                        if (correos.length > 0) {
+                            correos.forEach(email => {
+                                this.registroUsuarioService.enviarCorreoCredenciales(email!, usernameGenerado, payload.cedula).subscribe({
+                                    next: () => console.log('Correo de credenciales enviado a', email),
+                                    error: (err: any) => console.error('Error enviando correo', err)
                                 });
-                            }
-
-                            this.toastService.show('Registro Exitoso', `¡Registro exitoso! Bienvenido/a, ${payload.nombres} ${payload.apellidos}. Las credenciales han sido enviadas a su correo.`, 'success');
-                            this.cerrarModalCrearCuenta();
-                        },
-                        error: (err) => {
-                            this.cargandoRegistro = false;
-                            this.toastService.show('Error de Registro', this.obtenerMensajeErrorRegistro(err), 'error');
-                        }
-                    });
-                },
-                error: (err) => {
-                    this.cargandoRegistro = false;
-                    if (err.status === 404) {
-                        this.toastService.show('Error de Validación', 'No existe usuario con esa cedula en el servicio de validacion.', 'error');
-                        return;
-                    }
-                    this.toastService.show('Error de Validación', 'Error al validar usuario. Verifique la cedula.', 'error');
-                }
-            });
-        } else {
-            if (!this.nombres || !this.apellidos) {
-                this.cargandoRegistro = false;
-                this.toastService.show('Error', 'Por favor ingrese nombres y apellidos.', 'warning');
-                return;
-            }
-
-            const payload: RegistroUsuarioPayload = {
-                cedula: this.cedula.trim(),
-                nombres: this.nombres.trim(),
-                apellidos: this.apellidos.trim(),
-                rol: 'estudiante',
-                estadoUsuario: true,
-            };
-
-            this.registroUsuarioService.registrarUsuario(payload).subscribe({
-                next: (response) => {
-                    this.cargandoRegistro = false;
-                    const usernameGenerado = response.nombreUsuario ?? payload.cedula;
-                    const correos = [payload.correoInstitucional, payload.correoPersonal].filter(c => c && c.trim() !== '');
-
-                    if (correos.length > 0) {
-                        correos.forEach(email => {
-                            this.registroUsuarioService.enviarCorreoCredenciales(email!, usernameGenerado, payload.cedula).subscribe({
-                                next: () => console.log('Correo de credenciales enviado a', email),
-                                error: (err: any) => console.error('Error enviando correo', err)
                             });
-                        });
-                    }
+                        }
 
-                    this.toastService.show('Registro Exitoso', `¡Registro exitoso! Bienvenido/a, ${payload.nombres} ${payload.apellidos}. Las credenciales han sido enviadas a su correo.`, 'success');
-                    this.cerrarModalCrearCuenta();
-                },
-                error: (err: any) => {
-                    this.cargandoRegistro = false;
-                    this.toastService.show('Error de Registro', this.obtenerMensajeErrorRegistro(err), 'error');
+                        this.toastService.show('Registro Exitoso', `¡Registro exitoso! Bienvenido/a, ${payload.nombres} ${payload.apellidos}. Las credenciales han sido enviadas a su correo.`, 'success');
+                        this.cerrarModalCrearCuenta();
+                    },
+                    error: (err) => {
+                        this.cargandoRegistro = false;
+                        this.toastService.show('Error de Registro', this.obtenerMensajeErrorRegistro(err), 'error');
+                    }
+                });
+            },
+            error: (err) => {
+                this.cargandoRegistro = false;
+                if (err.status === 404) {
+                    this.toastService.show('Error de Validación', 'No existe usuario con esa cedula en el servicio de validacion.', 'error');
+                    return;
                 }
-            });
-        }
+                this.toastService.show('Error de Validación', 'Error al validar usuario. Verifique la cedula.', 'error');
+            }
+        });
     }
 
     cerrarModalCrearCuenta() {
         this.showModalCreateAccount = false;
-        this.estudianteExterno = false;
         this.cedula = '';
-        this.nombres = '';
-        this.apellidos = '';
         this.cargandoRegistro = false;
     }
 
     private mapToRegistroPayload(data: any): RegistroUsuarioPayload {
         return {
             cedula: String(data?.cedula ?? this.cedula).trim(),
-            nombres: String(data?.nombres ?? this.nombres).trim(),
-            apellidos: String(data?.apellidos ?? this.apellidos).trim(),
+            nombres: String(data?.nombres ?? '').trim(),
+            apellidos: String(data?.apellidos ?? '').trim(),
             correoPersonal: data?.correoPersonal,
             correoInstitucional: data?.correoInstitucional,
             telefono: data?.telefono,

@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { InicioSesionComponent } from './components/inicio-sesion/inicio-sesion.component';
 
+// Rutas raiz de la aplicacion con carga perezosa por modulo de rol.
 export const routes: Routes = [
     { path: 'inicio-sesion', component: InicioSesionComponent },
     { path: '', redirectTo: 'inicio-sesion', pathMatch: 'full' },

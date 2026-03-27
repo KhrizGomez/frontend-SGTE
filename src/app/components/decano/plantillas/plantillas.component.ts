@@ -13,10 +13,10 @@ import { LoadingComponent } from '../../shared/loading/loading.component';
   selector: 'app-plantillas',
   standalone: true,
   imports: [CommonModule, FormsModule, LoadingComponent],
-  templateUrl: './plantillas.html',
-  styleUrl: './plantillas.css'
+  templateUrl: './plantillas.component.html',
+  styleUrl: './plantillas.component.css'
 })
-export class Plantillas implements OnInit {
+export class DecanoPlantillasComponent implements OnInit {
   modoFlujo = signal<'disponibles' | 'personalizado' | null>(null);
   plantillas = signal<PlantillaCarrera[]>([]);
   categoriasActivas = signal<CategoriaTramite[]>([]);
@@ -937,3 +937,4 @@ export class Plantillas implements OnInit {
     return usuario.facultad || usuario.carrera || 'Sin asignación';
   }
 }
+

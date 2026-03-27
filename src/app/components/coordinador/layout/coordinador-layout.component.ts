@@ -16,6 +16,7 @@ import { ToastService } from '../../../services/general/toast.service';
     styleUrl: './coordinador-layout.component.css',
     encapsulation: ViewEncapsulation.None
 })
+// Layout contenedor del rol coordinador: sidebar, router-outlet y chat contextual.
 export class CoordinadorLayoutComponent implements OnInit, AfterViewInit {
     usuarioActual: AutenticacionRespuesta | null = null;
 
@@ -34,6 +35,7 @@ export class CoordinadorLayoutComponent implements OnInit, AfterViewInit {
     constructor(private autenticacionService: AutenticacionService, private toastService: ToastService) {}
 
     ngOnInit() {
+        // Hidrata datos de usuario para cabecera y contexto del asistente.
         this.usuarioActual = this.autenticacionService.obtenerUsuarioActual();
         this.chatConfig = {
             ...this.chatConfig,
@@ -43,6 +45,7 @@ export class CoordinadorLayoutComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit(): void {
+        // Notificacion de demostracion para exponer el patron de toast en el modulo.
         if (!sessionStorage.getItem('demoPushShown')) {
           setTimeout(()=>{
             this.toastService.show('Nuevo trámite', 'Juan Pérez ha solicitado Cambio de carrera', 'info');
@@ -52,18 +55,22 @@ export class CoordinadorLayoutComponent implements OnInit, AfterViewInit {
     }
 
     getNombre(){
+        // Renderiza nombre corto en cabecera evitando null/undefined.
         return `${this.usuarioActual?.nombres?.split(' ', 1) ?? ''} ${this.usuarioActual?.apellidos?.split(' ', 1) ?? ''}`;
     }
 
     getRol(){
+        // Expone el rol para badges o etiquetas del layout.
         return this.usuarioActual?.rol;
     }
 
     getIniciales(){
+        // Genera avatar textual cuando no hay imagen de perfil.
         return `${this.usuarioActual?.nombres?.substring(0, 1) ?? ''}${this.usuarioActual?.apellidos?.substring(0, 1) ?? ''}`;
     }
 
     cerrarSesion() {
+        // Limpia sesion y fuerza retorno al login para reiniciar contexto.
         this.autenticacionService.cerrarSesion();
         window.location.href = '/login'; // Or use Router to navigate
     }

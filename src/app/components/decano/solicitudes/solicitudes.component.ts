@@ -11,10 +11,10 @@ import { LoadingComponent } from '../../shared/loading/loading.component';
   selector: 'app-decano-solicitudes',
   standalone: true,
   imports: [CommonModule, FormsModule, LoadingComponent],
-  templateUrl: './solicitudes.html',
-  styleUrls: ['./solicitudes.css']
+  templateUrl: './solicitudes.component.html',
+  styleUrls: ['./solicitudes.component.css']
 })
-export class Solicitudes implements OnInit {
+export class DecanoSolicitudesComponent implements OnInit {
   readonly rolGestion = 'decano';
 
   buscar = '';

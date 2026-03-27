@@ -13,10 +13,11 @@ import { LoadingComponent } from '../../shared/loading/loading.component';
   selector: 'app-plantillas',
   standalone: true,
   imports: [CommonModule, FormsModule, LoadingComponent],
-  templateUrl: './plantillas.html',
-  styleUrl: './plantillas.css'
+  templateUrl: './plantillas.component.html',
+  styleUrl: './plantillas.component.css'
 })
-export class Plantillas implements OnInit {
+// Gestiona CRUD de plantillas y construccion de flujos para tramites de coordinacion.
+export class PlantillasComponent implements OnInit {
   modoFlujo = signal<'disponibles' | 'personalizado' | null>(null);
   plantillas = signal<PlantillaCarrera[]>([]);
   categoriasActivas = signal<CategoriaTramite[]>([]);
@@ -174,6 +175,7 @@ export class Plantillas implements OnInit {
     private toastService: ToastService
   ) {}
 
+  // Carga catalogos y datos base necesarios para operar el formulario de plantillas.
   ngOnInit(): void {
     this.cargarPlantillas();
     this.cargarFlujosDisponibles();
@@ -512,6 +514,7 @@ export class Plantillas implements OnInit {
   }
 
   crearPlantilla(): void {
+    // Orquesta validaciones, creacion/edicion de flujo y persistencia final de la plantilla.
     const formulario = this.nuevaPlantilla();
     const usuario = this.authService.obtenerUsuarioActual();
     const nombrePlantilla = formulario.nombrePlantilla.trim();
@@ -839,6 +842,7 @@ export class Plantillas implements OnInit {
   }
 
   cargarPlantillas(): void {
+    // Siempre filtra por la carrera del usuario autenticado para respetar el contexto.
     const usuario = this.authService.obtenerUsuarioActual();
     if (!usuario?.idCarrera) {
       this.error.set('No se pudo obtener la carrera del usuario.');

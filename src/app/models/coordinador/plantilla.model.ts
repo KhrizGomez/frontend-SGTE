@@ -1,3 +1,4 @@
+// Contratos tipados de tramites/plantillas usados por coordinacion en servicios y componentes.
 export interface PasoTramite {
     idPaso: number;
     idFlujo: number;
@@ -74,6 +75,7 @@ export interface GuardarPlantillaPayload {
     requisitos: RequisitoNuevoPlantilla[];
 }
 
+// Payloads y respuestas usados al crear solicitudes desde frontend.
 export interface CrearSolicitudRequestDTO {
     idPlantilla: number;
     detallesSolicitud: string;
@@ -98,6 +100,7 @@ export interface RequisitoNuevoPlantilla {
     numeroOrden: number;
 }
 
+// Contratos para construir y persistir flujos personalizados.
 export interface EtapaFlujoCompletoRequest {
     idEtapa?: number | null;
     nombreEtapa?: string;
@@ -132,6 +135,7 @@ export interface GuardarFlujoCompletoResponse {
     creadoPorId: number | null;
 }
 
+// View-model interno del formulario de plantillas.
 export interface PasoNuevoPlantilla {
     idPaso: number;
     ordenPaso: number;
@@ -159,6 +163,7 @@ export interface NuevaPlantillaForm {
     requisitos: RequisitoNuevoPlantilla[];
 }
 
+// DTO principal de plantilla consumido por la bandeja de coordinacion.
 export interface PlantillaCarrera {
     idPlantilla: number;
     nombrePlantilla: string;
@@ -222,6 +227,7 @@ export interface FlujoTramite {
     pasos: PasoTramite[];
 }
 
+// Contratos para seguimiento y gestion de solicitudes por rol.
 export interface SolicitudDetalleResponse {
     idSolicitud: number;
     codigoSolicitud: string;

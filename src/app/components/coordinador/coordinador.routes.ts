@@ -1,19 +1,20 @@
 ﻿import {Routes} from '@angular/router';
 import {CoordinadorLayoutComponent} from './layout/coordinador-layout.component';
-import {Dashboard} from './dashboard/dashboard';
-import {Plantillas} from './plantillas/plantillas';
-import {Solicitudes} from './solicitudes/solicitudes';
-import {Notificaciones} from './notificaciones/notificaciones';
+import {DashboardComponent} from './dashboard/dashboard.component';
+import {PlantillasComponent} from './plantillas/plantillas.component';
+import {SolicitudesComponent} from './solicitudes/solicitudes.component';
+import {NotificacionesComponent} from './notificaciones/notificaciones.component';
 
+// Enruta vistas internas del modulo de coordinacion.
 export const coordinadorRoutes: Routes = [
     {
         path: '',
         component: CoordinadorLayoutComponent,
         children: [
-            { path: 'dashboard', component: Dashboard },
-            { path: 'plantillas', component: Plantillas },
-            { path: 'solicitudes', component: Solicitudes },
-            { path: 'notificaciones', component: Notificaciones },
+            { path: 'dashboard', component: DashboardComponent },
+            { path: 'plantillas', component: PlantillasComponent },
+            { path: 'solicitudes', component: SolicitudesComponent },
+            { path: 'notificaciones', component: NotificacionesComponent },
 
             { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
         ]

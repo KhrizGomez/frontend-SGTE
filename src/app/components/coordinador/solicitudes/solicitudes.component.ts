@@ -11,10 +11,11 @@ import { LoadingComponent } from '../../shared/loading/loading.component';
   selector: 'app-solicitudes',
   standalone: true,
   imports: [CommonModule, FormsModule, LoadingComponent],
-  templateUrl: './solicitudes.html',
-  styleUrls: ['./solicitudes.css']
+  templateUrl: './solicitudes.component.html',
+  styleUrls: ['./solicitudes.component.css']
 })
-export class Solicitudes implements OnInit {
+// Bandeja operativa del coordinador para revisar, aprobar o rechazar solicitudes.
+export class SolicitudesComponent implements OnInit {
   readonly rolGestion = 'coordinador';
 
   buscar = '';
@@ -47,6 +48,7 @@ export class Solicitudes implements OnInit {
   }
 
   cargarSolicitudes(): void {
+    // Obtiene solo las solicitudes gestionables por el rol configurado en esta vista.
     this.cargando = true;
     this.error = '';
     this.cdr.detectChanges();
@@ -66,6 +68,7 @@ export class Solicitudes implements OnInit {
   }
 
   seleccionarSolicitud(sol: SolicitudDetalleResponse): void {
+    // Carga el detalle completo para habilitar timeline, documentos y acciones.
     this.cargandoDetalle = true;
     this.cdr.detectChanges();
 
@@ -185,6 +188,7 @@ export class Solicitudes implements OnInit {
   }
 
   ejecutarAccion(): void {
+    // Ejecuta transicion del flujo actual (aprobar/rechazar) y sincroniza vista local.
     if (this.confirmInput !== this.textoRequerido || !this.solicitudSeleccionada) return;
 
     this.ejecutandoAccion = true;

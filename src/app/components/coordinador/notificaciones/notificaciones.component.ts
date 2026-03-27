@@ -7,25 +7,17 @@ import { LoadingComponent } from '../../shared/loading/loading.component';
 import { ToastService } from '../../../services/general/toast.service';
 import { ConfiguracionUsuarioService } from '../../../services/general/configuracion-usuario.service';
 import { NotificacionService, NotificacionDTO } from '../../../services/general/notificacion.service';
-
-interface Notificacion {
-  id: number;
-  icono: string;
-  titulo: string;
-  mensaje: string;
-  tiempo: string;
-  leida: boolean;
-  tipo: string;
-}
+import { Notificacion } from '../../../models/coordinador/notificacion.model';
 
 @Component({
-  selector: 'app-decano-notificaciones',
+  selector: 'app-coordinador-notificaciones',
   standalone: true,
   imports: [CommonModule, FormsModule, LoadingComponent],
-  templateUrl: './notificaciones.html',
-  styleUrls: ['./notificaciones.css'],
+  templateUrl: './notificaciones.component.html',
+  styleUrls: ['./notificaciones.component.css'],
 })
-export class Notificaciones implements OnInit {
+// Gestiona bandeja de notificaciones y preferencias de canales del coordinador.
+export class NotificacionesComponent implements OnInit {
   buscar = signal('');
   paginaActual = signal(1);
   porPagina = 5;
@@ -78,12 +70,14 @@ export class Notificaciones implements OnInit {
     private notificacionService: NotificacionService
   ) {}
 
+  // Inicializa bandeja y preferencias del usuario en paralelo.
   ngOnInit() {
     this.cargarNotificaciones();
     this.cargarPreferencias();
   }
 
   cargarPreferencias(): void {
+    // Hidrata toggles de canales desde configuracion persistida en backend.
     this.configService.obtenerMisPreferencias().subscribe({
       next: (config) => {
         this.prefs.set({
@@ -96,6 +90,7 @@ export class Notificaciones implements OnInit {
   }
 
   cargarNotificaciones(): void {
+    // Trae bandeja del usuario y la adapta al view-model local.
     this.cargando.set(true);
     this.loadingService.withMinDuration(this.notificacionService.obtenerMisNotificaciones()).subscribe({
       next: (data) => {
@@ -109,6 +104,7 @@ export class Notificaciones implements OnInit {
   }
 
   private mapearNotificacion(dto: NotificacionDTO): Notificacion {
+    // Normaliza payload backend para desacoplar la UI de cambios de contrato.
     return {
       id: dto.idNotificacion,
       icono: this.obtenerIcono(dto.titulo),
@@ -121,6 +117,7 @@ export class Notificaciones implements OnInit {
   }
 
   private obtenerIcono(titulo: string): string {
+    // Mapa simple de palabras clave para iconografia contextual en tarjetas.
     const t = titulo.toLowerCase();
     if (t.includes('rechazada')) return 'bi-x-circle-fill';
     if (t.includes('finalizada')) return 'bi-check-circle-fill';
@@ -131,6 +128,7 @@ export class Notificaciones implements OnInit {
   }
 
   private tiempoRelativo(fecha: string): string {
+    // Convierte fecha absoluta a etiqueta relativa legible para la bandeja.
     if (!fecha) return '';
     const ahora = new Date();
     const f = new Date(fecha);
@@ -155,6 +153,7 @@ export class Notificaciones implements OnInit {
   }
 
   abrirNotificacion(n: Notificacion) {
+    // Abre detalle en modal sin salir de la bandeja principal.
     this.notificacionSeleccionada.set(n);
     this.showModal.set(true);
   }
@@ -165,6 +164,7 @@ export class Notificaciones implements OnInit {
   }
 
   marcarLeida(id: number, e?: Event) {
+    // Sincroniza estado leido tanto en backend como en estado local reactivo.
     if (e) e.stopPropagation();
     this.notificacionService.marcarLeida(id).subscribe({
       next: () => {
@@ -181,11 +181,13 @@ export class Notificaciones implements OnInit {
   }
 
   irAlTramite() {
+    // Shortcut de navegacion hacia la bandeja operativa de solicitudes.
     this.cerrarModal();
-    this.router.navigate(['/decano/solicitudes']);
+    this.router.navigate(['/coordinacion/solicitudes']);
   }
 
   guardarPrefs() {
+    // Persiste toggles de canales para afectar futuros envios de alertas.
     this.configService.guardarCanales({
       whatsapp: this.prefs().wa,
       correo: this.prefs().mail,
@@ -196,6 +198,7 @@ export class Notificaciones implements OnInit {
   }
 
   restablecerPrefs() {
+    // Resetea en UI; se persiste solo cuando el usuario confirma guardar.
     this.prefs.set({ wa: false, mail: true });
   }
 }
