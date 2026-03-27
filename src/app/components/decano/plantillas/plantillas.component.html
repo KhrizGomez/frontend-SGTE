@@ -69,11 +69,7 @@
       <input class="search-input ms-auto" [ngModel]="buscar()" (ngModelChange)="buscar.set($event)"
         placeholder="Buscar (nombre, categoría, flujo)..." style="flex: 1; max-width: 350px;" />
 
-      <div class="view-toggles mx-2">
-        <button class="view-btn"><i class="bi bi-layout-text-window"></i></button>
-        <button class="view-btn"><i class="bi bi-grid"></i></button>
-        <button class="view-btn active"><i class="bi bi-grid-3x3-gap-fill"></i></button>
-      </div>
+
 
       <!-- Control: Paginación -->
       <div class="d-flex align-items-center gap-2 ms-2 ps-3" style="border-left: 1px solid #e9ecef;">

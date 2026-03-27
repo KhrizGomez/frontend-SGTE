@@ -1,4 +1,4 @@
-import { Component, NgZone } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -8,6 +8,7 @@ import { RegistroUsuarioService } from '../../services/general/registro-usuario.
 import { AutenticacionService } from '../../services/general/autenticacion.service';
 import { RegistroUsuarioPayload } from '../../models/general/registro-usuario.model';
 import { ToastService } from '../../services/general/toast.service';
+import { timeout } from 'rxjs/operators';
 
 declare var bootstrap: any;
 
@@ -36,7 +37,7 @@ export class InicioSesionComponent {
         private validacionUsuarioService: ValidacionUsuarioService,
         private registroUsuarioService: RegistroUsuarioService,
         private toastService: ToastService,
-        private ngZone: NgZone
+        private cdr: ChangeDetectorRef,
     ) { }
 
     // Auth login
@@ -54,6 +55,7 @@ export class InicioSesionComponent {
         }).subscribe({
             next: (response) => {
                 this.cargandoInicioSesion = false;
+                this.cdr.detectChanges();
                 console.log('Login exitoso:', response);
                 const ruta = this.autenticacionService.obtenerRutaPorRolUsuarioActual(response.rol);
                 this.toastService.show('Inicio de sesión exitoso', `¡Hola, ${response.nombres} ${response.apellidos}!`, 'success');
@@ -61,6 +63,7 @@ export class InicioSesionComponent {
             },
             error: (err) => {
                 this.cargandoInicioSesion = false;
+                this.cdr.detectChanges();
                 console.error('Error de autenticación:', err);
                 
                 let msj = 'Error al iniciar sesión.';
@@ -100,12 +103,11 @@ export class InicioSesionComponent {
 
         this.cargandoRegistro = true;
 
-        this.validacionUsuarioService.validarUsuario(cedulaNormalizada).subscribe({
+        this.validacionUsuarioService.validarUsuario(cedulaNormalizada).pipe(timeout(5000)).subscribe({
             next: (data) => {
                 const payload = this.mapToRegistroPayload(data);
-                this.registroUsuarioService.registrarUsuario(payload).subscribe({
+                this.registroUsuarioService.registrarUsuario(payload).pipe(timeout(5000)).subscribe({
                     next: (response) => {
-                        this.cargandoRegistro = false;
                         const usernameGenerado = response.nombreUsuario ?? payload.cedula;
                         const correos = [payload.correoInstitucional, payload.correoPersonal].filter(c => c && c.trim() !== '');
 
@@ -123,17 +125,33 @@ export class InicioSesionComponent {
                     },
                     error: (err) => {
                         this.cargandoRegistro = false;
-                        this.toastService.show('Error de Registro', this.obtenerMensajeErrorRegistro(err), 'error');
+                        this.cdr.detectChanges();
+                        const msg = err?.name === 'TimeoutError'
+                            ? 'El servidor no respondió. Intente nuevamente.'
+                            : this.obtenerMensajeErrorRegistro(err);
+                        this.toastService.show('Error de Registro', msg, 'error');
+                    },
+                    complete: () => {
+                        this.cargandoRegistro = false;
+                        this.cdr.detectChanges();
                     }
                 });
             },
             error: (err) => {
                 this.cargandoRegistro = false;
+                this.cdr.detectChanges();
+                if (err?.name === 'TimeoutError') {
+                    this.toastService.show('Error de Validación', 'El servidor de validación no respondió. Intente nuevamente.', 'error');
+                    return;
+                }
                 if (err.status === 404) {
                     this.toastService.show('Error de Validación', 'No existe usuario con esa cedula en el servicio de validacion.', 'error');
                     return;
                 }
                 this.toastService.show('Error de Validación', 'Error al validar usuario. Verifique la cedula.', 'error');
+            },
+            complete: () => {
+                // Validación completada, el registro inner subscribe maneja su propio loading
             }
         });
     }

@@ -9,15 +9,15 @@
     <div class="kpi-card kpi-warning">
       <div class="kpi-content">
         <span class="kpi-label">Pendientes</span>
-        <span class="kpi-value">45</span>
+        <span class="kpi-value">{{ stats.pendientes }}</span>
       </div>
       <div class="kpi-icon"><i class="bi bi-clock"></i></div>
     </div>
 
     <div class="kpi-card kpi-success">
       <div class="kpi-content">
-        <span class="kpi-label">Aceptadas</span>
-        <span class="kpi-value">596</span>
+        <span class="kpi-label">Finalizadas</span>
+        <span class="kpi-value">{{ stats.finalizadas }}</span>
       </div>
       <div class="kpi-icon"><i class="bi bi-check-circle"></i></div>
     </div>
@@ -25,15 +25,15 @@
     <div class="kpi-card kpi-danger">
       <div class="kpi-content">
         <span class="kpi-label">Rechazadas</span>
-        <span class="kpi-value">14</span>
+        <span class="kpi-value">{{ stats.rechazadas }}</span>
       </div>
       <div class="kpi-icon"><i class="bi bi-x-circle"></i></div>
     </div>
 
     <div class="kpi-card kpi-primary">
       <div class="kpi-content">
-        <span class="kpi-label">Trámites Activos</span>
-        <span class="kpi-value">175</span>
+        <span class="kpi-label">Total Solicitudes</span>
+        <span class="kpi-value">{{ stats.total }}</span>
       </div>
       <div class="kpi-icon"><i class="bi bi-file-earmark-text"></i></div>
     </div>
@@ -47,17 +47,17 @@
         <h3 class="panel-title">Estado de Solicitudes</h3>
       </div>
       <div class="donut-chart-container">
-        <div class="donut-mock">
+        <div class="donut-mock" [style.background]="donutGradient">
           <div class="donut-inner">
-            <strong>655</strong>
+            <strong>{{ stats.total }}</strong>
             <span>Solicitudes</span>
           </div>
         </div>
         <div class="chart-legend">
-          <div class="legend-item"><div class="legend-color" style="background:#d97706"></div>Pendientes</div>
-          <div class="legend-item"><div class="legend-color" style="background:#0f6a1d"></div>Aceptadas</div>
-          <div class="legend-item"><div class="legend-color" style="background:#dc2626"></div>Rechazadas</div>
-          <div class="legend-item"><div class="legend-color" style="background:#6c757d"></div>Canceladas</div>
+          <div class="legend-item"><div class="legend-color" style="background:#d97706"></div>Pendientes ({{ stats.pendientes }})</div>
+          <div class="legend-item"><div class="legend-color" style="background:#0f6a1d"></div>Finalizadas ({{ stats.finalizadas }})</div>
+          <div class="legend-item"><div class="legend-color" style="background:#dc2626"></div>Rechazadas ({{ stats.rechazadas }})</div>
+          <div class="legend-item"><div class="legend-color" style="background:#6c757d"></div>En Proceso ({{ stats.enProceso }})</div>
         </div>
       </div>
     </div>
@@ -65,47 +65,31 @@
     <div class="dash-panel">
       <div class="panel-header">
         <i class="bi bi-bar-chart-fill"></i>
-        <h3 class="panel-title">Trámites Programados — Semana</h3>
-        <span class="panel-subtitle">Semana Actual</span>
+        <h3 class="panel-title">Resumen por Estado</h3>
+        <span class="panel-subtitle">Distribución actual</span>
       </div>
       <div class="bar-chart-container">
         <div class="y-axis">
-          <span>100</span>
-          <span>50</span>
+          <span>{{ stats.total }}</span>
+          <span>{{ (stats.total / 2) | number:'1.0-0' }}</span>
           <span>0</span>
         </div>
         <div class="bar-col">
-          <div class="bar" style="height: 10%;"></div>
-          <span class="x-label">Lun</span>
+          <div class="bar" [style.height.%]="stats.total ? (stats.pendientes / stats.total * 100) : 0" style="background: #d97706;"></div>
+          <span class="x-label">Pend.</span>
         </div>
         <div class="bar-col">
-          <div class="bar" style="height: 25%;"></div>
-          <span class="x-label">Mar</span>
+          <div class="bar" [style.height.%]="stats.total ? (stats.enProceso / stats.total * 100) : 0" style="background: #2563eb;"></div>
+          <span class="x-label">Proc.</span>
         </div>
         <div class="bar-col">
-          <div class="bar" style="height: 40%"></div>
-          <span class="x-label">Mié</span>
+          <div class="bar" [style.height.%]="stats.total ? (stats.finalizadas / stats.total * 100) : 0" style="background: #0f6a1d;"></div>
+          <span class="x-label">Final.</span>
         </div>
         <div class="bar-col">
-          <div class="bar" style="height: 15%"></div>
-          <span class="x-label">Jue</span>
+          <div class="bar" [style.height.%]="stats.total ? (stats.rechazadas / stats.total * 100) : 0" style="background: #dc2626;"></div>
+          <span class="x-label">Rech.</span>
         </div>
-        <div class="bar-col">
-          <div class="bar" style="height: 60%"></div>
-          <span class="x-label">Vie</span>
-        </div>
-        <div class="bar-col">
-          <div class="bar" style="height: 5%"></div>
-          <span class="x-label">Sáb</span>
-        </div>
-        <div class="bar-col">
-          <div class="bar" style="height: 90%; background: #0f6a1d;"></div>
-          <span class="x-label">Dom</span>
-        </div>
-      </div>
-      <div class="chart-legend" style="margin-top: 15px;">
-        <div class="legend-item"><div class="legend-color" style="background:#a3d9a5"></div>Regular</div>
-        <div class="legend-item"><div class="legend-color" style="background:#0f6a1d"></div>Urgente</div>
       </div>
     </div>
   </section>
@@ -116,30 +100,29 @@
       <div class="panel-header">
         <i class="bi bi-calendar-event"></i>
         <h3 class="panel-title">Trámites de Hoy</h3>
-        <span class="panel-subtitle" style="background: #0f6a1d; color: white; padding: 2px 8px; border-radius: 10px; font-weight: bold; margin-left: auto;">2</span>
+        <span class="panel-subtitle" style="background: #0f6a1d; color: white; padding: 2px 8px; border-radius: 10px; font-weight: bold; margin-left: auto;">{{ tramitesHoy.length }}</span>
       </div>
       
-      <div class="session-list">
-        <div class="session-item">
-          <div class="session-time"><i class="bi bi-clock-fill" style="color: #d97706;"></i> 10:30 AM</div>
+      <div class="session-list" *ngIf="tramitesHoy.length > 0">
+        <div class="session-item" *ngFor="let sol of tramitesHoy">
+          <div class="session-time"><i class="bi bi-clock-fill" style="color: #d97706;"></i> {{ formatearHora(sol.fechaCreacion) }}</div>
           <div class="session-info">
-            <h4 class="session-title" style="text-transform: uppercase;">Aprobación de Malla Curricular</h4>
-            <div style="font-size: 0.8rem; color: #6c757d; margin-bottom: 4px;">Ingeniería en Software (Ref. #102)</div>
-            <span class="session-badge"><i class="bi bi-geo-alt-fill"></i> Presencial</span>
-          </div>
-        </div>
-
-        <div class="session-item">
-          <div class="session-time"><i class="bi bi-clock-fill" style="color: #059669;"></i> 14:00 PM</div>
-          <div class="session-info">
-            <h4 class="session-title" style="text-transform: uppercase;">Validación de Prácticas</h4>
-            <div style="font-size: 0.8rem; color: #6c757d; margin-bottom: 4px;">Facultad de Ciencias de la Ingeniería (Ref. #150)</div>
-            <span class="session-badge green"><i class="bi bi-laptop"></i> Virtual</span>
+            <h4 class="session-title" style="text-transform: uppercase;">{{ sol.nombrePlantilla }}</h4>
+            <div style="font-size: 0.8rem; color: #6c757d; margin-bottom: 4px;">{{ sol.carrera }} (Ref. {{ sol.codigoSolicitud }})</div>
+            <span class="session-badge" [class.green]="sol.estadoActual === 'finalizado'">
+              <i class="bi" [ngClass]="{'bi-clock-history': sol.estadoActual === 'pendiente', 'bi-arrow-repeat': sol.estadoActual === 'en_proceso', 'bi-check-circle': sol.estadoActual === 'finalizado', 'bi-x-circle': sol.estadoActual === 'rechazado'}"></i>
+              {{ sol.estadoActual | titlecase }}
+            </span>
           </div>
         </div>
       </div>
 
-      <button class="btn-outline-full">&rarr; Ver todos los trámites de hoy</button>
+      <div *ngIf="tramitesHoy.length === 0 && !cargando" style="text-align: center; padding: 30px 10px; color: #adb5bd;">
+        <i class="bi bi-calendar-check" style="font-size: 2rem; display: block; margin-bottom: 8px;"></i>
+        No hay trámites registrados hoy
+      </div>
+
+      <button class="btn-outline-full" [routerLink]="['/decano/solicitudes']">&rarr; Ver todas las solicitudes</button>
     </div>
 
     <div class="dash-panel">

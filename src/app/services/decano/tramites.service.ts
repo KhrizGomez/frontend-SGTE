@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-import { PlantillaCarrera, TipoTramiteDetalle, RegistrarTipoTramitePayload, FlujoTramite, PasoTramite, CategoriaTramite, GuardarPlantillaPayload, EtapaTramite, UsuarioAsignableTramite, GuardarFlujoCompletoPayload, GuardarFlujoCompletoResponse, RequisitoNuevoPlantilla } from '../../models/decano/tramite-detalle.model';
+import { PlantillaCarrera, TipoTramiteDetalle, RegistrarTipoTramitePayload, FlujoTramite, PasoTramite, CategoriaTramite, GuardarPlantillaPayload, EtapaTramite, UsuarioAsignableTramite, GuardarFlujoCompletoPayload, GuardarFlujoCompletoResponse, RequisitoNuevoPlantilla, SolicitudDetalleResponse } from '../../models/decano/tramite-detalle.model';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -13,6 +13,10 @@ export class TramitesService {
     private readonly categoriasBaseUrl = `${environment.apiUrl}/api/tramites/categorias`;
 
     constructor(private readonly http: HttpClient) {}
+
+    getSolicitudesPorRol(nombreRol: string): Observable<SolicitudDetalleResponse[]> {
+        return this.http.get<SolicitudDetalleResponse[]>(`${environment.apiUrl}/api/solicitudes/por-rol/${nombreRol}`);
+    }
 
     getTiposTramiteDetalles(): Observable<TipoTramiteDetalle[]> {
         return this.http

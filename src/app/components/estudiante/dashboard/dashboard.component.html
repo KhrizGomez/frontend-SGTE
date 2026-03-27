@@ -9,7 +9,7 @@
     <div class="kpi-card kpi-warning">
       <div class="kpi-content">
         <span class="kpi-label">En Revisión</span>
-        <span class="kpi-value">2</span>
+        <span class="kpi-value">{{ stats.enRevision }}</span>
       </div>
       <div class="kpi-icon"><i class="bi bi-clock"></i></div>
     </div>
@@ -17,15 +17,15 @@
     <div class="kpi-card kpi-success">
       <div class="kpi-content">
         <span class="kpi-label">Finalizadas</span>
-        <span class="kpi-value">8</span>
+        <span class="kpi-value">{{ stats.finalizadas }}</span>
       </div>
       <div class="kpi-icon"><i class="bi bi-check-circle"></i></div>
     </div>
 
     <div class="kpi-card kpi-danger">
       <div class="kpi-content">
-        <span class="kpi-label">Observadas</span>
-        <span class="kpi-value">1</span>
+        <span class="kpi-label">Rechazadas</span>
+        <span class="kpi-value">{{ stats.rechazadas }}</span>
       </div>
       <div class="kpi-icon"><i class="bi bi-x-circle"></i></div>
     </div>
@@ -33,7 +33,7 @@
     <div class="kpi-card kpi-primary">
       <div class="kpi-content">
         <span class="kpi-label">Total Solicitudes</span>
-        <span class="kpi-value">11</span>
+        <span class="kpi-value">{{ stats.total }}</span>
       </div>
       <div class="kpi-icon"><i class="bi bi-file-earmark-text"></i></div>
     </div>
@@ -47,16 +47,16 @@
         <h3 class="panel-title">Distribución de mis trámites</h3>
       </div>
       <div class="donut-chart-container">
-        <div class="donut-mock" style="background: conic-gradient(#d97706 0deg 65deg, #0f6a1d 65deg 320deg, #dc2626 320deg 360deg);">
+        <div class="donut-mock" [style.background]="donutGradient">
           <div class="donut-inner">
-            <strong>11</strong>
+            <strong>{{ stats.total }}</strong>
             <span>Total</span>
           </div>
         </div>
         <div class="chart-legend">
-          <div class="legend-item"><div class="legend-color" style="background:#d97706"></div>En Revisión</div>
-          <div class="legend-item"><div class="legend-color" style="background:#0f6a1d"></div>Finalizadas</div>
-          <div class="legend-item"><div class="legend-color" style="background:#dc2626"></div>Observadas</div>
+          <div class="legend-item"><div class="legend-color" style="background:#d97706"></div>En Revisión ({{ stats.enRevision }})</div>
+          <div class="legend-item"><div class="legend-color" style="background:#0f6a1d"></div>Finalizadas ({{ stats.finalizadas }})</div>
+          <div class="legend-item"><div class="legend-color" style="background:#dc2626"></div>Rechazadas ({{ stats.rechazadas }})</div>
         </div>
       </div>
     </div>
@@ -64,47 +64,27 @@
     <div class="dash-panel">
       <div class="panel-header">
         <i class="bi bi-bar-chart-fill"></i>
-        <h3 class="panel-title">Historial de Solicitudes</h3>
-        <span class="panel-subtitle">Último Semestre</span>
+        <h3 class="panel-title">Resumen por Estado</h3>
+        <span class="panel-subtitle">Mis solicitudes</span>
       </div>
       <div class="bar-chart-container">
         <div class="y-axis">
-          <span>5</span>
-          <span>3</span>
+          <span>{{ stats.total }}</span>
+          <span>{{ (stats.total / 2) | number:'1.0-0' }}</span>
           <span>0</span>
         </div>
         <div class="bar-col">
-          <div class="bar" style="height: 10%;"></div>
-          <span class="x-label">Oct</span>
+          <div class="bar" [style.height.%]="stats.total ? (stats.enRevision / stats.total * 100) : 0" style="background: #d97706;"></div>
+          <span class="x-label">Revisión</span>
         </div>
         <div class="bar-col">
-          <div class="bar" style="height: 25%;"></div>
-          <span class="x-label">Nov</span>
+          <div class="bar" [style.height.%]="stats.total ? (stats.finalizadas / stats.total * 100) : 0" style="background: #0f6a1d;"></div>
+          <span class="x-label">Finaliz.</span>
         </div>
         <div class="bar-col">
-          <div class="bar" style="height: 60%"></div>
-          <span class="x-label">Dic</span>
+          <div class="bar" [style.height.%]="stats.total ? (stats.rechazadas / stats.total * 100) : 0" style="background: #dc2626;"></div>
+          <span class="x-label">Rechaz.</span>
         </div>
-        <div class="bar-col">
-          <div class="bar" style="height: 15%"></div>
-          <span class="x-label">Ene</span>
-        </div>
-        <div class="bar-col">
-          <div class="bar" style="height: 40%"></div>
-          <span class="x-label">Feb</span>
-        </div>
-        <div class="bar-col">
-          <div class="bar" style="height: 5%"></div>
-          <span class="x-label">Mar</span>
-        </div>
-        <div class="bar-col">
-          <div class="bar" style="height: 90%; background: #0f6a1d;"></div>
-          <span class="x-label">Abr</span>
-        </div>
-      </div>
-      <div class="chart-legend" style="margin-top: 15px;">
-        <div class="legend-item"><div class="legend-color" style="background:#a3d9a5"></div>Regulares</div>
-        <div class="legend-item"><div class="legend-color" style="background:#0f6a1d"></div>Urgentes</div>
       </div>
     </div>
   </section>
@@ -114,31 +94,37 @@
     <div class="dash-panel">
       <div class="panel-header">
         <i class="bi bi-bell-fill"></i>
-        <h3 class="panel-title">Avisos y Notificaciones</h3>
-        <span class="panel-subtitle" style="background: #0f6a1d; color: white; padding: 2px 8px; border-radius: 10px; font-weight: bold; margin-left: auto;">2</span>
+        <h3 class="panel-title">Solicitudes Recientes</h3>
+        <span class="panel-subtitle" style="background: #0f6a1d; color: white; padding: 2px 8px; border-radius: 10px; font-weight: bold; margin-left: auto;">{{ recientes.length }}</span>
       </div>
 
-      <div class="session-list">
-        <div class="session-item">
-          <div class="session-time"><i class="bi bi-exclamation-triangle-fill" style="color: #d97706;"></i> Hoy</div>
-          <div class="session-info">
-            <h4 class="session-title" style="text-transform: uppercase;">Falta documento en su solicitud</h4>
-            <div style="font-size: 0.8rem; color: #6c757d; margin-bottom: 4px;">Certificado de Matrícula (Ref. #204)</div>
-            <span class="session-badge" style="background: #fff3cd; color: #d97706; padding: 4px 8px; border-radius: 12px; font-size: 0.75rem;"><i class="bi bi-clock-history"></i> Vence en 2 días</span>
+      <div class="session-list" *ngIf="recientes.length > 0">
+        <div class="session-item" *ngFor="let sol of recientes">
+          <div class="session-time">
+            <i class="bi" [ngClass]="{'bi-exclamation-triangle-fill': sol.estadoActual === 'pendiente' || sol.estadoActual === 'en_proceso', 'bi-check-circle-fill': sol.estadoActual === 'finalizado', 'bi-x-circle-fill': sol.estadoActual === 'rechazado'}"
+               [style.color]="sol.estadoActual === 'finalizado' ? '#059669' : sol.estadoActual === 'rechazado' ? '#dc2626' : '#d97706'"></i>
+            {{ formatearFechaRelativa(sol.fechaCreacion) }}
           </div>
-        </div>
-
-        <div class="session-item">
-          <div class="session-time"><i class="bi bi-check-circle-fill" style="color: #059669;"></i> Ayer</div>
           <div class="session-info">
-            <h4 class="session-title" style="text-transform: uppercase;">Trámite Finalizado Exitosamente</h4>
-            <div style="font-size: 0.8rem; color: #6c757d; margin-bottom: 4px;">Cambio de Paralelo (Ref. #199)</div>
-            <span class="session-badge green"><i class="bi bi-file-earmark-pdf"></i> Resolución lista</span>
+            <h4 class="session-title" style="text-transform: uppercase;">{{ sol.nombrePlantilla }}</h4>
+            <div style="font-size: 0.8rem; color: #6c757d; margin-bottom: 4px;">{{ sol.carrera }} (Ref. {{ sol.codigoSolicitud }})</div>
+            <span class="session-badge" [class.green]="sol.estadoActual === 'finalizado'"
+              [style.background]="sol.estadoActual === 'finalizado' ? '#d1fae5' : sol.estadoActual === 'rechazado' ? '#fee2e2' : '#fff3cd'"
+              [style.color]="sol.estadoActual === 'finalizado' ? '#059669' : sol.estadoActual === 'rechazado' ? '#dc2626' : '#d97706'"
+              style="padding: 4px 8px; border-radius: 12px; font-size: 0.75rem;">
+              <i class="bi" [ngClass]="{'bi-clock-history': sol.estadoActual === 'pendiente' || sol.estadoActual === 'en_proceso', 'bi-file-earmark-pdf': sol.estadoActual === 'finalizado', 'bi-x-circle': sol.estadoActual === 'rechazado'}"></i>
+              {{ sol.estadoActual === 'finalizado' ? 'Resolución lista' : sol.estadoActual === 'rechazado' ? 'Rechazada' : 'En proceso' }}
+            </span>
           </div>
         </div>
       </div>
 
-      <button class="btn-outline-full" [routerLink]="['/estudiante/notificaciones']">&rarr; Ver todas mis notificaciones</button>
+      <div *ngIf="recientes.length === 0 && !cargando" style="text-align: center; padding: 30px 10px; color: #adb5bd;">
+        <i class="bi bi-inbox" style="font-size: 2rem; display: block; margin-bottom: 8px;"></i>
+        No tienes solicitudes aún
+      </div>
+
+      <button class="btn-outline-full" [routerLink]="['/estudiante/solicitudes']">&rarr; Ver todas mis solicitudes</button>
     </div>
 
     <div class="dash-panel">
@@ -168,4 +154,3 @@
   </section>
 
 </div>
-
