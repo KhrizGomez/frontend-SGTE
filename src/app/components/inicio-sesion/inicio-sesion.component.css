@@ -290,3 +290,176 @@ input:-webkit-autofill:active{
         max-width: 500px;
     }
 }
+
+/* =========================================================
+   BOTONES DE ACCIÓN COMPARTIDOS
+   ========================================================= */
+.header-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid #0f6a1d;
+  border-radius: 12px;
+  background: #fff;
+  color: #0f6a1d;
+  font-weight: 700;
+  box-shadow: 0 2px 4px rgba(15, 106, 29, 0.08);
+  transition: all 0.2s ease;
+  font-size: 0.95rem;
+}
+
+.header-action-btn:hover:not(:disabled) {
+  background: #f3fbf5;
+  box-shadow: 0 6px 16px rgba(15, 106, 29, 0.12);
+  transform: translateY(-1px);
+}
+
+.header-action-btn i {
+  font-size: 1rem;
+}
+
+.header-action-btn--soft {
+  background: #f8f9fa;
+  border-color: #e9ecef;
+  color: #495057;
+}
+
+.header-action-btn--soft:hover:not(:disabled) {
+  background: #e9ecef;
+  color: #212529;
+}
+
+.header-action-btn--icon {
+  padding: 10px 12px;
+  min-width: 44px;
+  justify-content: center;
+}
+
+.header-action-btn--primary {
+  background: linear-gradient(135deg, #0f6a1d 0%, #0b5015 100%) !important;
+  border-color: #093f10 !important;
+  color: #fff !important;
+}
+
+.header-action-btn--primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0b5015 0%, #093f10 100%) !important;
+  box-shadow: 0 6px 16px rgba(15, 106, 29, 0.3) !important;
+}
+
+.header-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* =========================================================
+   MODAL: CREAR CUENTA
+   ========================================================= */
+.modal--confirm-action {
+  position: fixed;
+  inset: 0;
+  z-index: 1060;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.modal--confirm-action .modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.52);
+  backdrop-filter: blur(4px);
+}
+
+.modal__workspace--confirm-action {
+  position: relative;
+  z-index: 1;
+  width: min(620px, 92vw);
+  display: flex;
+  justify-content: center;
+}
+
+.modal__dialog--confirm-action {
+  width: 100%;
+  max-width: 620px;
+  overflow: hidden;
+  border-radius: 24px;
+  background: #ffffff;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.14);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header variant */
+.modal__dialog--confirm-action .modal__header {
+  padding: 18px 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.modal__dialog--confirm-action .modal__header--primary {
+  border-bottom: 1px solid #d1fae5;
+  background: linear-gradient(180deg, #ecfdf5 0%, #ffffff 100%);
+}
+
+.modal__dialog--confirm-action .modal__header h3 {
+  margin: 0 0 6px;
+  font-size: 1.18rem;
+  line-height: 1.2;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.modal__header--primary h3 { color: #065f46; }
+.modal__header--primary p { color: #047857; margin: 0; line-height: 1.45; font-size: 0.92rem; }
+
+/* Body */
+.modal__body--confirm-action {
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.confirm-action__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.confirm-action__label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #374151;
+  letter-spacing: 0.02em;
+}
+
+.confirm-action__input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 0.92rem;
+  color: #111827;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.confirm-action__input:focus {
+  border-color: #0f6a1d;
+  box-shadow: 0 0 0 3px rgba(15, 106, 29, 0.08);
+}
+
+/* Footer */
+.modal__footer--confirm-action {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 0 22px 22px;
+}

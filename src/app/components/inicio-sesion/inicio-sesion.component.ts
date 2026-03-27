@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, NgZone } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -18,7 +18,7 @@ declare var bootstrap: any;
     templateUrl: './inicio-sesion.component.html',
     styleUrl: './inicio-sesion.component.css',
 })
-export class InicioSesionComponent implements AfterViewInit {
+export class InicioSesionComponent {
 
     // Login
     nombreUsuario: string = '';
@@ -26,6 +26,7 @@ export class InicioSesionComponent implements AfterViewInit {
     cargandoInicioSesion: boolean = false;
 
     // Registro
+    showModalCreateAccount: boolean = false;
     estudianteExterno: boolean = false;
     cedula: string = '';
     nombres: string = '';
@@ -87,11 +88,7 @@ export class InicioSesionComponent implements AfterViewInit {
 
     // Modal crear cuenta
     abrirModalCreateAccount() {
-        const modalElement = document.getElementById('modalCreateAccount');
-        if (modalElement) {
-            const modal = new bootstrap.Modal(modalElement);
-            modal.show();
-        }
+        this.showModalCreateAccount = true;
     }
 
     registrarCuenta() {
@@ -185,13 +182,12 @@ export class InicioSesionComponent implements AfterViewInit {
     }
 
     cerrarModalCrearCuenta() {
-        const modalElement = document.getElementById('modalCreateAccount');
-        if (modalElement) {
-            const modal = bootstrap.Modal.getInstance(modalElement);
-            if (modal) {
-                modal.hide();
-            }
-        }
+        this.showModalCreateAccount = false;
+        this.estudianteExterno = false;
+        this.cedula = '';
+        this.nombres = '';
+        this.apellidos = '';
+        this.cargandoRegistro = false;
     }
 
     private mapToRegistroPayload(data: any): RegistroUsuarioPayload {
@@ -268,18 +264,4 @@ export class InicioSesionComponent implements AfterViewInit {
         return err?.error?.mensaje ?? err?.error ?? 'Error al registrar usuario.';
     }
 
-    ngAfterViewInit() {
-        const modalElement = document.getElementById('modalCreateAccount');
-        if (modalElement) {
-            modalElement.addEventListener('hidden.bs.modal', () => {
-                this.ngZone.run(() => {
-                    this.estudianteExterno = false;
-                    this.cedula = '';
-                    this.nombres = '';
-                    this.apellidos = '';
-                    this.cargandoRegistro = false;
-                });
-            });
-        }
-    }
 }

@@ -622,3 +622,273 @@
 .btn-outline-secondary { color: #6c757d; border-color: #6c757d; background-color: transparent; }
 .btn-outline-secondary:hover { color: #fff; background-color: #6c757d; border-color: #6c757d; }
 .btn:disabled { pointer-events: none; opacity: .65; }
+
+/* =========================================================
+   BOTONES DE ACCIÓN COMPARTIDOS (Estilos de Plantillas)
+   ========================================================= */
+.header-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid #0f6a1d;
+  border-radius: 12px;
+  background: #fff;
+  color: #0f6a1d;
+  font-weight: 700;
+  box-shadow: 0 2px 4px rgba(15, 106, 29, 0.08);
+  transition: all 0.2s ease;
+  font-size: 0.95rem;
+}
+
+.header-action-btn:hover:not(:disabled) {
+  background: #f3fbf5;
+  box-shadow: 0 6px 16px rgba(15, 106, 29, 0.12);
+  transform: translateY(-1px);
+}
+
+.header-action-btn i {
+  font-size: 1rem;
+}
+
+.header-action-btn--soft {
+  background: #f8f9fa;
+  border-color: #e9ecef;
+  color: #495057;
+}
+
+.header-action-btn--soft:hover:not(:disabled) {
+  background: #e9ecef;
+  color: #212529;
+}
+
+.header-action-btn--icon {
+  padding: 10px 12px;
+  min-width: 44px;
+  justify-content: center;
+}
+
+/* =========================================================
+   MODAL: CONFIRMACIÓN DE ACCIÓN (APROBAR / RECHAZAR)
+   Diseño inspirado en el confirm-delete de plantillas
+   ========================================================= */
+.modal--confirm-action {
+  position: fixed;
+  inset: 0;
+  z-index: 1060;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.modal--confirm-action .modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.52);
+  backdrop-filter: blur(4px);
+}
+
+.modal__workspace--confirm-action {
+  position: relative;
+  z-index: 1;
+  width: min(620px, 92vw);
+  display: flex;
+  justify-content: center;
+}
+
+.modal__dialog--confirm-action {
+  width: 100%;
+  max-width: 620px;
+  overflow: hidden;
+  border-radius: 24px;
+  background: #ffffff;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.14);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header variants */
+.modal__dialog--confirm-action .modal__header {
+  padding: 18px 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.modal__dialog--confirm-action .modal__header--success {
+  border-bottom: 1px solid #d1fae5;
+  background: linear-gradient(180deg, #ecfdf5 0%, #ffffff 100%);
+}
+
+.modal__dialog--confirm-action .modal__header--danger {
+  border-bottom: 1px solid #fee2e2;
+  background: linear-gradient(180deg, #fff5f5 0%, #ffffff 100%);
+}
+
+.modal__dialog--confirm-action .modal__header h3 {
+  margin: 0 0 6px;
+  font-size: 1.18rem;
+  line-height: 1.2;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.modal__header--success h3 { color: #065f46; }
+.modal__header--success h3 i { color: #059669; }
+.modal__header--danger h3 { color: #991b1b; }
+.modal__header--danger h3 i { color: #dc2626; }
+
+.modal__dialog--confirm-action .modal__header p {
+  margin: 0;
+  line-height: 1.45;
+  font-size: 0.92rem;
+}
+
+.modal__header--success p { color: #047857; }
+.modal__header--danger p { color: #b91c1c; }
+
+/* Body */
+.modal__body--confirm-action {
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.confirm-action__text {
+  margin: 0;
+  color: #111827;
+  line-height: 1.55;
+  font-size: 0.96rem;
+}
+
+.confirm-action__text strong {
+  color: #0f6a1d;
+}
+
+.confirm-action__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.confirm-action__label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #374151;
+  letter-spacing: 0.02em;
+}
+
+.confirm-action__label--verify {
+  color: #d97706;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.88rem;
+}
+
+.confirm-action__textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 0.92rem;
+  color: #111827;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s;
+  font-family: inherit;
+}
+
+.confirm-action__textarea:focus {
+  border-color: #0f6a1d;
+  box-shadow: 0 0 0 3px rgba(15, 106, 29, 0.08);
+}
+
+/* Verification box */
+.confirm-action__verify {
+  padding: 16px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #fffbeb 0%, #ffffff 100%);
+  border: 1px solid #fde68a;
+}
+
+.confirm-action__hint {
+  margin: 6px 0 10px;
+  color: #6b7280;
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.confirm-action__phrase {
+  text-align: center;
+  padding: 10px 16px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  font-family: monospace;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #212529;
+  user-select: none;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.confirm-action__input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 0.92rem;
+  color: #111827;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.confirm-action__input:focus {
+  border-color: #d97706;
+  box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.08);
+}
+
+/* Footer */
+.modal__footer--confirm-action {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 0 22px 22px;
+}
+
+/* Button variants for success/danger */
+.header-action-btn--success {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+  border-color: #065f46 !important;
+  color: #fff !important;
+}
+
+.header-action-btn--success:hover:not(:disabled) {
+  background: linear-gradient(135deg, #047857 0%, #065f46 100%) !important;
+  box-shadow: 0 6px 16px rgba(5, 150, 105, 0.3) !important;
+}
+
+.header-action-btn--danger {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%) !important;
+  border-color: #991b1b !important;
+  color: #fff !important;
+}
+
+.header-action-btn--danger:hover:not(:disabled) {
+  background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%) !important;
+  box-shadow: 0 6px 16px rgba(220, 38, 38, 0.3) !important;
+}
+
+.header-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
